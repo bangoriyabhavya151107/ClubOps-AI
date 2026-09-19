@@ -34,7 +34,7 @@ export default function HomePage() {
             Features
           </Link>
 
-          <Link href="/#about">
+          <Link href="/about">
             About
           </Link>
 
