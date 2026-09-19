@@ -2,7 +2,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "ClubOps AI",
-  description: "AI-Powered College Club Management",
+  description: "AI-powered college club management",
 };
 
 export default function RootLayout({ children }) {
