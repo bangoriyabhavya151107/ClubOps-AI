@@ -1,207 +1,263 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import Sidebar from "@/components/layout/Sidebar";
+import Topbar from "@/components/layout/Topbar";
+
+const stats = [
+  {
+    title: "Total Members",
+    value: "248",
+    change: "+12%",
+    icon: "👥",
+  },
+  {
+    title: "Upcoming Events",
+    value: "18",
+    change: "+5%",
+    icon: "📅",
+  },
+  {
+    title: "Tasks",
+    value: "42",
+    change: "+8%",
+    icon: "📋",
+  },
+  {
+    title: "Attendance",
+    value: "87%",
+    change: "+4%",
+    icon: "✅",
+  },
+];
+
+const events = [
+  {
+    name: "Annual Club Meeting",
+    date: "24 Sep 2026",
+    time: "10:00 AM",
+    status: "Upcoming",
+  },
+  {
+    name: "Volunteer Training",
+    date: "27 Sep 2026",
+    time: "02:00 PM",
+    status: "Upcoming",
+  },
+  {
+    name: "Community Workshop",
+    date: "30 Sep 2026",
+    time: "11:00 AM",
+    status: "Upcoming",
+  },
+];
+
+const tasks = [
+  {
+    name: "Prepare event documents",
+    priority: "High",
+  },
+  {
+    name: "Contact volunteers",
+    priority: "Medium",
+  },
+  {
+    name: "Update member records",
+    priority: "Low",
+  },
+];
 
 export default function DashboardPage() {
-
-  const supabase = createClient();
-  const router = useRouter();
-
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-
-    async function loadDashboard() {
-
-      const {
-        data: { user }
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        router.push("/login");
-        return;
-      }
-
-      const { data, error } =
-        await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-      if (error) {
-        console.error(error);
-        router.push("/login");
-        return;
-      }
-
-      setProfile(data);
-      setLoading(false);
-    }
-
-    loadDashboard();
-
-  }, []);
-
-  async function handleLogout() {
-
-    await supabase.auth.signOut();
-
-    router.push("/login");
-  }
-
-  if (loading) {
-
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
-        Loading dashboard...
-      </main>
-    );
-  }
-
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <div className="dashboard-layout">
 
-      {/* Header */}
+      <Sidebar />
 
-      <header className="border-b border-slate-800">
+      <main className="main-content">
 
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+        <Topbar />
 
-          <div>
-            <h1 className="text-2xl font-bold">
-              ClubOps AI
-            </h1>
+        <section className="dashboard-content">
 
-            <p className="text-sm text-slate-400">
-              Dashboard
-            </p>
+          {/* Statistics */}
+
+          <div className="stats-grid">
+
+            {stats.map((stat) => (
+              <div className="stat-card" key={stat.title}>
+
+                <div className="stat-card-top">
+
+                  <div>
+                    <p>{stat.title}</p>
+                    <h2>{stat.value}</h2>
+                  </div>
+
+                  <div className="stat-icon">
+                    {stat.icon}
+                  </div>
+
+                </div>
+
+                <span className="stat-change">
+                  {stat.change} this month
+                </span>
+
+              </div>
+            ))}
+
           </div>
 
-          <button
-            onClick={handleLogout}
-            className="rounded-lg border border-slate-700 px-4 py-2 hover:bg-slate-800"
-          >
-            Logout
-          </button>
+          {/* Main Grid */}
 
-        </div>
+          <div className="dashboard-grid">
 
-      </header>
+            {/* Upcoming Events */}
 
+            <div className="dashboard-card">
 
-      {/* Dashboard */}
+              <div className="card-header">
 
-      <section className="mx-auto max-w-7xl px-6 py-10">
+                <div>
+                  <h2>Upcoming Events</h2>
+                  <p>Your upcoming club events</p>
+                </div>
 
-        <div className="mb-8">
+                <a href="/events">
+                  View All
+                </a>
 
-          <h2 className="text-3xl font-bold">
-            Welcome, {profile?.full_name}
-          </h2>
+              </div>
 
-          <p className="mt-2 text-slate-400">
-            Your role:{" "}
-            <span className="font-semibold text-blue-400">
-              {profile?.role}
-            </span>
-          </p>
+              <div className="event-list">
 
-        </div>
+                {events.map((event) => (
+                  <div
+                    className="event-row"
+                    key={event.name}
+                  >
 
+                    <div className="event-date">
+                      <strong>
+                        {event.date.split(" ")[0]}
+                      </strong>
 
-        {/* Cards */}
+                      <span>
+                        {event.date.split(" ")[1]}
+                      </span>
+                    </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
+                    <div className="event-information">
 
-          <DashboardCard
-            title="Total Events"
-            value="0"
-          />
+                      <h3>{event.name}</h3>
 
-          <DashboardCard
-            title="Tasks"
-            value="0"
-          />
+                      <p>
+                        🕐 {event.time}
+                      </p>
 
-          <DashboardCard
-            title="Volunteers"
-            value="0"
-          />
+                    </div>
 
-        </div>
+                    <span className="status-badge">
+                      {event.status}
+                    </span>
 
+                  </div>
+                ))}
 
-        {/* AI */}
+              </div>
 
-        <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-8">
+            </div>
 
-          <p className="text-sm font-semibold text-blue-400">
-            AI COMMAND CENTER
-          </p>
+            {/* Tasks */}
 
-          <h3 className="mt-2 text-2xl font-bold">
-            AI features coming next
-          </h3>
+            <div className="dashboard-card">
 
-          <p className="mt-3 max-w-2xl text-slate-400">
-            In Day 2, Gemini will be connected to real database actions
-            such as event creation, task creation and volunteer assignment.
-          </p>
+              <div className="card-header">
 
-        </div>
+                <div>
+                  <h2>Pending Tasks</h2>
+                  <p>Tasks that need attention</p>
+                </div>
 
+                <a href="/tasks">
+                  View All
+                </a>
 
-        {/* Role information */}
+              </div>
 
-        <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-8">
+              <div className="task-list">
 
-          <h3 className="text-xl font-bold">
-            Your Access
-          </h3>
+                {tasks.map((task) => (
+                  <div
+                    className="task-row"
+                    key={task.name}
+                  >
 
-          {profile?.role === "ADMIN" && (
-            <p className="mt-3 text-slate-400">
-              You have administrative access to the platform.
-            </p>
-          )}
+                    <div className="task-check">
+                      ☐
+                    </div>
 
-          {profile?.role === "COORDINATOR" && (
-            <p className="mt-3 text-slate-400">
-              You can manage club operations, events, tasks and volunteers.
-            </p>
-          )}
+                    <div className="task-information">
+                      <h3>{task.name}</h3>
+                      <span>
+                        {task.priority} Priority
+                      </span>
+                    </div>
 
-          {profile?.role === "VOLUNTEER" && (
-            <p className="mt-3 text-slate-400">
-              You can view relevant events and manage your assigned tasks.
-            </p>
-          )}
+                  </div>
+                ))}
 
-        </div>
+              </div>
 
-      </section>
+            </div>
 
-    </main>
-  );
-}
+          </div>
 
+          {/* Quick Actions */}
 
-function DashboardCard({ title, value }) {
+          <div className="dashboard-card">
 
-  return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <div className="card-header">
 
-      <p className="text-slate-400">
-        {title}
-      </p>
+              <div>
+                <h2>Quick Actions</h2>
+                <p>Frequently used ClubOps features</p>
+              </div>
 
-      <p className="mt-3 text-4xl font-bold">
-        {value}
-      </p>
+            </div>
+
+            <div className="quick-actions">
+
+              <a href="/events/create">
+                <span>➕</span>
+                <strong>Create Event</strong>
+                <small>Create a new club event</small>
+              </a>
+
+              <a href="/members">
+                <span>👤</span>
+                <strong>Manage Members</strong>
+                <small>View and manage members</small>
+              </a>
+
+              <a href="/tasks">
+                <span>📋</span>
+                <strong>Add Task</strong>
+                <small>Create a new task</small>
+              </a>
+
+              <a href="/announcements">
+                <span>📢</span>
+                <strong>Announcement</strong>
+                <small>Send club announcement</small>
+              </a>
+
+            </div>
+
+          </div>
+
+        </section>
+
+      </main>
 
     </div>
   );
