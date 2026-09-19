@@ -1,105 +1,292 @@
 import Link from "next/link";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <main className="min-h-screen bg-slate-950 text-white">
+    <main>
 
-      {/* Navbar */}
-      <nav className="border-b border-slate-800">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+      {/* =========================
+          NAVBAR
+      ========================= */}
 
-          <Link href="/" className="text-2xl font-bold">
+      <nav className="navbar">
+
+        <div className="logo">
+
+          <div className="logo-icon">
+            C
+          </div>
+
+          <div className="logo-text">
             ClubOps AI
-          </Link>
-
-          <div className="flex gap-3">
-            <Link
-              href="/login"
-              className="rounded-lg border border-slate-700 px-5 py-2 hover:bg-slate-800"
-            >
-              Login
-            </Link>
-
-            <Link
-              href="/register"
-              className="rounded-lg bg-blue-600 px-5 py-2 hover:bg-blue-700"
-            >
-              Get Started
-            </Link>
           </div>
 
         </div>
-      </nav>
 
-      {/* Hero */}
-      <section className="mx-auto max-w-7xl px-6 py-24 text-center">
 
-        <p className="mb-4 text-blue-400">
-          AI-Powered College Club Management
-        </p>
+        <div className="nav-links">
 
-        <h1 className="mx-auto max-w-4xl text-5xl font-bold leading-tight">
-          Run Your College Events Smarter with AI
-        </h1>
-
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-400">
-          Manage events, tasks, volunteers, meetings and club operations
-          from one intelligent platform.
-        </p>
-
-        <div className="mt-8 flex justify-center gap-4">
-
-          <Link
-            href="/register"
-            className="rounded-lg bg-blue-600 px-7 py-3 font-semibold hover:bg-blue-700"
-          >
-            Create Account
+          <Link href="/">
+            Home
           </Link>
+
+          <Link href="/#features">
+            Features
+          </Link>
+
+          <Link href="/#about">
+            About
+          </Link>
+
+          <Link href="/#contact">
+            Contact
+          </Link>
+
+        </div>
+
+
+        <div className="nav-buttons">
 
           <Link
             href="/login"
-            className="rounded-lg border border-slate-700 px-7 py-3 font-semibold hover:bg-slate-800"
+            className="login-button"
           >
             Login
           </Link>
 
+          <Link
+            href="/register"
+            className="get-started-button"
+          >
+            Get Started
+          </Link>
+
         </div>
+
+      </nav>
+
+
+      {/* =========================
+          HERO
+      ========================= */}
+
+      <section className="hero">
+
+        <div className="hero-content">
+
+          <div className="hero-badge">
+            ✨ AI-Powered College Club Management
+          </div>
+
+          <h1>
+            Run Your College
+            <br />
+
+            <span>
+              Events Smarter with AI
+            </span>
+          </h1>
+
+          <p className="hero-description">
+            Manage events, tasks, volunteers,
+            meetings and club operations from
+            one intelligent platform.
+          </p>
+
+
+          <div className="hero-buttons">
+
+            <Link
+              href="/register"
+              className="primary-button"
+            >
+              Create Account →
+            </Link>
+
+            <Link
+              href="/login"
+              className="secondary-button"
+            >
+              Login
+            </Link>
+
+          </div>
+
+        </div>
+
       </section>
 
-      {/* Features */}
-      <section className="mx-auto grid max-w-6xl gap-6 px-6 pb-20 md:grid-cols-3">
 
-        <Feature
-          title="Event Management"
-          description="Manage college events, deadlines and activities from one place."
-        />
+      {/* =========================
+          FEATURES
+      ========================= */}
 
-        <Feature
-          title="AI Assistant"
-          description="Use AI to plan events and automate operational tasks."
-        />
+      <section
+        className="features-section"
+        id="features"
+      >
 
-        <Feature
-          title="Team Management"
-          description="Manage coordinators, volunteers and responsibilities."
-        />
+        <div className="section-header">
+
+          <h2>
+            Everything Your Club Needs
+          </h2>
+
+          <p>
+            ClubOps AI brings your college club
+            operations into one simple platform.
+          </p>
+
+        </div>
+
+
+        <div className="features-grid">
+
+
+          {/* Feature 1 */}
+
+          <div className="feature-card">
+
+            <div className="feature-icon">
+              📅
+            </div>
+
+            <h3>
+              Event Management
+            </h3>
+
+            <p>
+              Manage college events, deadlines
+              and activities from one place.
+            </p>
+
+          </div>
+
+
+          {/* Feature 2 */}
+
+          <div className="feature-card">
+
+            <div className="feature-icon">
+              🤖
+            </div>
+
+            <h3>
+              AI Assistant
+            </h3>
+
+            <p>
+              Use AI to plan events and automate
+              operational tasks.
+            </p>
+
+          </div>
+
+
+          {/* Feature 3 */}
+
+          <div className="feature-card">
+
+            <div className="feature-icon">
+              👥
+            </div>
+
+            <h3>
+              Team Management
+            </h3>
+
+            <p>
+              Manage coordinators, volunteers
+              and responsibilities.
+            </p>
+
+          </div>
+
+
+          {/* Feature 4 */}
+
+          <div className="feature-card">
+
+            <div className="feature-icon">
+              ✅
+            </div>
+
+            <h3>
+              Attendance
+            </h3>
+
+            <p>
+              Track attendance and monitor
+              member participation.
+            </p>
+
+          </div>
+
+
+          {/* Feature 5 */}
+
+          <div className="feature-card">
+
+            <div className="feature-icon">
+              📋
+            </div>
+
+            <h3>
+              Task Management
+            </h3>
+
+            <p>
+              Assign, track and complete club
+              tasks efficiently.
+            </p>
+
+          </div>
+
+
+          {/* Feature 6 */}
+
+          <div className="feature-card">
+
+            <div className="feature-icon">
+              📊
+            </div>
+
+            <h3>
+              Reports & Analytics
+            </h3>
+
+            <p>
+              Understand your club performance
+              with useful reports.
+            </p>
+
+          </div>
+
+
+        </div>
 
       </section>
+
+
+      {/* =========================
+          FOOTER
+      ========================= */}
+
+      <footer className="footer">
+
+        <h3>
+          ClubOps AI
+        </h3>
+
+        <p>
+          AI-Powered College Club Management
+        </p>
+
+        <p>
+          © 2026 ClubOps AI. All rights reserved.
+        </p>
+
+      </footer>
 
     </main>
-  );
-}
-
-function Feature({ title, description }) {
-  return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
-      <h2 className="mb-3 text-xl font-semibold">
-        {title}
-      </h2>
-
-      <p className="text-slate-400">
-        {description}
-      </p>
-    </div>
   );
 }
