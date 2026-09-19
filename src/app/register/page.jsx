@@ -1,181 +1,234 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { useState } from "react";
 
 export default function RegisterPage() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
 
-  const router = useRouter();
-  const supabase = createClient();
-
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
 
-  async function handleRegister(e) {
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    setError("");
-    setMessage("");
-
-    if (!fullName || !email || !password) {
-      setError("Please fill all required fields.");
+    if (
+      !formData.fullName ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
+      setMessage("Please fill all fields.");
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+    if (formData.password !== formData.confirmPassword) {
+      setMessage("Passwords do not match.");
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-
-    try {
-
-      setLoading(true);
-
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-
-        options: {
-          data: {
-            full_name: fullName,
-            phone: phone
-          }
-        }
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      setMessage(
-        "Account created successfully. Please check your email for verification."
-      );
-
-      setFullName("");
-      setEmail("");
-      setPhone("");
-      setPassword("");
-      setConfirmPassword("");
-
-    } catch (err) {
-
-      setError(err.message || "Registration failed.");
-
-    } finally {
-
-      setLoading(false);
-
-    }
-  }
+    setMessage("Account information is valid.");
+  };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 py-10 text-white">
+    <main className="auth-page">
 
-      <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-8">
+      <div className="auth-card">
 
-        <h1 className="text-3xl font-bold">
-          Create Account
-        </h1>
+        {/* Logo */}
 
-        <p className="mt-2 text-slate-400">
-          Join ClubOps AI
-        </p>
+        <Link href="/" className="auth-logo">
 
-        {error && (
-          <div className="mt-5 rounded-lg bg-red-900/30 p-3 text-sm text-red-300">
-            {error}
+          <div className="auth-logo-icon">
+            C
           </div>
-        )}
 
-        {message && (
-          <div className="mt-5 rounded-lg bg-green-900/30 p-3 text-sm text-green-300">
-            {message}
+          <span>
+            ClubOps AI
+          </span>
+
+        </Link>
+
+
+        {/* Heading */}
+
+        <div className="auth-heading">
+
+          <h1>
+            Create Account
+          </h1>
+
+          <p>
+            Join ClubOps AI
+          </p>
+
+        </div>
+
+
+        {/* Register Form */}
+
+        <form
+          className="auth-form"
+          onSubmit={handleSubmit}
+        >
+
+          {/* Full Name */}
+
+          <div className="form-group">
+
+            <label htmlFor="fullName">
+              Full Name
+            </label>
+
+            <input
+              id="fullName"
+              name="fullName"
+              type="text"
+              placeholder="Enter your full name"
+              value={formData.fullName}
+              onChange={handleChange}
+            />
+
           </div>
-        )}
 
-        <form onSubmit={handleRegister} className="mt-6 space-y-4">
 
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-blue-500"
-            required
-          />
+          {/* Email */}
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-blue-500"
-            required
-          />
+          <div className="form-group">
 
-          <input
-            type="tel"
-            placeholder="Phone Number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-blue-500"
-          />
+            <label htmlFor="email">
+              Email Address
+            </label>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-blue-500"
-            required
-          />
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+            />
 
-          <input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-950 px-4 py-3 outline-none focus:border-blue-500"
-            required
-          />
+          </div>
+
+
+          {/* Phone */}
+
+          <div className="form-group">
+
+            <label htmlFor="phone">
+              Phone Number
+            </label>
+
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              placeholder="Enter your phone number"
+              value={formData.phone}
+              onChange={handleChange}
+            />
+
+          </div>
+
+
+          {/* Password */}
+
+          <div className="form-group">
+
+            <label htmlFor="password">
+              Password
+            </label>
+
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Create a password"
+              value={formData.password}
+              onChange={handleChange}
+            />
+
+          </div>
+
+
+          {/* Confirm Password */}
+
+          <div className="form-group">
+
+            <label htmlFor="confirmPassword">
+              Confirm Password
+            </label>
+
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              placeholder="Confirm your password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+            />
+
+          </div>
+
+
+          {/* Message */}
+
+          {message && (
+            <div className="auth-message">
+              {message}
+            </div>
+          )}
+
+
+          {/* Submit */}
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-blue-600 py-3 font-semibold hover:bg-blue-700 disabled:opacity-50"
+            className="auth-submit"
           >
-            {loading ? "Creating Account..." : "Create Account"}
+            Create Account
           </button>
 
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-400">
 
-          Already have an account?{" "}
+        {/* Login */}
 
-          <Link
-            href="/login"
-            className="text-blue-400 hover:underline"
-          >
+        <div className="auth-footer">
+
+          <span>
+            Already have an account?
+          </span>
+
+          <Link href="/login">
             Login
           </Link>
 
-        </p>
+        </div>
+
+
+        {/* Back Home */}
+
+        <Link
+          href="/"
+          className="back-home"
+        >
+          ← Back to Home
+        </Link>
 
       </div>
 
