@@ -1,29 +1,34 @@
 import Link from "next/link";
-import "./legal.css";
+import styles from "../legal.module.css";
 
 export default function PrivacyPage() {
   return (
-    <main className="legal-page">
-      <div className="legal-background">
-        <div className="legal-glow legal-glow-one" />
-        <div className="legal-glow legal-glow-two" />
+    <main className={styles.legalPage}>
+      <div className={styles.legalBackground}>
+        <div
+          className={`${styles.legalGlow} ${styles.legalGlowOne}`}
+        />
+
+        <div
+          className={`${styles.legalGlow} ${styles.legalGlowTwo}`}
+        />
       </div>
 
       {/* NAVBAR */}
-      <nav className="legal-navbar">
-        <Link href="/" className="legal-logo">
-          <span className="legal-logo-icon">C</span>
+      <nav className={styles.legalNavbar}>
+        <Link href="/" className={styles.legalLogo}>
+          <span className={styles.legalLogoIcon}>C</span>
           <span>ClubOps AI</span>
         </Link>
 
-        <Link href="/" className="legal-back">
+        <Link href="/" className={styles.legalBack}>
           ← Back to Home
         </Link>
       </nav>
 
-      {/* CONTENT */}
-      <section className="legal-hero">
-        <span className="legal-badge">
+      {/* HERO */}
+      <section className={styles.legalHero}>
+        <span className={styles.legalBadge}>
           PRIVACY
         </span>
 
@@ -38,15 +43,15 @@ export default function PrivacyPage() {
           information when you use the platform.
         </p>
 
-        <span className="legal-updated">
+        <span className={styles.legalUpdated}>
           Last updated: September 19, 2026
         </span>
       </section>
 
-      <section className="legal-content">
-
-        <article className="legal-section">
-          <span className="legal-number">01</span>
+      {/* CONTENT */}
+      <section className={styles.legalContent}>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>01</span>
 
           <div>
             <h2>Introduction</h2>
@@ -66,8 +71,8 @@ export default function PrivacyPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">02</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>02</span>
 
           <div>
             <h2>Information We May Collect</h2>
@@ -83,13 +88,16 @@ export default function PrivacyPage() {
               <li>Club membership information</li>
               <li>Event and attendance information</li>
               <li>Information you voluntarily provide</li>
-              <li>Technical information required to operate the application</li>
+              <li>
+                Technical information required to operate
+                the application
+              </li>
             </ul>
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">03</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>03</span>
 
           <div>
             <h2>How Information May Be Used</h2>
@@ -101,17 +109,25 @@ export default function PrivacyPage() {
 
             <ul>
               <li>Creating and managing user accounts</li>
-              <li>Providing club management functionality</li>
+              <li>
+                Providing club management functionality
+              </li>
               <li>Managing events and attendance</li>
-              <li>Providing account-related communication</li>
-              <li>Improving application performance</li>
-              <li>Maintaining application security</li>
+              <li>
+                Providing account-related communication
+              </li>
+              <li>
+                Improving application performance
+              </li>
+              <li>
+                Maintaining application security
+              </li>
             </ul>
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">04</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>04</span>
 
           <div>
             <h2>Authentication & Security</h2>
@@ -131,8 +147,8 @@ export default function PrivacyPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">05</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>05</span>
 
           <div>
             <h2>Third-Party Services</h2>
@@ -151,8 +167,8 @@ export default function PrivacyPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">06</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>06</span>
 
           <div>
             <h2>Data Retention</h2>
@@ -167,8 +183,8 @@ export default function PrivacyPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">07</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>07</span>
 
           <div>
             <h2>Your Choices</h2>
@@ -187,8 +203,8 @@ export default function PrivacyPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">08</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>08</span>
 
           <div>
             <h2>Changes to This Policy</h2>
@@ -201,8 +217,8 @@ export default function PrivacyPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">09</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>09</span>
 
           <div>
             <h2>Contact</h2>
@@ -215,23 +231,25 @@ export default function PrivacyPage() {
 
             <Link
               href="/contact"
-              className="legal-inline-button"
+              className={styles.legalInlineButton}
             >
               Contact ClubOps AI →
             </Link>
           </div>
         </article>
-
       </section>
 
       {/* FOOTER */}
-      <footer className="legal-footer">
+      <footer className={styles.legalFooter}>
         <span>
           © {new Date().getFullYear()} ClubOps AI
         </span>
 
         <div>
-          <Link href="/privacy" className="active">
+          <Link
+            href="/privacy"
+            className={styles.active}
+          >
             Privacy
           </Link>
 
