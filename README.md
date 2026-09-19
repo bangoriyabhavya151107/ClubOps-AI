@@ -110,3 +110,6 @@ Run Risk Audit: Click "🔍 What Am I Missing?" in the AI Command Center to run 
 Meeting Automation: Paste a meeting transcript into the Meetings tab and click "Analyze & Extract Tasks" to auto-generate tasks.
 📄 License
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+
+more stuff coming sooon 
