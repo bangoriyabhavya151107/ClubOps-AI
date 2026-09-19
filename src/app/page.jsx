@@ -1,18 +1,14 @@
 import Link from "next/link";
-import Footer from "@/components/layout/Footer";
 
 export default function HomePage() {
   return (
     <main>
-
       {/* =========================
           NAVBAR
       ========================= */}
 
       <nav className="navbar">
-
         <div className="logo">
-
           <div className="logo-icon">
             C
           </div>
@@ -20,12 +16,9 @@ export default function HomePage() {
           <div className="logo-text">
             ClubOps AI
           </div>
-
         </div>
 
-
         <div className="nav-links">
-
           <Link href="/">
             Home
           </Link>
@@ -41,12 +34,9 @@ export default function HomePage() {
           <Link href="/contact">
             Contact
           </Link>
-
         </div>
 
-
         <div className="nav-buttons">
-
           <Link
             href="/login"
             className="login-button"
@@ -60,20 +50,15 @@ export default function HomePage() {
           >
             Get Started
           </Link>
-
         </div>
-
       </nav>
-
 
       {/* =========================
           HERO
       ========================= */}
 
       <section className="hero">
-
         <div className="hero-content">
-
           <div className="hero-badge">
             ✨ AI-Powered College Club Management
           </div>
@@ -93,9 +78,7 @@ export default function HomePage() {
             one intelligent platform.
           </p>
 
-
           <div className="hero-buttons">
-
             <Link
               href="/register"
               className="primary-button"
@@ -109,13 +92,9 @@ export default function HomePage() {
             >
               Login
             </Link>
-
           </div>
-
         </div>
-
       </section>
-
 
       {/* =========================
           FEATURES
@@ -125,9 +104,7 @@ export default function HomePage() {
         className="features-section"
         id="features"
       >
-
         <div className="section-header">
-
           <h2>
             Everything Your Club Needs
           </h2>
@@ -136,17 +113,12 @@ export default function HomePage() {
             ClubOps AI brings your college club
             operations into one simple platform.
           </p>
-
         </div>
 
-
         <div className="features-grid">
-
-
           {/* Feature 1 */}
 
           <div className="feature-card">
-
             <div className="feature-icon">
               📅
             </div>
@@ -159,14 +131,11 @@ export default function HomePage() {
               Manage college events, deadlines
               and activities from one place.
             </p>
-
           </div>
-
 
           {/* Feature 2 */}
 
           <div className="feature-card">
-
             <div className="feature-icon">
               🤖
             </div>
@@ -179,14 +148,11 @@ export default function HomePage() {
               Use AI to plan events and automate
               operational tasks.
             </p>
-
           </div>
-
 
           {/* Feature 3 */}
 
           <div className="feature-card">
-
             <div className="feature-icon">
               👥
             </div>
@@ -199,14 +165,11 @@ export default function HomePage() {
               Manage coordinators, volunteers
               and responsibilities.
             </p>
-
           </div>
-
 
           {/* Feature 4 */}
 
           <div className="feature-card">
-
             <div className="feature-icon">
               ✅
             </div>
@@ -219,14 +182,11 @@ export default function HomePage() {
               Track attendance and monitor
               member participation.
             </p>
-
           </div>
-
 
           {/* Feature 5 */}
 
           <div className="feature-card">
-
             <div className="feature-icon">
               📋
             </div>
@@ -239,14 +199,11 @@ export default function HomePage() {
               Assign, track and complete club
               tasks efficiently.
             </p>
-
           </div>
-
 
           {/* Feature 6 */}
 
           <div className="feature-card">
-
             <div className="feature-icon">
               📊
             </div>
@@ -259,35 +216,9 @@ export default function HomePage() {
               Understand your club performance
               with useful reports.
             </p>
-
           </div>
-
-
         </div>
-
       </section>
-
-
-      {/* =========================
-          FOOTER
-      ========================= */}
-
-      <footer className="footer">
-
-        <h3>
-          ClubOps AI
-        </h3>
-
-        <p>
-          AI-Powered College Club Management
-        </p>
-
-        <p>
-          © 2026 ClubOps AI. All rights reserved.
-        </p>
-
-      </footer>
-
     </main>
   );
 }
