@@ -1,29 +1,34 @@
 import Link from "next/link";
-import "./legal.css";
+import styles from "../legal.module.css";
 
 export default function TermsPage() {
   return (
-    <main className="legal-page">
-      <div className="legal-background">
-        <div className="legal-glow legal-glow-one" />
-        <div className="legal-glow legal-glow-two" />
+    <main className={styles.legalPage}>
+      <div className={styles.legalBackground}>
+        <div
+          className={`${styles.legalGlow} ${styles.legalGlowOne}`}
+        />
+
+        <div
+          className={`${styles.legalGlow} ${styles.legalGlowTwo}`}
+        />
       </div>
 
       {/* NAVBAR */}
-      <nav className="legal-navbar">
-        <Link href="/" className="legal-logo">
-          <span className="legal-logo-icon">C</span>
+      <nav className={styles.legalNavbar}>
+        <Link href="/" className={styles.legalLogo}>
+          <span className={styles.legalLogoIcon}>C</span>
           <span>ClubOps AI</span>
         </Link>
 
-        <Link href="/" className="legal-back">
+        <Link href="/" className={styles.legalBack}>
           ← Back to Home
         </Link>
       </nav>
 
       {/* HERO */}
-      <section className="legal-hero">
-        <span className="legal-badge">
+      <section className={styles.legalHero}>
+        <span className={styles.legalBadge}>
           TERMS
         </span>
 
@@ -38,16 +43,15 @@ export default function TermsPage() {
           with using the platform.
         </p>
 
-        <span className="legal-updated">
+        <span className={styles.legalUpdated}>
           Last updated: September 19, 2026
         </span>
       </section>
 
       {/* CONTENT */}
-      <section className="legal-content">
-
-        <article className="legal-section">
-          <span className="legal-number">01</span>
+      <section className={styles.legalContent}>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>01</span>
 
           <div>
             <h2>Acceptance of Terms</h2>
@@ -64,8 +68,8 @@ export default function TermsPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">02</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>02</span>
 
           <div>
             <h2>Using ClubOps AI</h2>
@@ -84,8 +88,8 @@ export default function TermsPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">03</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>03</span>
 
           <div>
             <h2>User Accounts</h2>
@@ -104,8 +108,8 @@ export default function TermsPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">04</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>04</span>
 
           <div>
             <h2>Acceptable Use</h2>
@@ -118,17 +122,32 @@ export default function TermsPage() {
             </p>
 
             <ul>
-              <li>Do not attempt to gain unauthorized access.</li>
-              <li>Do not intentionally disrupt the service.</li>
-              <li>Do not upload malicious software.</li>
-              <li>Do not misuse another user's account.</li>
-              <li>Do not use the platform for unlawful activities.</li>
+              <li>
+                Do not attempt to gain unauthorized access.
+              </li>
+
+              <li>
+                Do not intentionally disrupt the service.
+              </li>
+
+              <li>
+                Do not upload malicious software.
+              </li>
+
+              <li>
+                Do not misuse another user's account.
+              </li>
+
+              <li>
+                Do not use the platform for unlawful
+                activities.
+              </li>
             </ul>
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">05</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>05</span>
 
           <div>
             <h2>Club Data</h2>
@@ -146,8 +165,8 @@ export default function TermsPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">06</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>06</span>
 
           <div>
             <h2>Availability</h2>
@@ -161,8 +180,8 @@ export default function TermsPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">07</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>07</span>
 
           <div>
             <h2>Third-Party Services</h2>
@@ -181,8 +200,8 @@ export default function TermsPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">08</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>08</span>
 
           <div>
             <h2>Intellectual Property</h2>
@@ -202,8 +221,8 @@ export default function TermsPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">09</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>09</span>
 
           <div>
             <h2>Disclaimer</h2>
@@ -222,8 +241,8 @@ export default function TermsPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">10</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>10</span>
 
           <div>
             <h2>Changes to These Terms</h2>
@@ -236,8 +255,8 @@ export default function TermsPage() {
           </div>
         </article>
 
-        <article className="legal-section">
-          <span className="legal-number">11</span>
+        <article className={styles.legalSection}>
+          <span className={styles.legalNumber}>11</span>
 
           <div>
             <h2>Contact</h2>
@@ -249,17 +268,16 @@ export default function TermsPage() {
 
             <Link
               href="/contact"
-              className="legal-inline-button"
+              className={styles.legalInlineButton}
             >
               Contact ClubOps AI →
             </Link>
           </div>
         </article>
-
       </section>
 
       {/* FOOTER */}
-      <footer className="legal-footer">
+      <footer className={styles.legalFooter}>
         <span>
           © {new Date().getFullYear()} ClubOps AI
         </span>
@@ -269,7 +287,10 @@ export default function TermsPage() {
             Privacy
           </Link>
 
-          <Link href="/terms" className="active">
+          <Link
+            href="/terms"
+            className={styles.active}
+          >
             Terms
           </Link>
 
