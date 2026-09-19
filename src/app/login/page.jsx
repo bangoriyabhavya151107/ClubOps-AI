@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-import { supabase } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const supabase = createClient();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -53,10 +52,6 @@ export default function LoginPage() {
 
       setSuccess("Login successful! Opening dashboard...");
 
-      /*
-       * Give Supabase a moment to update the client session,
-       * then navigate to the dashboard.
-       */
       setTimeout(() => {
         window.location.href = "/dashboard";
       }, 500);
@@ -74,16 +69,23 @@ export default function LoginPage() {
 
         {/* LEFT SIDE */}
         <section className="login-info">
+
           <Link href="/" className="login-logo">
-            <div className="login-logo-icon">C</div>
+
+            <div className="login-logo-icon">
+              C
+            </div>
 
             <div>
               <strong>ClubOps AI</strong>
               <span>College Club Management</span>
             </div>
+
           </Link>
 
+
           <div className="login-info-content">
+
             <span className="login-badge">
               ✨ AI-Powered Club Management
             </span>
@@ -98,66 +100,107 @@ export default function LoginPage() {
               tasks and activities from one intelligent platform.
             </p>
 
+
             <div className="login-features">
+
               <div>
+
                 <span>📅</span>
+
                 <div>
                   <strong>Manage Events</strong>
-                  <p>Plan and organize club events.</p>
+
+                  <p>
+                    Plan and organize club events.
+                  </p>
                 </div>
+
               </div>
 
+
               <div>
+
                 <span>👥</span>
+
                 <div>
                   <strong>Manage Members</strong>
-                  <p>Coordinate your complete team.</p>
+
+                  <p>
+                    Coordinate your complete team.
+                  </p>
                 </div>
+
               </div>
 
+
               <div>
+
                 <span>🤖</span>
+
                 <div>
                   <strong>AI Assistant</strong>
-                  <p>Get intelligent help for your club.</p>
+
+                  <p>
+                    Get intelligent help for your club.
+                  </p>
                 </div>
+
               </div>
+
             </div>
+
           </div>
+
         </section>
+
 
         {/* RIGHT SIDE */}
         <section className="login-card-wrapper">
+
           <div className="login-card">
 
             <div className="login-card-header">
+
               <div className="mobile-login-logo">
-                <div className="login-logo-icon">C</div>
+
+                <div className="login-logo-icon">
+                  C
+                </div>
+
               </div>
 
-              <h2>Welcome Back</h2>
+              <h2>
+                Welcome Back
+              </h2>
 
               <p>
                 Login to your ClubOps AI account
               </p>
+
             </div>
 
+
+            {/* ERROR MESSAGE */}
             {error && (
               <div className="login-error">
                 ❌ {error}
               </div>
             )}
 
+
+            {/* SUCCESS MESSAGE */}
             {success && (
               <div className="login-success">
                 ✅ {success}
               </div>
             )}
 
+
             <form onSubmit={handleLogin}>
 
               {/* EMAIL */}
               <div className="login-field">
+
                 <label htmlFor="email">
                   Email Address
                 </label>
@@ -169,12 +212,17 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
+                  disabled={loading}
                 />
+
               </div>
+
 
               {/* PASSWORD */}
               <div className="login-field">
+
                 <div className="password-label-row">
+
                   <label htmlFor="password">
                     Password
                   </label>
@@ -182,6 +230,7 @@ export default function LoginPage() {
                   <Link href="/forgot-password">
                     Forgot Password?
                   </Link>
+
                 </div>
 
                 <input
@@ -191,8 +240,11 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="current-password"
+                  disabled={loading}
                 />
+
               </div>
+
 
               {/* LOGIN BUTTON */}
               <button
@@ -200,26 +252,42 @@ export default function LoginPage() {
                 className="login-submit"
                 disabled={loading}
               >
-                {loading ? "Logging in..." : "Login"}
+                {loading
+                  ? "Logging in..."
+                  : "Login"}
               </button>
+
             </form>
 
+
+            {/* DIVIDER */}
             <div className="login-divider">
               <span>OR</span>
             </div>
 
+
+            {/* REGISTER */}
             <p className="register-link">
+
               Don't have an account?{" "}
+
               <Link href="/register">
                 Create Account
               </Link>
+
             </p>
 
-            <Link href="/" className="back-home">
+
+            {/* HOME */}
+            <Link
+              href="/"
+              className="back-home"
+            >
               ← Back to Home
             </Link>
 
           </div>
+
         </section>
 
       </div>
