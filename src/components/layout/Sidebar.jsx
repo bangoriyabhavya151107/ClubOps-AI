@@ -3,112 +3,173 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const menuItems = [
+const mainMenu = [
   {
     name: "Dashboard",
     href: "/dashboard",
-    icon: "📊",
+    icon: "⌂",
   },
   {
     name: "Members",
     href: "/members",
-    icon: "👥",
+    icon: "♟",
   },
   {
     name: "Events",
     href: "/events",
-    icon: "📅",
+    icon: "▣",
   },
   {
     name: "Attendance",
     href: "/attendance",
-    icon: "✅",
+    icon: "✓",
   },
   {
     name: "Tasks",
     href: "/tasks",
-    icon: "📋",
+    icon: "☑",
   },
   {
     name: "Meetings",
     href: "/meetings",
-    icon: "🗓️",
+    icon: "◫",
   },
   {
     name: "Documents",
     href: "/documents",
-    icon: "📄",
+    icon: "▤",
   },
   {
     name: "Announcements",
     href: "/announcements",
-    icon: "📢",
+    icon: "◈",
   },
   {
     name: "Reports",
     href: "/reports",
-    icon: "📈",
+    icon: "▥",
   },
+];
+
+const aiMenu = [
   {
     name: "AI Assistant",
     href: "/ai-assistant",
-    icon: "🤖",
+    icon: "✦",
   },
 ];
+
+function isActivePath(pathname, href) {
+  if (href === "/dashboard") {
+    return pathname === "/dashboard";
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="sidebar">
-
-      <div className="sidebar-logo">
-        <div className="logo-icon">C</div>
+    <aside className="clubops-sidebar">
+      {/* Brand */}
+      <div className="clubops-brand">
+        <div className="clubops-brand-mark">C</div>
 
         <div>
-          <h2>ClubOps</h2>
-          <span>AI Management</span>
+          <strong>ClubOps AI</strong>
+          <span>Club Management</span>
         </div>
       </div>
 
-      <nav className="sidebar-menu">
+      {/* Navigation */}
+      <nav className="clubops-navigation">
+        <div className="clubops-nav-section">
+          <span className="clubops-nav-label">MAIN MENU</span>
 
-        <p className="menu-title">MAIN MENU</p>
+          {mainMenu.map((item) => {
+            const active = isActivePath(pathname, item.href);
 
-        {menuItems.map((item) => {
-          const active = pathname === item.href;
+            return (
+              <Link
+                href={item.href}
+                key={item.href}
+                className={`clubops-nav-item ${
+                  active ? "active" : ""
+                }`}
+              >
+                <span className="clubops-nav-icon">
+                  {item.icon}
+                </span>
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`menu-item ${active ? "active" : ""}`}
-            >
-              <span className="menu-icon">
-                {item.icon}
-              </span>
+                <span>{item.name}</span>
 
-              <span>{item.name}</span>
-            </Link>
-          );
-        })}
+                {active && (
+                  <span className="clubops-active-indicator" />
+                )}
+              </Link>
+            );
+          })}
+        </div>
 
+        <div className="clubops-nav-section">
+          <span className="clubops-nav-label">SMART TOOLS</span>
+
+          {aiMenu.map((item) => {
+            const active = isActivePath(pathname, item.href);
+
+            return (
+              <Link
+                href={item.href}
+                key={item.href}
+                className={`clubops-nav-item clubops-ai-nav ${
+                  active ? "active" : ""
+                }`}
+              >
+                <span className="clubops-nav-icon">
+                  {item.icon}
+                </span>
+
+                <span>{item.name}</span>
+
+                <span className="clubops-ai-badge">AI</span>
+              </Link>
+            );
+          })}
+        </div>
       </nav>
 
-      <div className="sidebar-bottom">
-
-        <Link href="/settings" className="menu-item">
-          <span className="menu-icon">⚙️</span>
+      {/* Bottom */}
+      <div className="clubops-sidebar-bottom">
+        <Link
+          href="/settings"
+          className={`clubops-nav-item ${
+            isActivePath(pathname, "/settings") ? "active" : ""
+          }`}
+        >
+          <span className="clubops-nav-icon">⚙</span>
           <span>Settings</span>
         </Link>
 
-        <Link href="/profile" className="menu-item">
-          <span className="menu-icon">👤</span>
+        <Link
+          href="/profile"
+          className={`clubops-nav-item ${
+            isActivePath(pathname, "/profile") ? "active" : ""
+          }`}
+        >
+          <span className="clubops-nav-icon">◉</span>
           <span>Profile</span>
         </Link>
 
-      </div>
+        <div className="clubops-sidebar-footer">
+          <div className="clubops-footer-avatar">C</div>
 
+          <div>
+            <strong>Club Admin</strong>
+            <span>Administrator</span>
+          </div>
+        </div>
+      </div>
     </aside>
   );
 }

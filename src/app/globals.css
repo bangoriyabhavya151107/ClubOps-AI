@@ -1864,3 +1864,1548 @@ button {
     font-size: 24px;
   }
 }
+
+
+/* =========================================================
+   CLUBOPS AI - ORGANIZED DASHBOARD
+   Dashboard-only styles
+   ========================================================= */
+
+.clubops-dashboard {
+  min-height: 100vh;
+  background: #f7f8fc;
+  color: #172033;
+}
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+.clubops-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+
+  width: 255px;
+  height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #111827;
+  color: #ffffff;
+
+  padding: 20px 14px;
+
+  z-index: 100;
+
+  overflow-y: auto;
+
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.clubops-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.clubops-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+}
+
+/* Brand */
+
+.clubops-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  padding: 7px 10px 22px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.clubops-brand-mark {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 11px;
+
+  background: linear-gradient(
+    135deg,
+    #6366f1,
+    #8b5cf6
+  );
+
+  color: white;
+
+  font-size: 19px;
+  font-weight: 800;
+
+  box-shadow:
+    0 8px 20px rgba(99, 102, 241, 0.28);
+}
+
+.clubops-brand strong,
+.clubops-brand span {
+  display: block;
+}
+
+.clubops-brand strong {
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.clubops-brand span {
+  margin-top: 3px;
+
+  color: #94a3b8;
+
+  font-size: 10px;
+}
+
+/* Navigation */
+
+.clubops-navigation {
+  flex: 1;
+
+  padding-top: 24px;
+}
+
+.clubops-nav-section {
+  margin-bottom: 26px;
+}
+
+.clubops-nav-label {
+  display: block;
+
+  padding: 0 11px;
+  margin-bottom: 8px;
+
+  color: #64748b;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 1.4px;
+}
+
+.clubops-nav-item {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  min-height: 42px;
+
+  gap: 11px;
+
+  padding: 0 11px;
+
+  margin-bottom: 3px;
+
+  color: #aeb9ca;
+
+  border-radius: 9px;
+
+  text-decoration: none;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.clubops-nav-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.clubops-nav-item.active {
+  background: rgba(99, 102, 241, 0.18);
+  color: #ffffff;
+}
+
+.clubops-nav-icon {
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 7px;
+
+  color: #94a3b8;
+
+  font-size: 15px;
+
+  transition: 0.2s;
+}
+
+.clubops-nav-item.active .clubops-nav-icon {
+  background: rgba(99, 102, 241, 0.28);
+  color: #a5b4fc;
+}
+
+.clubops-nav-item:hover .clubops-nav-icon {
+  color: #ffffff;
+}
+
+.clubops-active-indicator {
+  position: absolute;
+
+  right: 8px;
+
+  width: 4px;
+  height: 18px;
+
+  border-radius: 10px;
+
+  background: #818cf8;
+}
+
+.clubops-ai-nav {
+  background: rgba(139, 92, 246, 0.07);
+}
+
+.clubops-ai-badge {
+  margin-left: auto;
+
+  padding: 3px 6px;
+
+  border-radius: 5px;
+
+  background: rgba(139, 92, 246, 0.18);
+
+  color: #c4b5fd;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 0.5px;
+}
+
+/* Sidebar bottom */
+
+.clubops-sidebar-bottom {
+  padding-top: 10px;
+
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.clubops-sidebar-footer {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-top: 12px;
+  padding: 12px 9px 2px;
+}
+
+.clubops-footer-avatar {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: #312e81;
+
+  color: #c7d2fe;
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.clubops-sidebar-footer strong,
+.clubops-sidebar-footer span {
+  display: block;
+}
+
+.clubops-sidebar-footer strong {
+  color: #e2e8f0;
+  font-size: 11px;
+}
+
+.clubops-sidebar-footer span {
+  margin-top: 2px;
+
+  color: #64748b;
+
+  font-size: 9px;
+}
+
+/* =========================================================
+   MAIN AREA
+   ========================================================= */
+
+.clubops-main {
+  min-height: 100vh;
+
+  margin-left: 255px;
+}
+
+/* =========================================================
+   TOPBAR
+   ========================================================= */
+
+.clubops-topbar {
+  position: sticky;
+  top: 0;
+
+  height: 76px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 30px;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  border-bottom: 1px solid #e8ebf2;
+
+  backdrop-filter: blur(12px);
+
+  z-index: 50;
+}
+
+.clubops-topbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.clubops-page-heading span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #94a3b8;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 1.3px;
+}
+
+.clubops-page-heading h1 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 20px;
+  line-height: 1.2;
+
+  font-weight: 750;
+}
+
+.clubops-mobile-brand {
+  display: none;
+}
+
+.clubops-topbar-right {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+}
+
+.clubops-notification {
+  position: relative;
+
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #475569;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.clubops-notification:hover {
+  border-color: #c7d2fe;
+  background: #f8f8ff;
+}
+
+.clubops-bell {
+  font-size: 18px;
+
+  transform: rotate(-35deg);
+}
+
+.clubops-notification-dot {
+  position: absolute;
+
+  top: 8px;
+  right: 8px;
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #6366f1;
+
+  border: 1px solid white;
+}
+
+.clubops-profile-divider {
+  width: 1px;
+  height: 30px;
+
+  background: #e5e7eb;
+}
+
+.clubops-user {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  cursor: pointer;
+}
+
+.clubops-user-avatar {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  background: linear-gradient(
+    135deg,
+    #6366f1,
+    #8b5cf6
+  );
+
+  color: white;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.clubops-user-details strong,
+.clubops-user-details span {
+  display: block;
+}
+
+.clubops-user-details strong {
+  color: #1e293b;
+
+  font-size: 11px;
+}
+
+.clubops-user-details span {
+  margin-top: 2px;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+}
+
+.clubops-user-arrow {
+  margin-left: 2px;
+
+  color: #94a3b8;
+
+  font-size: 14px;
+}
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.clubops-content {
+  width: 100%;
+
+  max-width: 1500px;
+
+  margin: 0 auto;
+
+  padding: 30px;
+}
+
+/* =========================================================
+   WELCOME
+   ========================================================= */
+
+.clubops-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 25px;
+
+  margin-bottom: 26px;
+}
+
+.clubops-eyebrow {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #6366f1;
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 1.5px;
+}
+
+.clubops-welcome h1 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 27px;
+  line-height: 1.25;
+
+  font-weight: 760;
+}
+
+.clubops-welcome p {
+  margin: 7px 0 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+}
+
+.clubops-date-card {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 11px 14px;
+
+  background: #ffffff;
+
+  border: 1px solid #e7eaf0;
+
+  border-radius: 11px;
+
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.025);
+}
+
+.clubops-date-icon {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: #eef2ff;
+
+  font-size: 16px;
+}
+
+.clubops-date-card strong,
+.clubops-date-card span {
+  display: block;
+}
+
+.clubops-date-card strong {
+  color: #334155;
+
+  font-size: 10px;
+}
+
+.clubops-date-card span {
+  margin-top: 3px;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+}
+
+/* =========================================================
+   STATISTICS
+   ========================================================= */
+
+.clubops-stats {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 15px;
+
+  margin-bottom: 20px;
+}
+
+.clubops-stat-card {
+  padding: 19px;
+
+  background: #ffffff;
+
+  border: 1px solid #e7eaf0;
+
+  border-radius: 13px;
+
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.025);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.clubops-stat-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 25px rgba(15, 23, 42, 0.06);
+}
+
+.clubops-stat-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.clubops-stat-title {
+  display: block;
+
+  color: #64748b;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.clubops-stat-value {
+  display: block;
+
+  margin-top: 5px;
+
+  color: #172033;
+
+  font-size: 27px;
+  line-height: 1;
+
+  font-weight: 750;
+}
+
+.clubops-stat-icon {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.clubops-stat-icon.purple {
+  background: #eef2ff;
+  color: #6366f1;
+}
+
+.clubops-stat-icon.blue {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.clubops-stat-icon.orange {
+  background: #fff7ed;
+  color: #f97316;
+}
+
+.clubops-stat-icon.green {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.clubops-stat-footer {
+  display: flex;
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 4px;
+
+  margin-top: 17px;
+}
+
+.clubops-stat-description {
+  width: 100%;
+
+  margin-bottom: 4px;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+}
+
+.clubops-stat-change {
+  color: #10b981;
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.clubops-stat-change-text {
+  color: #94a3b8;
+
+  font-size: 9px;
+}
+
+/* =========================================================
+   PANELS
+   ========================================================= */
+
+.clubops-dashboard-grid {
+  display: grid;
+
+  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.9fr);
+
+  gap: 18px;
+
+  margin-bottom: 18px;
+}
+
+.clubops-panel {
+  min-width: 0;
+
+  padding: 21px;
+
+  background: #ffffff;
+
+  border: 1px solid #e7eaf0;
+
+  border-radius: 13px;
+
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.025);
+}
+
+.clubops-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 15px;
+
+  margin-bottom: 18px;
+}
+
+.clubops-section-label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #94a3b8;
+
+  font-size: 8px;
+  font-weight: 800;
+
+  letter-spacing: 1.3px;
+}
+
+.clubops-panel-header h2 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 15px;
+  font-weight: 750;
+}
+
+.clubops-panel-header p {
+  margin: 4px 0 0;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+}
+
+.clubops-view-link {
+  flex-shrink: 0;
+
+  color: #6366f1;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  text-decoration: none;
+
+  transition: 0.2s;
+}
+
+.clubops-view-link:hover {
+  color: #4338ca;
+}
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+
+.clubops-event-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.clubops-event-item {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 13px 0;
+
+  border-top: 1px solid #f1f3f6;
+}
+
+.clubops-event-item:first-child {
+  border-top: 0;
+  padding-top: 2px;
+}
+
+.clubops-event-date {
+  width: 43px;
+  height: 48px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  background: #f5f3ff;
+
+  border-radius: 9px;
+}
+
+.clubops-event-date strong {
+  color: #5b21b6;
+
+  font-size: 16px;
+  line-height: 1;
+}
+
+.clubops-event-date span {
+  margin-top: 4px;
+
+  color: #8b5cf6;
+
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.clubops-event-details {
+  min-width: 0;
+
+  flex: 1;
+}
+
+.clubops-event-details h3 {
+  overflow: hidden;
+
+  margin: 0;
+
+  color: #334155;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubops-event-details p {
+  overflow: hidden;
+
+  margin: 4px 0;
+
+  color: #94a3b8;
+
+  font-size: 9px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubops-event-meta {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  color: #94a3b8;
+
+  font-size: 8px;
+}
+
+.clubops-upcoming-badge {
+  flex-shrink: 0;
+
+  padding: 5px 7px;
+
+  border-radius: 5px;
+
+  background: #ecfdf5;
+
+  color: #059669;
+
+  font-size: 7px;
+  font-weight: 800;
+}
+
+/* =========================================================
+   TASKS
+   ========================================================= */
+
+.clubops-task-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.clubops-task-item {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 12px 0;
+
+  border-top: 1px solid #f1f3f6;
+}
+
+.clubops-task-item:first-child {
+  border-top: 0;
+  padding-top: 2px;
+}
+
+.clubops-task-checkbox {
+  width: 17px;
+  height: 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  padding: 0;
+
+  border: 1px solid #d7dce5;
+
+  border-radius: 5px;
+
+  background: #ffffff;
+
+  cursor: pointer;
+}
+
+.clubops-task-checkbox:hover {
+  border-color: #6366f1;
+}
+
+.clubops-task-content {
+  min-width: 0;
+
+  flex: 1;
+}
+
+.clubops-task-content h3 {
+  overflow: hidden;
+
+  margin: 0;
+
+  color: #334155;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubops-task-content p {
+  margin: 4px 0 0;
+
+  color: #94a3b8;
+
+  font-size: 8px;
+}
+
+.clubops-priority {
+  flex-shrink: 0;
+
+  padding: 5px 7px;
+
+  border-radius: 5px;
+
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.clubops-priority.high {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.clubops-priority.medium {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.clubops-priority.low {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+/* =========================================================
+   QUICK ACTIONS
+   ========================================================= */
+
+.clubops-actions-panel {
+  margin-bottom: 18px;
+}
+
+.clubops-actions-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+}
+
+.clubops-action-card {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+
+  padding: 13px;
+
+  border: 1px solid #edf0f4;
+
+  border-radius: 10px;
+
+  background: #ffffff;
+
+  color: inherit;
+
+  text-decoration: none;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.clubops-action-card:hover {
+  transform: translateY(-2px);
+
+  border-color: #c7d2fe;
+
+  box-shadow:
+    0 7px 18px rgba(15, 23, 42, 0.06);
+}
+
+.clubops-action-icon {
+  width: 35px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 9px;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.clubops-action-icon.purple {
+  background: #eef2ff;
+  color: #6366f1;
+}
+
+.clubops-action-icon.blue {
+  background: #eff6ff;
+  color: #3b82f6;
+}
+
+.clubops-action-icon.orange {
+  background: #fff7ed;
+  color: #f97316;
+}
+
+.clubops-action-icon.green {
+  background: #ecfdf5;
+  color: #10b981;
+}
+
+.clubops-action-card h3 {
+  overflow: hidden;
+
+  margin: 0;
+
+  color: #334155;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubops-action-card p {
+  overflow: hidden;
+
+  margin: 3px 0 0;
+
+  color: #94a3b8;
+
+  font-size: 8px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubops-action-arrow {
+  margin-left: auto;
+
+  color: #cbd5e1;
+
+  font-size: 13px;
+
+  transition: 0.2s;
+}
+
+.clubops-action-card:hover .clubops-action-arrow {
+  color: #6366f1;
+
+  transform: translateX(2px);
+}
+
+/* =========================================================
+   BOTTOM CARDS
+   ========================================================= */
+
+.clubops-bottom-grid {
+  display: grid;
+
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.8fr);
+
+  gap: 18px;
+}
+
+.clubops-info-card {
+  padding: 21px;
+
+  border-radius: 13px;
+
+  border: 1px solid #e7eaf0;
+
+  background: #ffffff;
+}
+
+.clubops-ai-card {
+  display: flex;
+
+  gap: 17px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #f5f3ff 0%,
+      #ffffff 65%
+    );
+}
+
+.clubops-info-icon {
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 11px;
+
+  background: #ede9fe;
+
+  font-size: 21px;
+}
+
+.clubops-info-content {
+  min-width: 0;
+}
+
+.clubops-info-content h2 {
+  margin: 0;
+
+  color: #312e81;
+
+  font-size: 15px;
+}
+
+.clubops-info-content p {
+  max-width: 620px;
+
+  margin: 6px 0 12px;
+
+  color: #64748b;
+
+  font-size: 9px;
+  line-height: 1.6;
+}
+
+.clubops-info-button {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 7px 10px;
+
+  border-radius: 6px;
+
+  background: #6366f1;
+
+  color: #ffffff;
+
+  font-size: 8px;
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+.clubops-summary-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 15px;
+}
+
+.clubops-summary-header h2 {
+  margin: 0;
+
+  color: #172033;
+
+  font-size: 15px;
+}
+
+.clubops-status-dot {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 5px;
+
+  padding: 5px 8px;
+
+  border-radius: 20px;
+
+  background: #ecfdf5;
+
+  color: #059669;
+
+  font-size: 7px;
+  font-weight: 800;
+}
+
+.clubops-status-dot::before {
+  content: "";
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #10b981;
+}
+
+.clubops-summary-list {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 9px;
+}
+
+.clubops-summary-list div {
+  padding: 10px;
+
+  border-radius: 8px;
+
+  background: #f8fafc;
+}
+
+.clubops-summary-list span,
+.clubops-summary-list strong {
+  display: block;
+}
+
+.clubops-summary-list span {
+  color: #94a3b8;
+
+  font-size: 8px;
+}
+
+.clubops-summary-list strong {
+  margin-top: 4px;
+
+  color: #334155;
+
+  font-size: 14px;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 1200px) {
+  .clubops-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .clubops-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .clubops-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   SMALL TABLET
+   ========================================================= */
+
+@media (max-width: 950px) {
+  .clubops-sidebar {
+    width: 220px;
+  }
+
+  .clubops-main {
+    margin-left: 220px;
+  }
+
+  .clubops-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .clubops-content {
+    padding: 22px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .clubops-sidebar {
+    position: static;
+
+    width: 100%;
+    height: auto;
+
+    min-height: auto;
+
+    padding: 12px;
+
+    border-right: 0;
+  }
+
+  .clubops-brand {
+    padding-bottom: 12px;
+  }
+
+  .clubops-navigation {
+    display: none;
+  }
+
+  .clubops-sidebar-bottom {
+    display: none;
+  }
+
+  .clubops-main {
+    margin-left: 0;
+  }
+
+  .clubops-topbar {
+    height: 66px;
+
+    padding: 0 16px;
+  }
+
+  .clubops-page-heading {
+    display: none;
+  }
+
+  .clubops-mobile-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .clubops-mobile-brand-mark {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+
+    background: #6366f1;
+
+    color: white;
+
+    font-size: 12px;
+    font-weight: 800;
+  }
+
+  .clubops-mobile-brand strong {
+    color: #172033;
+
+    font-size: 13px;
+  }
+
+  .clubops-user-details,
+  .clubops-user-arrow,
+  .clubops-profile-divider {
+    display: none;
+  }
+
+  .clubops-content {
+    padding: 20px 15px;
+  }
+
+  .clubops-welcome {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    margin-bottom: 20px;
+  }
+
+  .clubops-welcome h1 {
+    font-size: 23px;
+  }
+
+  .clubops-date-card {
+    width: 100%;
+  }
+
+  .clubops-stats {
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+  }
+
+  .clubops-stat-card {
+    padding: 15px;
+  }
+
+  .clubops-stat-value {
+    font-size: 23px;
+  }
+
+  .clubops-stat-icon {
+    width: 34px;
+    height: 34px;
+
+    font-size: 14px;
+  }
+
+  .clubops-dashboard-grid {
+    gap: 12px;
+  }
+
+  .clubops-panel {
+    padding: 16px;
+  }
+
+  .clubops-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .clubops-event-item {
+    align-items: flex-start;
+  }
+
+  .clubops-upcoming-badge {
+    display: none;
+  }
+}
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 430px) {
+  .clubops-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .clubops-stat-footer {
+    margin-top: 12px;
+  }
+
+  .clubops-event-meta {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 3px;
+  }
+
+  .clubops-summary-list {
+    grid-template-columns: 1fr;
+  }
+
+  .clubops-ai-card {
+    flex-direction: column;
+  }
+}
