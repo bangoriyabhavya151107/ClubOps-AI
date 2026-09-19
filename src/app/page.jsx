@@ -37,7 +37,7 @@ export default function HomePage() {
             About
           </Link>
 
-          <Link href="/#contact">
+          <Link href="/contact">
             Contact
           </Link>
 
