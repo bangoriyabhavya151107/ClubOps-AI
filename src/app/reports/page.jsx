@@ -1,16 +1,147 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
-import styles from "@/components/clubops/ManagementPage.module.css";
 
 export default function ReportsPage() {
-  const metrics = [
-    { label: "Members", value: 0 },
-    { label: "Events", value: 0 },
-    { label: "Tasks", value: 0 },
-    { label: "Attendance", value: "0%" },
-  ];
+  const [data, setData] = useState({
+    members: 0,
+    events: 0,
+    tasks: 0,
+    completed: 0,
+    overdue: 0,
+    meetings: 0,
+    announcements: 0,
+    risks: 0,
+  });
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  async function load() {
+    const { getWorkspace } =
+      await import("@/lib/clubops");
+
+    const workspace =
+      await getWorkspace();
+
+    const supabase = (
+      await import("@/lib/supabase/client")
+    ).createClient();
+
+    const [
+      members,
+      events,
+      tasks,
+      meetings,
+      announcements,
+      risks,
+    ] = await Promise.all([
+      supabase
+        .from("members")
+        .select("id", { count: "exact" })
+        .eq(
+          "club_id",
+          workspace.clubId
+        ),
+
+      supabase
+        .from("events")
+        .select("id", { count: "exact" })
+        .eq(
+          "club_id",
+          workspace.clubId
+        ),
+
+      supabase
+        .from("tasks")
+        .select(
+          "id,status,due_date"
+        )
+        .eq(
+          "club_id",
+          workspace.clubId
+        ),
+
+      supabase
+        .from("meetings")
+        .select("id", {
+          count: "exact",
+        })
+        .eq(
+          "club_id",
+          workspace.clubId
+        ),
+
+      supabase
+        .from("announcements")
+        .select("id", {
+          count: "exact",
+        })
+        .eq(
+          "club_id",
+          workspace.clubId
+        ),
+
+      supabase
+        .from("risks")
+        .select("id", {
+          count: "exact",
+        })
+        .eq(
+          "club_id",
+          workspace.clubId
+        ),
+    ]);
+
+    const today =
+      new Date()
+        .toISOString()
+        .split("T")[0];
+
+    const taskRows =
+      tasks.data || [];
+
+    setData({
+      members:
+        members.count || 0,
+
+      events:
+        events.count || 0,
+
+      tasks:
+        taskRows.length,
+
+      completed:
+        taskRows.filter(
+          (task) =>
+            task.status ===
+            "Completed"
+        ).length,
+
+      overdue:
+        taskRows.filter(
+          (task) =>
+            task.status !==
+              "Completed" &&
+            task.due_date &&
+            task.due_date <
+              today
+        ).length,
+
+      meetings:
+        meetings.count || 0,
+
+      announcements:
+        announcements.count || 0,
+
+      risks:
+        risks.count || 0,
+    });
+  }
 
   return (
     <div className="clubops-dashboard">
@@ -20,65 +151,108 @@ export default function ReportsPage() {
         <Topbar />
 
         <section className="clubops-content">
-          <div className="clubops-page-intro">
+          <div className="clubops-welcome">
             <div>
-              <span className="clubops-eyebrow">ANALYTICS</span>
-              <h2>Reports</h2>
+              <span>ANALYTICS</span>
+              <h2>Operations Reports</h2>
               <p>
-                A clean overview of club activity. No sample data is loaded.
+                Live metrics calculated from Supabase.
               </p>
             </div>
           </div>
 
-          <div className={styles.reportGrid}>
-            {metrics.map((metric) => (
-              <div className={styles.reportMetric} key={metric.label}>
-                <span>{metric.label}</span>
-                <strong>{metric.value}</strong>
-              </div>
-            ))}
+          <div className="clubops-stat-grid">
+            <Stat
+              title="Members"
+              value={data.members}
+            />
+
+            <Stat
+              title="Events"
+              value={data.events}
+            />
+
+            <Stat
+              title="Tasks"
+              value={data.tasks}
+            />
+
+            <Stat
+              title="Completed"
+              value={data.completed}
+            />
+
+            <Stat
+              title="Overdue"
+              value={data.overdue}
+            />
+
+            <Stat
+              title="Risks"
+              value={data.risks}
+            />
           </div>
 
-          <section className="clubops-card">
-            <div className="clubops-card-heading">
+          <section className="clubops-panel">
+            <div className="clubops-panel-title">
               <div>
-                <span className="clubops-section-label">
-                  SUMMARY
-                </span>
-
-                <h2>Operations Report</h2>
-
-                <p>
-                  Reports will reflect records created inside the connected
-                  data source when you add that integration.
-                </p>
+                <span>CLUB HEALTH</span>
+                <h3>Operational Overview</h3>
               </div>
             </div>
 
-            <div className={styles.reportList}>
-              <div className={styles.reportRow}>
-                <span>Total member records</span>
-                <strong>0</strong>
-              </div>
+            <div className="clubops-list">
+              <Row
+                label="Meetings"
+                value={data.meetings}
+              />
 
-              <div className={styles.reportRow}>
-                <span>Total event records</span>
-                <strong>0</strong>
-              </div>
+              <Row
+                label="Announcements"
+                value={data.announcements}
+              />
 
-              <div className={styles.reportRow}>
-                <span>Total task records</span>
-                <strong>0</strong>
-              </div>
+              <Row
+                label="Completed tasks"
+                value={data.completed}
+              />
 
-              <div className={styles.reportRow}>
-                <span>Total attendance records</span>
-                <strong>0</strong>
-              </div>
+              <Row
+                label="Overdue tasks"
+                value={data.overdue}
+              />
+
+              <Row
+                label="Open risks"
+                value={data.risks}
+              />
             </div>
           </section>
         </section>
       </main>
+    </div>
+  );
+}
+
+function Stat({ title, value }) {
+  return (
+    <article className="clubops-stat">
+      <small>{title}</small>
+      <strong>{value}</strong>
+    </article>
+  );
+}
+
+function Row({ label, value }) {
+  return (
+    <div className="clubops-list-row">
+      <div>
+        <strong>{label}</strong>
+      </div>
+
+      <span className="status-badge">
+        {value}
+      </span>
     </div>
   );
 }

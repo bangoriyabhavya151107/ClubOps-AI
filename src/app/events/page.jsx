@@ -1,49 +1,5 @@
 import ManagementPage from "@/components/clubops/ManagementPage";
 
 export default function EventsPage() {
-  return (
-    <ManagementPage
-      eyebrow="CLUB MANAGEMENT"
-      title="Events"
-      description="Create and manage club events. The list starts empty."
-      singular="Event"
-      fields={[
-        {
-          name: "name",
-          label: "Event name",
-          placeholder: "Enter event name",
-          required: true,
-        },
-        {
-          name: "date",
-          label: "Date",
-          type: "date",
-          required: true,
-        },
-        {
-          name: "time",
-          label: "Time",
-          type: "time",
-        },
-        {
-          name: "location",
-          label: "Location",
-          placeholder: "Enter location",
-        },
-        {
-          name: "description",
-          label: "Description",
-          type: "textarea",
-          placeholder: "Describe the event",
-          fullWidth: true,
-        },
-      ]}
-      columns={[
-        { key: "name", label: "Event" },
-        { key: "date", label: "Date" },
-        { key: "time", label: "Time" },
-        { key: "location", label: "Location" },
-      ]}
-    />
-  );
+  return <ManagementPage resource="events" />;
 }

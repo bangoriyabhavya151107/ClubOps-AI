@@ -1,237 +1,226 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
+import styles from "./register.module.css";
 
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
+  const router = useRouter();
+  const supabase = createClient();
+
+  const [form, setForm] = useState({
     fullName: "",
     email: "",
     phone: "",
+    department: "",
+    role: "VOLUNTEER",
     password: "",
     confirmPassword: "",
   });
 
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  function update(field, value) {
+    setForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
+  }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  async function handleRegister(event) {
+    event.preventDefault();
+
+    setError("");
 
     if (
-      !formData.fullName ||
-      !formData.email ||
-      !formData.phone ||
-      !formData.password ||
-      !formData.confirmPassword
+      !form.fullName ||
+      !form.email ||
+      !form.password
     ) {
-      setMessage("Please fill all fields.");
+      setError("Please complete all required fields.");
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      setMessage("Passwords do not match.");
+    if (form.password.length < 6) {
+      setError("Password must contain at least 6 characters.");
       return;
     }
 
-    setMessage("Account information is valid.");
-  };
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const { data, error: signupError } =
+        await supabase.auth.signUp({
+          email: form.email.trim(),
+          password: form.password,
+          options: {
+            data: {
+              full_name: form.fullName.trim(),
+              phone: form.phone.trim(),
+              department: form.department.trim(),
+              role: form.role,
+            },
+          },
+        });
+
+      if (signupError) {
+        throw signupError;
+      }
+
+      if (!data.session) {
+        alert(
+          "Account created. If email confirmation is enabled, confirm your email and then login."
+        );
+
+        router.replace("/login");
+        return;
+      }
+
+      router.replace("/dashboard");
+      router.refresh();
+    } catch (error) {
+      setError(
+        error?.message ||
+          "Unable to create the account."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
-    <main className="auth-page">
-
-      <div className="auth-card">
-
-        {/* Logo */}
-
-        <Link href="/" className="auth-logo">
-
-          <div className="auth-logo-icon">
-            C
-          </div>
-
-          <span>
-            ClubOps AI
-          </span>
-
+    <main className={styles.page}>
+      <div className={styles.card}>
+        <Link href="/" className={styles.logo}>
+          <span>C</span>
+          ClubOps AI
         </Link>
 
+        <h1>Create your workspace</h1>
 
-        {/* Heading */}
+        <p>
+          Your role controls what you can manage inside ClubOps.
+        </p>
 
-        <div className="auth-heading">
-
-          <h1>
-            Create Account
-          </h1>
-
-          <p>
-            Join ClubOps AI
-          </p>
-
-        </div>
-
-
-        {/* Register Form */}
-
-        <form
-          className="auth-form"
-          onSubmit={handleSubmit}
-        >
-
-          {/* Full Name */}
-
-          <div className="form-group">
-
-            <label htmlFor="fullName">
-              Full Name
-            </label>
-
-            <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              placeholder="Enter your full name"
-              value={formData.fullName}
-              onChange={handleChange}
-            />
-
+        {error && (
+          <div className={styles.error}>
+            {error}
           </div>
+        )}
 
-
-          {/* Email */}
-
-          <div className="form-group">
-
-            <label htmlFor="email">
-              Email Address
-            </label>
-
+        <form onSubmit={handleRegister}>
+          <label>
+            Full name *
             <input
-              id="email"
-              name="email"
+              value={form.fullName}
+              onChange={(e) =>
+                update("fullName", e.target.value)
+              }
+              placeholder="Bhavya Patel"
+            />
+          </label>
+
+          <label>
+            Email *
+            <input
               type="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
+              value={form.email}
+              onChange={(e) =>
+                update("email", e.target.value)
+              }
+              placeholder="you@example.com"
             />
+          </label>
 
-          </div>
-
-
-          {/* Phone */}
-
-          <div className="form-group">
-
-            <label htmlFor="phone">
-              Phone Number
+          <div className={styles.two}>
+            <label>
+              Phone
+              <input
+                value={form.phone}
+                onChange={(e) =>
+                  update("phone", e.target.value)
+                }
+                placeholder="+91..."
+              />
             </label>
 
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              placeholder="Enter your phone number"
-              value={formData.phone}
-              onChange={handleChange}
-            />
-
+            <label>
+              Department
+              <input
+                value={form.department}
+                onChange={(e) =>
+                  update("department", e.target.value)
+                }
+                placeholder="Computer Engineering"
+              />
+            </label>
           </div>
 
+          <label>
+            Role *
+            <select
+              value={form.role}
+              onChange={(e) =>
+                update("role", e.target.value)
+              }
+            >
+              <option value="ADMIN">Admin</option>
+              <option value="COORDINATOR">
+                Coordinator
+              </option>
+              <option value="VOLUNTEER">
+                Volunteer
+              </option>
+            </select>
+          </label>
 
-          {/* Password */}
-
-          <div className="form-group">
-
-            <label htmlFor="password">
-              Password
+          <div className={styles.two}>
+            <label>
+              Password *
+              <input
+                type="password"
+                value={form.password}
+                onChange={(e) =>
+                  update("password", e.target.value)
+                }
+              />
             </label>
 
-            <input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Create a password"
-              value={formData.password}
-              onChange={handleChange}
-            />
-
-          </div>
-
-
-          {/* Confirm Password */}
-
-          <div className="form-group">
-
-            <label htmlFor="confirmPassword">
-              Confirm Password
+            <label>
+              Confirm *
+              <input
+                type="password"
+                value={form.confirmPassword}
+                onChange={(e) =>
+                  update(
+                    "confirmPassword",
+                    e.target.value
+                  )
+                }
+              />
             </label>
-
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              placeholder="Confirm your password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-            />
-
           </div>
 
-
-          {/* Message */}
-
-          {message && (
-            <div className="auth-message">
-              {message}
-            </div>
-          )}
-
-
-          {/* Submit */}
-
-          <button
-            type="submit"
-            className="auth-submit"
-          >
-            Create Account
+          <button disabled={loading}>
+            {loading
+              ? "Creating workspace..."
+              : "Create Account"}
           </button>
-
         </form>
 
-
-        {/* Login */}
-
-        <div className="auth-footer">
-
-          <span>
-            Already have an account?
-          </span>
-
-          <Link href="/login">
-            Login
-          </Link>
-
+        <div className={styles.footer}>
+          Already registered?{" "}
+          <Link href="/login">Login</Link>
         </div>
-
-
-        {/* Back Home */}
-
-        <Link
-          href="/"
-          className="back-home"
-        >
-          ← Back to Home
-        </Link>
-
       </div>
-
     </main>
   );
 }

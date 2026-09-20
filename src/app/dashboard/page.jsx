@@ -1,134 +1,165 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
 
-const stats = [
-  {
-    title: "Total Members",
-    value: "248",
-    description: "Active club members",
-    change: "+12%",
-    changeText: "vs last month",
-    icon: "👥",
-    tone: "purple",
-  },
-  {
-    title: "Upcoming Events",
-    value: "18",
-    description: "Events scheduled",
-    change: "+5%",
-    changeText: "vs last month",
-    icon: "📅",
-    tone: "blue",
-  },
-  {
-    title: "Pending Tasks",
-    value: "42",
-    description: "Tasks need attention",
-    change: "+8%",
-    changeText: "vs last month",
-    icon: "✓",
-    tone: "orange",
-  },
-  {
-    title: "Attendance",
-    value: "87%",
-    description: "Average attendance",
-    change: "+4%",
-    changeText: "vs last month",
-    icon: "📊",
-    tone: "green",
-  },
-];
-
-const events = [
-  {
-    day: "24",
-    month: "SEP",
-    name: "Annual Club Meeting",
-    description: "Monthly club coordination meeting",
-    time: "10:00 AM",
-    location: "Conference Room",
-  },
-  {
-    day: "27",
-    month: "SEP",
-    name: "Volunteer Training",
-    description: "Training session for new volunteers",
-    time: "02:00 PM",
-    location: "Seminar Hall",
-  },
-  {
-    day: "30",
-    month: "SEP",
-    name: "Community Workshop",
-    description: "Community outreach workshop",
-    time: "11:00 AM",
-    location: "Main Auditorium",
-  },
-];
-
-const tasks = [
-  {
-    name: "Prepare event documents",
-    category: "Annual Club Meeting",
-    priority: "High",
-    priorityClass: "high",
-  },
-  {
-    name: "Contact volunteers",
-    category: "Volunteer Training",
-    priority: "Medium",
-    priorityClass: "medium",
-  },
-  {
-    name: "Update member records",
-    category: "Administration",
-    priority: "Low",
-    priorityClass: "low",
-  },
-  {
-    name: "Prepare presentation",
-    category: "Community Workshop",
-    priority: "Medium",
-    priorityClass: "medium",
-  },
-];
-
-const quickActions = [
-  {
-    icon: "＋",
-    title: "Create Event",
-    description: "Schedule a new club event",
-    href: "/events/create",
-    className: "purple",
-  },
-  {
-    icon: "👤",
-    title: "Manage Members",
-    description: "View and manage members",
-    href: "/members",
-    className: "blue",
-  },
-  {
-    icon: "✓",
-    title: "Add Task",
-    description: "Create and assign a task",
-    href: "/tasks",
-    className: "orange",
-  },
-  {
-    icon: "🤖",
-    title: "Ask AI Assistant",
-    description: "Get help with club operations",
-    href: "/ai-assistant",
-    className: "green",
-  },
-];
+import {
+  formatDate,
+  formatMoney,
+  getWorkspace,
+  initials,
+} from "@/lib/clubops";
 
 export default function DashboardPage() {
+  const [workspace, setWorkspace] = useState(null);
+
+  const [events, setEvents] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [meetings, setMeetings] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [volunteers, setVolunteers] = useState([]);
+  const [budget, setBudget] = useState([]);
+
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  async function loadDashboard() {
+    try {
+      const result = await getWorkspace();
+
+      setWorkspace(result);
+
+      const supabase = (
+        await import("@/lib/supabase/client")
+      ).createClient();
+
+      const clubId = result.clubId;
+
+      if (!clubId) return;
+
+      const [
+        eventResult,
+        taskResult,
+        meetingResult,
+        announcementResult,
+        volunteerResult,
+        budgetResult,
+      ] = await Promise.all([
+        supabase
+          .from("events")
+          .select("*")
+          .eq("club_id", clubId)
+          .order("event_date", { ascending: true }),
+
+        supabase
+          .from("tasks")
+          .select("*")
+          .eq("club_id", clubId)
+          .order("due_date", { ascending: true }),
+
+        supabase
+          .from("meetings")
+          .select("*")
+          .eq("club_id", clubId)
+          .order("meeting_date", { ascending: true }),
+
+        supabase
+          .from("announcements")
+          .select("*")
+          .eq("club_id", clubId)
+          .order("created_at", { ascending: false }),
+
+        supabase
+          .from("members")
+          .select("*")
+          .eq("club_id", clubId)
+          .eq("role", "Volunteer")
+          .eq("status", "Active"),
+
+        supabase
+          .from("event_budgets")
+          .select("*")
+          .eq("club_id", clubId),
+      ]);
+
+      setEvents(eventResult.data || []);
+      setTasks(taskResult.data || []);
+      setMeetings(meetingResult.data || []);
+      setAnnouncements(announcementResult.data || []);
+      setVolunteers(volunteerResult.data || []);
+      setBudget(budgetResult.data || []);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const upcomingEvents = useMemo(
+    () =>
+      events.filter(
+        (event) =>
+          new Date(`${event.event_date}T00:00:00`) >= today &&
+          event.status !== "Cancelled"
+      ),
+    [events]
+  );
+
+  const pendingTasks = tasks.filter(
+    (task) => task.status !== "Completed"
+  );
+
+  const completedTasks = tasks.filter(
+    (task) => task.status === "Completed"
+  );
+
+  const overdueTasks = pendingTasks.filter(
+    (task) =>
+      task.due_date &&
+      new Date(`${task.due_date}T00:00:00`) < today
+  );
+
+  const progress =
+    tasks.length === 0
+      ? 0
+      : Math.round(
+          (completedTasks.length / tasks.length) * 100
+        );
+
+  const totalBudget = budget.reduce(
+    (sum, item) =>
+      sum + Number(item.allocated_amount || 0),
+    0
+  );
+
+  const totalSpent = budget.reduce(
+    (sum, item) =>
+      sum + Number(item.spent_amount || 0),
+    0
+  );
+
+  const nextMeeting = meetings.find(
+    (meeting) =>
+      new Date(`${meeting.meeting_date}T00:00:00`) >= today
+  );
+
+  if (loading) {
+    return (
+      <div className="clubops-dashboard-loading">
+        Loading ClubOps workspace...
+      </div>
+    );
+  }
+
   return (
     <div className="clubops-dashboard">
       <Sidebar />
@@ -136,270 +167,391 @@ export default function DashboardPage() {
       <main className="clubops-main">
         <Topbar />
 
-        <div className="clubops-content">
-          {/* Welcome */}
-          <section className="clubops-welcome">
-            <div>
-              <span className="clubops-eyebrow">CLUB OVERVIEW</span>
+        <section className="clubops-content">
 
-              <h1>Good evening, Club Admin 👋</h1>
+          <div className="clubops-welcome">
+            <div>
+              <span>LIVE CLUB WORKSPACE</span>
+
+              <h2>
+                Welcome,{" "}
+                {workspace?.profile?.full_name ||
+                  "Club Member"}{" "}
+                👋
+              </h2>
 
               <p>
-                Here&apos;s what&apos;s happening with your club today.
+                Everything below is live data from your
+                Supabase workspace.
               </p>
             </div>
 
-            <div className="clubops-date-card">
-              <span className="clubops-date-icon">📅</span>
-
-              <div>
-                <strong>September 2026</strong>
-                <span>Club Operations</span>
-              </div>
+            <div className="clubops-role-card">
+              <small>ROLE</small>
+              <strong>
+                {workspace?.role || "VOLUNTEER"}
+              </strong>
             </div>
-          </section>
+          </div>
 
-          {/* Statistics */}
-          <section className="clubops-stats">
-            {stats.map((stat) => (
-              <article className="clubops-stat-card" key={stat.title}>
-                <div className="clubops-stat-header">
-                  <div>
-                    <span className="clubops-stat-title">
-                      {stat.title}
-                    </span>
+          <div className="clubops-stat-grid">
 
-                    <strong className="clubops-stat-value">
-                      {stat.value}
-                    </strong>
-                  </div>
+            <Stat
+              label="Members"
+              value={events ? volunteers.length : 0}
+              icon="👥"
+              note="Active volunteers"
+            />
 
-                  <div
-                    className={`clubops-stat-icon ${stat.tone}`}
-                  >
-                    {stat.icon}
-                  </div>
+            <Stat
+              label="Upcoming Events"
+              value={upcomingEvents.length}
+              icon="📅"
+              note="Scheduled"
+            />
+
+            <Stat
+              label="Pending Tasks"
+              value={pendingTasks.length}
+              icon="☑"
+              note={`${overdueTasks.length} overdue`}
+            />
+
+            <Stat
+              label="Task Progress"
+              value={`${progress}%`}
+              icon="📈"
+              note={`${completedTasks.length} completed`}
+            />
+
+            <Stat
+              label="Budget"
+              value={formatMoney(totalBudget)}
+              icon="₹"
+              note={`${formatMoney(totalSpent)} spent`}
+            />
+
+            <Stat
+              label="Available Volunteers"
+              value={volunteers.length}
+              icon="🙋"
+              note="Active volunteers"
+            />
+
+          </div>
+
+          <div className="clubops-main-grid">
+
+            <section className="clubops-panel">
+              <PanelTitle
+                eyebrow="EVENT MANAGEMENT"
+                title="Upcoming Events"
+                link="/events"
+              />
+
+              {upcomingEvents.length === 0 ? (
+                <Empty
+                  title="No events yet"
+                  text="Create your first event to start managing operations."
+                />
+              ) : (
+                <div className="clubops-list">
+                  {upcomingEvents
+                    .slice(0, 5)
+                    .map((event) => (
+                      <div
+                        className="clubops-list-row"
+                        key={event.id}
+                      >
+                        <div className="clubops-date-box">
+                          <strong>
+                            {new Date(
+                              `${event.event_date}T00:00:00`
+                            ).getDate()}
+                          </strong>
+
+                          <small>
+                            {new Date(
+                              `${event.event_date}T00:00:00`
+                            ).toLocaleDateString(
+                              "en-IN",
+                              { month: "short" }
+                            )}
+                          </small>
+                        </div>
+
+                        <div>
+                          <strong>{event.name}</strong>
+
+                          <p>
+                            {event.location ||
+                              "Location not added"}
+                          </p>
+
+                          <small>
+                            Expected students:{" "}
+                            {event.expected_students || 0}
+                          </small>
+                        </div>
+
+                        <span className="status-badge">
+                          {event.status}
+                        </span>
+                      </div>
+                    ))}
                 </div>
+              )}
+            </section>
 
-                <div className="clubops-stat-footer">
-                  <span className="clubops-stat-description">
-                    {stat.description}
-                  </span>
+            <section className="clubops-panel">
+              <PanelTitle
+                eyebrow="TASK MANAGEMENT"
+                title="Task Progress"
+                link="/tasks"
+              />
 
-                  <span className="clubops-stat-change">
-                    {stat.change}
-                  </span>
-
-                  <span className="clubops-stat-change-text">
-                    {stat.changeText}
-                  </span>
-                </div>
-              </article>
-            ))}
-          </section>
-
-          {/* Main dashboard grid */}
-          <section className="clubops-dashboard-grid">
-            {/* Events */}
-            <article className="clubops-panel clubops-events-panel">
-              <div className="clubops-panel-header">
+              <div className="progress-card">
                 <div>
-                  <span className="clubops-section-label">
-                    SCHEDULE
+                  <strong>{progress}%</strong>
+                  <span>overall completion</span>
+                </div>
+
+                <div className="progress-track">
+                  <div
+                    style={{
+                      width: `${progress}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="task-summary">
+                <Summary
+                  label="Completed"
+                  value={completedTasks.length}
+                />
+
+                <Summary
+                  label="Pending"
+                  value={pendingTasks.length}
+                />
+
+                <Summary
+                  label="Overdue"
+                  value={overdueTasks.length}
+                />
+              </div>
+
+              <div className="clubops-list compact">
+                {pendingTasks
+                  .slice(0, 4)
+                  .map((task) => (
+                    <div
+                      className="clubops-list-row"
+                      key={task.id}
+                    >
+                      <div className="task-dot" />
+
+                      <div>
+                        <strong>{task.title}</strong>
+
+                        <p>
+                          Due{" "}
+                          {formatDate(task.due_date)}
+                        </p>
+                      </div>
+
+                      <span
+                        className={`priority ${String(
+                          task.priority
+                        ).toLowerCase()}`}
+                      >
+                        {task.priority}
+                      </span>
+                    </div>
+                  ))}
+              </div>
+            </section>
+
+          </div>
+
+          <div className="clubops-main-grid">
+
+            <section className="clubops-panel">
+              <PanelTitle
+                eyebrow="CALENDAR"
+                title="Next Meeting"
+                link="/meetings"
+              />
+
+              {nextMeeting ? (
+                <div className="feature-card">
+                  <span>🗓️</span>
+
+                  <div>
+                    <strong>
+                      {nextMeeting.title}
+                    </strong>
+
+                    <p>
+                      {formatDate(
+                        nextMeeting.meeting_date
+                      )}
+                      {" • "}
+                      {nextMeeting.start_time ||
+                        "Time not set"}
+                    </p>
+
+                    <small>
+                      {nextMeeting.location ||
+                        "Online / location not set"}
+                    </small>
+                  </div>
+                </div>
+              ) : (
+                <Empty
+                  title="No upcoming meeting"
+                  text="Schedule your next coordination meeting."
+                />
+              )}
+            </section>
+
+            <section className="clubops-panel">
+              <PanelTitle
+                eyebrow="COMMUNICATION"
+                title="Latest Announcement"
+                link="/announcements"
+              />
+
+              {announcements[0] ? (
+                <div className="announcement-card">
+                  <span>
+                    {announcements[0].priority}
                   </span>
 
-                  <h2>Upcoming Events</h2>
+                  <h3>
+                    {announcements[0].title}
+                  </h3>
 
                   <p>
-                    Keep track of your club&apos;s upcoming activities.
+                    {announcements[0].content}
                   </p>
                 </div>
+              ) : (
+                <Empty
+                  title="No announcements"
+                  text="Important club communication will appear here."
+                />
+              )}
+            </section>
 
-                <Link href="/events" className="clubops-view-link">
-                  View all →
-                </Link>
-              </div>
+          </div>
 
-              <div className="clubops-event-list">
-                {events.map((event) => (
-                  <div className="clubops-event-item" key={event.name}>
-                    <div className="clubops-event-date">
-                      <strong>{event.day}</strong>
-                      <span>{event.month}</span>
-                    </div>
+          <section className="clubops-panel">
+            <PanelTitle
+              eyebrow="OPERATIONS"
+              title="Quick Actions"
+            />
 
-                    <div className="clubops-event-details">
-                      <h3>{event.name}</h3>
+            <div className="quick-actions">
 
-                      <p>{event.description}</p>
+              <Quick
+                href="/events"
+                icon="📅"
+                title="Create Event"
+                text="Plan event details and expected students."
+              />
 
-                      <div className="clubops-event-meta">
-                        <span>🕐 {event.time}</span>
-                        <span>📍 {event.location}</span>
-                      </div>
-                    </div>
+              <Quick
+                href="/tasks"
+                icon="☑"
+                title="Assign Task"
+                text="Assign work and track deadlines."
+              />
 
-                    <span className="clubops-upcoming-badge">
-                      Upcoming
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </article>
+              <Quick
+                href="/budget"
+                icon="₹"
+                title="Plan Budget"
+                text="Track allocation, spending and balance."
+              />
 
-            {/* Tasks */}
-            <article className="clubops-panel">
-              <div className="clubops-panel-header">
-                <div>
-                  <span className="clubops-section-label">
-                    WORKSPACE
-                  </span>
+              <Quick
+                href="/ai-assistant"
+                icon="✦"
+                title="Ask AI"
+                text="Generate event plans, risks and communication."
+              />
 
-                  <h2>Pending Tasks</h2>
-
-                  <p>Tasks that need your attention.</p>
-                </div>
-
-                <Link href="/tasks" className="clubops-view-link">
-                  View all →
-                </Link>
-              </div>
-
-              <div className="clubops-task-list">
-                {tasks.map((task) => (
-                  <div className="clubops-task-item" key={task.name}>
-                    <button
-                      type="button"
-                      className="clubops-task-checkbox"
-                      aria-label={`Complete ${task.name}`}
-                    >
-                      <span />
-                    </button>
-
-                    <div className="clubops-task-content">
-                      <h3>{task.name}</h3>
-
-                      <p>{task.category}</p>
-                    </div>
-
-                    <span
-                      className={`clubops-priority ${task.priorityClass}`}
-                    >
-                      {task.priority}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </article>
-          </section>
-
-          {/* Quick Actions */}
-          <section className="clubops-panel clubops-actions-panel">
-            <div className="clubops-panel-header">
-              <div>
-                <span className="clubops-section-label">
-                  SHORTCUTS
-                </span>
-
-                <h2>Quick Actions</h2>
-
-                <p>
-                  Jump directly into the tools you use most.
-                </p>
-              </div>
-            </div>
-
-            <div className="clubops-actions-grid">
-              {quickActions.map((action) => (
-                <Link
-                  href={action.href}
-                  className="clubops-action-card"
-                  key={action.title}
-                >
-                  <div
-                    className={`clubops-action-icon ${action.className}`}
-                  >
-                    {action.icon}
-                  </div>
-
-                  <div>
-                    <h3>{action.title}</h3>
-                    <p>{action.description}</p>
-                  </div>
-
-                  <span className="clubops-action-arrow">→</span>
-                </Link>
-              ))}
             </div>
           </section>
 
-          {/* Bottom information */}
-          <section className="clubops-bottom-grid">
-            <article className="clubops-info-card clubops-ai-card">
-              <div className="clubops-info-icon">🤖</div>
-
-              <div className="clubops-info-content">
-                <span className="clubops-section-label">
-                  AI ASSISTANT
-                </span>
-
-                <h2>Your club&apos;s AI assistant</h2>
-
-                <p>
-                  Need help planning an event, organizing tasks,
-                  writing announcements, or managing operations?
-                  Ask ClubOps AI.
-                </p>
-
-                <Link
-                  href="/ai-assistant"
-                  className="clubops-info-button"
-                >
-                  Open AI Assistant →
-                </Link>
-              </div>
-            </article>
-
-            <article className="clubops-info-card clubops-summary-card">
-              <div className="clubops-summary-header">
-                <div>
-                  <span className="clubops-section-label">
-                    CLUB STATUS
-                  </span>
-
-                  <h2>Operations Summary</h2>
-                </div>
-
-                <span className="clubops-status-dot">
-                  Active
-                </span>
-              </div>
-
-              <div className="clubops-summary-list">
-                <div>
-                  <span>Active members</span>
-                  <strong>248</strong>
-                </div>
-
-                <div>
-                  <span>Events this month</span>
-                  <strong>12</strong>
-                </div>
-
-                <div>
-                  <span>Completed tasks</span>
-                  <strong>86%</strong>
-                </div>
-
-                <div>
-                  <span>Average attendance</span>
-                  <strong>87%</strong>
-                </div>
-              </div>
-            </article>
-          </section>
-        </div>
+        </section>
       </main>
     </div>
+  );
+}
+
+function Stat({ label, value, icon, note }) {
+  return (
+    <article className="clubops-stat">
+      <span className="clubops-stat-icon">
+        {icon}
+      </span>
+
+      <small>{label}</small>
+
+      <strong>{value}</strong>
+
+      <p>{note}</p>
+    </article>
+  );
+}
+
+function PanelTitle({ eyebrow, title, link }) {
+  return (
+    <div className="clubops-panel-title">
+      <div>
+        <span>{eyebrow}</span>
+        <h3>{title}</h3>
+      </div>
+
+      {link && (
+        <Link href={link}>
+          View all →
+        </Link>
+      )}
+    </div>
+  );
+}
+
+function Summary({ label, value }) {
+  return (
+    <div>
+      <strong>{value}</strong>
+      <span>{label}</span>
+    </div>
+  );
+}
+
+function Empty({ title, text }) {
+  return (
+    <div className="clubops-empty">
+      <strong>{title}</strong>
+      <p>{text}</p>
+    </div>
+  );
+}
+
+function Quick({ href, icon, title, text }) {
+  return (
+    <Link href={href} className="quick-action">
+      <span>{icon}</span>
+
+      <div>
+        <strong>{title}</strong>
+        <p>{text}</p>
+      </div>
+    </Link>
   );
 }
