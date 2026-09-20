@@ -1,4 +1,3 @@
-```jsx
 "use client";
 
 import Link from "next/link";
@@ -66,7 +65,7 @@ function isActivePath(pathname, href) {
     return pathname === "/dashboard";
   }
 
-  return pathname === href || pathname.startsWith(`${href}/`);
+  return pathname === href || pathname.startsWith(href + "/");
 }
 
 export default function Sidebar() {
@@ -75,16 +74,23 @@ export default function Sidebar() {
   const supabase = createClient();
 
   async function handleLogout() {
-    await supabase.auth.signOut();
-    router.replace("/login");
-    router.refresh();
+    try {
+      await supabase.auth.signOut();
+
+      router.replace("/login");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   }
 
   return (
     <aside className="clubops-sidebar">
       {/* Brand */}
       <div className="clubops-brand">
-        <div className="clubops-brand-mark">C</div>
+        <div className="clubops-brand-mark">
+          C
+        </div>
 
         <div className="clubops-brand-text">
           <strong>ClubOps AI</strong>
@@ -94,11 +100,17 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="clubops-navigation">
+        {/* Main Menu */}
         <div className="clubops-nav-section">
-          <span className="clubops-nav-label">MAIN MENU</span>
+          <span className="clubops-nav-label">
+            MAIN MENU
+          </span>
 
           {mainMenu.map((item) => {
-            const active = isActivePath(pathname, item.href);
+            const active = isActivePath(
+              pathname,
+              item.href
+            );
 
             return (
               <Link
@@ -122,11 +134,17 @@ export default function Sidebar() {
           })}
         </div>
 
+        {/* Smart Tools */}
         <div className="clubops-nav-section">
-          <span className="clubops-nav-label">SMART TOOLS</span>
+          <span className="clubops-nav-label">
+            SMART TOOLS
+          </span>
 
           {aiMenu.map((item) => {
-            const active = isActivePath(pathname, item.href);
+            const active = isActivePath(
+              pathname,
+              item.href
+            );
 
             return (
               <Link
@@ -142,7 +160,9 @@ export default function Sidebar() {
 
                 <span>{item.name}</span>
 
-                <span className="clubops-ai-badge">AI</span>
+                <span className="clubops-ai-badge">
+                  AI
+                </span>
               </Link>
             );
           })}
@@ -151,25 +171,37 @@ export default function Sidebar() {
 
       {/* Account */}
       <div className="clubops-sidebar-account">
-        <span className="clubops-nav-label">ACCOUNT</span>
+        <span className="clubops-nav-label">
+          ACCOUNT
+        </span>
 
         <Link
           href="/profile"
           className={`clubops-nav-item ${
-            isActivePath(pathname, "/profile") ? "active" : ""
+            isActivePath(pathname, "/profile")
+              ? "active"
+              : ""
           }`}
         >
-          <span className="clubops-nav-icon">◉</span>
+          <span className="clubops-nav-icon">
+            ◉
+          </span>
+
           <span>My Profile</span>
         </Link>
 
         <Link
           href="/settings"
           className={`clubops-nav-item ${
-            isActivePath(pathname, "/settings") ? "active" : ""
+            isActivePath(pathname, "/settings")
+              ? "active"
+              : ""
           }`}
         >
-          <span className="clubops-nav-icon">⚙</span>
+          <span className="clubops-nav-icon">
+            ⚙
+          </span>
+
           <span>Settings</span>
         </Link>
 
@@ -178,14 +210,19 @@ export default function Sidebar() {
           className="clubops-logout-button"
           onClick={handleLogout}
         >
-          <span className="clubops-nav-icon">↪</span>
+          <span className="clubops-nav-icon">
+            ↪
+          </span>
+
           <span>Logout</span>
         </button>
       </div>
 
       {/* User */}
       <div className="clubops-sidebar-footer">
-        <div className="clubops-footer-avatar">CA</div>
+        <div className="clubops-footer-avatar">
+          CA
+        </div>
 
         <div className="clubops-footer-user">
           <strong>Club Admin</strong>
@@ -195,4 +232,3 @@ export default function Sidebar() {
     </aside>
   );
 }
-```
