@@ -1,27 +1,31 @@
 "use client";
 
+import {
+  useEffect,
+} from "react";
+
 import Link from "next/link";
-import { useEffect } from "react";
+
 import {
   ArrowRight,
   ArrowUpRight,
+  BarChart3,
+  BrainCircuit,
   CalendarDays,
   CheckCircle2,
   ClipboardCheck,
-  Clock3,
   LayoutDashboard,
-  Sparkles,
-  Users,
-  BarChart3,
-  BrainCircuit,
-  Zap,
-  ShieldCheck,
-  MessageSquareText,
   ListTodo,
+  MessageSquareText,
+  ShieldCheck,
+  Sparkles,
   UserCheck,
+  Users,
+  Zap,
 } from "lucide-react";
 
 import Footer from "@/components/layout/Footer";
+
 import styles from "./home.module.css";
 
 const features = [
@@ -37,21 +41,21 @@ const features = [
     number: "02",
     title: "Member Management",
     description:
-      "Keep your members, coordinators, roles and responsibilities organized.",
+      "Keep your members, coordinators and responsibilities organized.",
   },
   {
     icon: ClipboardCheck,
     number: "03",
     title: "Attendance",
     description:
-      "Track participation and maintain reliable attendance records.",
+      "Track participation and maintain reliable event attendance records.",
   },
   {
     icon: ListTodo,
     number: "04",
     title: "Task Management",
     description:
-      "Assign work, monitor progress and make sure important tasks do not get missed.",
+      "Assign work, monitor progress and keep important deadlines visible.",
   },
   {
     icon: BrainCircuit,
@@ -65,7 +69,7 @@ const features = [
     number: "06",
     title: "Reports & Analytics",
     description:
-      "Turn club activity into useful insights with clear operational reporting.",
+      "Turn club activity into useful operational insights.",
   },
 ];
 
@@ -73,85 +77,134 @@ const steps = [
   {
     number: "01",
     title: "Create your workspace",
-    description:
-      "Set up your club and bring your team into one organized environment.",
+    text:
+      "Bring your club and team into one organized digital workspace.",
   },
   {
     number: "02",
     title: "Organize everything",
-    description:
-      "Manage members, events, attendance and tasks without switching between tools.",
+    text:
+      "Manage events, members, tasks, meetings and attendance in one place.",
   },
   {
     number: "03",
     title: "Let AI help",
-    description:
-      "Use intelligent assistance to reduce repetitive work and plan faster.",
+    text:
+      "Use intelligent assistance to reduce repetitive operational work.",
   },
   {
     number: "04",
     title: "Track progress",
-    description:
-      "See what is happening across your club and make better operational decisions.",
+    text:
+      "Understand what is happening across your club and act faster.",
   },
 ];
 
-function Reveal({ children, className = "" }) {
-  return (
-    <div className={`${styles.reveal} ${className}`}>
-      {children}
-    </div>
-  );
-}
-
 export default function HomePage() {
   useEffect(() => {
-    const elements = document.querySelectorAll(
-      `.${styles.reveal}, .${styles.revealLeft}, .${styles.revealRight}`
+    const elements =
+      document.querySelectorAll(
+        `.${styles.reveal}, .${styles.revealLeft}, .${styles.revealRight}`
+      );
+
+    const observer =
+      new IntersectionObserver(
+        (entries) => {
+          entries.forEach(
+            (entry) => {
+              if (
+                entry.isIntersecting
+              ) {
+                entry.target.classList.add(
+                  styles.visible
+                );
+              }
+            }
+          );
+        },
+        {
+          threshold: 0.08,
+        }
+      );
+
+    elements.forEach(
+      (element) =>
+        observer.observe(element)
     );
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add(styles.visible);
-          }
-        });
-      },
-      {
-        threshold: 0.1,
-        rootMargin: "0px 0px -40px 0px",
-      }
-    );
-
-    elements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
+    return () =>
+      observer.disconnect();
   }, []);
 
   return (
-    <main className={styles.page}>
-      {/* =========================================
-          BACKGROUND
-      ========================================= */}
-      <div className={styles.background}>
-        <div className={styles.grid} />
-        <div className={`${styles.orb} ${styles.orbOne}`} />
-        <div className={`${styles.orb} ${styles.orbTwo}`} />
-        <div className={`${styles.orb} ${styles.orbThree}`} />
+    <main
+      className={
+        styles.page
+      }
+    >
+      <div
+        className={
+          styles.background
+        }
+      >
+        <div
+          className={
+            styles.grid
+          }
+        />
+
+        <div
+          className={`${styles.orb} ${styles.orbOne}`}
+        />
+
+        <div
+          className={`${styles.orb} ${styles.orbTwo}`}
+        />
+
+        <div
+          className={`${styles.orb} ${styles.orbThree}`}
+        />
       </div>
 
-      {/* =========================================
-          NAVBAR
-      ========================================= */}
-      <nav className={styles.navbar}>
-        <Link href="/" className={styles.logo}>
-          <span className={styles.logoIcon}>C</span>
-          <span className={styles.logoText}>ClubOps AI</span>
+      <nav
+        className={
+          styles.navbar
+        }
+      >
+        <Link
+          href="/"
+          className={
+            styles.logo
+          }
+        >
+          <span
+            className={
+              styles.logoIcon
+            }
+          >
+            C
+          </span>
+
+          <span
+            className={
+              styles.logoText
+            }
+          >
+            ClubOps AI
+          </span>
         </Link>
 
-        <div className={styles.navLinks}>
-          <Link href="/" className={styles.active}>
+        <div
+          className={
+            styles.navLinks
+          }
+        >
+          <Link
+            href="/"
+            className={
+              styles.active
+            }
+          >
             Home
           </Link>
 
@@ -168,593 +221,689 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className={styles.navActions}>
-          <Link href="/login" className={styles.loginButton}>
+        <div
+          className={
+            styles.navActions
+          }
+        >
+          <Link
+            href="/login"
+            className={
+              styles.loginButton
+            }
+          >
             Login
           </Link>
 
-          <Link href="/register" className={styles.navCta}>
+          <Link
+            href="/register"
+            className={
+              styles.navCta
+            }
+          >
             Get Started
             <ArrowRight size={15} />
           </Link>
         </div>
       </nav>
 
-      {/* =========================================
-          HERO
-      ========================================= */}
-      <section className={styles.hero}>
-        <div className={styles.heroInner}>
-          <Reveal>
-            <div className={styles.heroBadge}>
-              <span className={styles.badgeDot} />
-              <Sparkles size={14} />
-              AI-POWERED CLUB MANAGEMENT
-            </div>
-          </Reveal>
+      <section
+        className={
+          styles.hero
+        }
+      >
+        <div
+          className={
+            styles.heroGlow
+          }
+        />
 
-          <Reveal className={styles.heroRevealDelay}>
-            <h1 className={styles.heroTitle}>
-              Your club.
-              <br />
-              <span>Organized intelligently.</span>
-            </h1>
-          </Reveal>
+        <div
+          className={
+            styles.heroContent
+          }
+        >
+          <div
+            className={`${styles.heroBadge} ${styles.reveal}`}
+          >
+            <Sparkles size={13} />
 
-          <Reveal className={styles.heroRevealDelayTwo}>
-            <p className={styles.heroDescription}>
-              ClubOps AI gives college clubs one powerful workspace to
-              manage members, events, attendance, tasks and operations —
-              with AI built into the experience.
-            </p>
-          </Reveal>
+            AI-POWERED CLUB OPERATIONS
 
-          <Reveal className={styles.heroRevealDelayThree}>
-            <div className={styles.heroActions}>
-              <Link href="/register" className={styles.primaryButton}>
-                Start Managing
-                <ArrowRight size={18} />
-              </Link>
+            <span>
+              ●
+            </span>
 
-              <Link href="/features" className={styles.secondaryButton}>
-                Explore Features
-                <ArrowUpRight size={17} />
-              </Link>
-            </div>
-          </Reveal>
-
-          <Reveal className={styles.heroRevealDelayFour}>
-            <div className={styles.trustRow}>
-              <div>
-                <CheckCircle2 size={15} />
-                Built for college clubs
-              </div>
-
-              <span />
-
-              <div>
-                <Zap size={15} />
-                AI-powered workflows
-              </div>
-
-              <span />
-
-              <div>
-                <ShieldCheck size={15} />
-                One organized workspace
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* =========================================
-          PRODUCT PREVIEW
-      ========================================= */}
-      <section className={styles.previewSection}>
-        <Reveal className={styles.previewReveal}>
-          <div className={styles.previewWindow}>
-            <div className={styles.windowTop}>
-              <div className={styles.windowDots}>
-                <span />
-                <span />
-                <span />
-              </div>
-
-              <div className={styles.windowAddress}>
-                clubops.ai / dashboard
-              </div>
-
-              <div className={styles.windowStatus}>
-                <span />
-                Live workspace
-              </div>
-            </div>
-
-            <div className={styles.dashboardPreview}>
-              <aside className={styles.previewSidebar}>
-                <div className={styles.previewBrand}>
-                  <span>C</span>
-                  ClubOps
-                </div>
-
-                <div className={styles.sidebarLabel}>
-                  WORKSPACE
-                </div>
-
-                <div className={styles.sideItemActive}>
-                  <LayoutDashboard size={15} />
-                  Dashboard
-                </div>
-
-                <div className={styles.sideItem}>
-                  <CalendarDays size={15} />
-                  Events
-                </div>
-
-                <div className={styles.sideItem}>
-                  <Users size={15} />
-                  Members
-                </div>
-
-                <div className={styles.sideItem}>
-                  <ClipboardCheck size={15} />
-                  Attendance
-                </div>
-
-                <div className={styles.sideItem}>
-                  <ListTodo size={15} />
-                  Tasks
-                </div>
-              </aside>
-
-              <div className={styles.previewMain}>
-                <div className={styles.previewHeader}>
-                  <div>
-                    <span>MONDAY, SEPTEMBER 20</span>
-                    <h3>Good morning, Club Admin.</h3>
-                  </div>
-
-                  <div className={styles.previewAvatar}>BA</div>
-                </div>
-
-                <div className={styles.previewStats}>
-                  <div className={styles.previewStat}>
-                    <div className={styles.statIcon}>
-                      <Users size={17} />
-                    </div>
-
-                    <div>
-                      <span>Total Members</span>
-                      <strong>248</strong>
-                    </div>
-
-                    <small>+12%</small>
-                  </div>
-
-                  <div className={styles.previewStat}>
-                    <div className={styles.statIcon}>
-                      <CalendarDays size={17} />
-                    </div>
-
-                    <div>
-                      <span>Upcoming Events</span>
-                      <strong>08</strong>
-                    </div>
-
-                    <small>Next 30 days</small>
-                  </div>
-
-                  <div className={styles.previewStat}>
-                    <div className={styles.statIcon}>
-                      <ClipboardCheck size={17} />
-                    </div>
-
-                    <div>
-                      <span>Attendance</span>
-                      <strong>91%</strong>
-                    </div>
-
-                    <small>+4.2%</small>
-                  </div>
-                </div>
-
-                <div className={styles.previewGrid}>
-                  <div className={styles.activityCard}>
-                    <div className={styles.cardHeading}>
-                      <div>
-                        <span>OVERVIEW</span>
-                        <h4>Club activity</h4>
-                      </div>
-
-                      <BarChart3 size={18} />
-                    </div>
-
-                    <div className={styles.chart}>
-                      <div className={styles.chartLine}>
-                        <span style={{ height: "38%" }} />
-                        <span style={{ height: "54%" }} />
-                        <span style={{ height: "43%" }} />
-                        <span style={{ height: "70%" }} />
-                        <span style={{ height: "58%" }} />
-                        <span style={{ height: "84%" }} />
-                        <span style={{ height: "74%" }} />
-                        <span style={{ height: "93%" }} />
-                      </div>
-
-                      <div className={styles.chartLabels}>
-                        <span>Mon</span>
-                        <span>Tue</span>
-                        <span>Wed</span>
-                        <span>Thu</span>
-                        <span>Fri</span>
-                        <span>Sat</span>
-                        <span>Sun</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.upcomingCard}>
-                    <div className={styles.cardHeading}>
-                      <div>
-                        <span>NEXT UP</span>
-                        <h4>Upcoming event</h4>
-                      </div>
-
-                      <ArrowUpRight size={17} />
-                    </div>
-
-                    <div className={styles.eventMock}>
-                      <div className={styles.eventDate}>
-                        <strong>24</strong>
-                        <span>SEP</span>
-                      </div>
-
-                      <div>
-                        <strong>TechFest 2026</strong>
-                        <p>
-                          <Clock3 size={13} />
-                          10:00 AM
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className={styles.eventProgress}>
-                      <span />
-                    </div>
-
-                    <small>72% preparation complete</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
-      {/* =========================================
-          STATS
-      ========================================= */}
-      <section className={styles.statsSection}>
-        <Reveal>
-          <div className={styles.statsGrid}>
-            <div>
-              <strong>01</strong>
-              <span>Unified workspace</span>
-            </div>
-
-            <div>
-              <strong>06+</strong>
-              <span>Core club workflows</span>
-            </div>
-
-            <div>
-              <strong>AI</strong>
-              <span>Intelligent assistance</span>
-            </div>
-
-            <div>
-              <strong>24/7</strong>
-              <span>Accessible anywhere</span>
-            </div>
-          </div>
-        </Reveal>
-      </section>
-
-      {/* =========================================
-          FEATURES
-      ========================================= */}
-      <section className={styles.featuresSection} id="features">
-        <div className={styles.sectionContainer}>
-          <Reveal>
-            <div className={styles.sectionIntro}>
-              <div>
-                <span className={styles.sectionEyebrow}>
-                  <span />
-                  THE CLUB OPERATING SYSTEM
-                </span>
-
-                <h2>
-                  Everything your club needs.
-                  <br />
-                  <span>Nothing you don't.</span>
-                </h2>
-              </div>
-
-              <p>
-                Replace scattered spreadsheets, chats and disconnected
-                tools with one organized environment designed around
-                how student clubs actually work.
-              </p>
-            </div>
-          </Reveal>
-
-          <div className={styles.featureGrid}>
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-
-              return (
-                <Reveal
-                  key={feature.title}
-                  className={styles[`featureDelay${index + 1}`]}
-                >
-                  <Link
-                    href="/features"
-                    className={styles.featureCard}
-                  >
-                    <div className={styles.featureTop}>
-                      <div className={styles.featureIcon}>
-                        <Icon size={22} />
-                      </div>
-
-                      <span>{feature.number}</span>
-                    </div>
-
-                    <div className={styles.featureContent}>
-                      <h3>{feature.title}</h3>
-
-                      <p>{feature.description}</p>
-                    </div>
-
-                    <div className={styles.featureArrow}>
-                      <ArrowUpRight size={18} />
-                    </div>
-                  </Link>
-                </Reveal>
-              );
-            })}
+            LIVE
           </div>
 
-          <Reveal>
-            <div className={styles.featureMore}>
-              <Link href="/features">
-                Explore all ClubOps AI features
-                <ArrowRight size={17} />
-              </Link>
+          <h1
+            className={`${styles.heroTitle} ${styles.reveal}`}
+          >
+            Your club.
+            <br />
+
+            <span>
+              One intelligent
+              workspace.
+            </span>
+          </h1>
+
+          <p
+            className={`${styles.heroDescription} ${styles.reveal}`}
+          >
+            ClubOps AI brings events,
+            volunteers, tasks,
+            attendance, meetings,
+            budgets and AI assistance
+            into one modern workspace
+            built for student clubs.
+          </p>
+
+          <div
+            className={`${styles.heroActions} ${styles.reveal}`}
+          >
+            <Link
+              href="/register"
+              className={
+                styles.primaryButton
+              }
+            >
+              Start managing
+
+              <ArrowRight size={16} />
+            </Link>
+
+            <Link
+              href="#features"
+              className={
+                styles.secondaryButton
+              }
+            >
+              Explore platform
+
+              <ArrowUpRight size={15} />
+            </Link>
+          </div>
+
+          <div
+            className={`${styles.heroTrust} ${styles.reveal}`}
+          >
+            <div>
+              <CheckCircle2 size={14} />
+              <span>
+                Real-time workspace
+              </span>
             </div>
-          </Reveal>
-        </div>
-      </section>
 
-      {/* =========================================
-          AI SECTION
-      ========================================= */}
-      <section className={styles.aiSection}>
-        <div className={styles.aiGlow} />
+            <div>
+              <CheckCircle2 size={14} />
+              <span>
+                Supabase powered
+              </span>
+            </div>
 
-        <div className={styles.sectionContainer}>
-          <div className={styles.aiGrid}>
-            <Reveal className={styles.aiRevealLeft}>
-              <div className={styles.aiVisual}>
-                <div className={styles.aiCircle}>
-                  <div className={styles.aiCore}>
-                    <BrainCircuit size={34} />
-                  </div>
-                </div>
-
-                <div className={styles.aiFloatingCardOne}>
-                  <Sparkles size={15} />
-                  AI planning
-                </div>
-
-                <div className={styles.aiFloatingCardTwo}>
-                  <CheckCircle2 size={15} />
-                  Task organized
-                </div>
-
-                <div className={styles.aiFloatingCardThree}>
-                  <MessageSquareText size={15} />
-                  Smart suggestions
-                </div>
-              </div>
-            </Reveal>
-
-            <Reveal className={styles.aiRevealRight}>
-              <div className={styles.aiContent}>
-                <span className={styles.sectionEyebrow}>
-                  <span />
-                  INTELLIGENCE BUILT IN
-                </span>
-
-                <h2>
-                  Don't just manage
-                  <br />
-                  your club.
-                  <span> Make it smarter.</span>
-                </h2>
-
-                <p>
-                  ClubOps AI is designed to help reduce repetitive
-                  operational work so your team can spend more time
-                  creating events, building communities and making
-                  an impact.
-                </p>
-
-                <div className={styles.aiPoints}>
-                  <div>
-                    <div>
-                      <Sparkles size={17} />
-                    </div>
-
-                    <span>
-                      <strong>Plan faster</strong>
-                      Get help turning ideas into structured plans.
-                    </span>
-                  </div>
-
-                  <div>
-                    <div>
-                      <Zap size={17} />
-                    </div>
-
-                    <span>
-                      <strong>Reduce repetitive work</strong>
-                      Spend less time on routine organization.
-                    </span>
-                  </div>
-
-                  <div>
-                    <div>
-                      <BrainCircuit size={17} />
-                    </div>
-
-                    <span>
-                      <strong>Work with context</strong>
-                      Keep club information organized around your workflow.
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </Reveal>
+            <div>
+              <CheckCircle2 size={14} />
+              <span>
+                AI assisted
+              </span>
+            </div>
           </div>
         </div>
-      </section>
 
-      {/* =========================================
-          HOW IT WORKS
-      ========================================= */}
-      <section className={styles.workflowSection}>
-        <div className={styles.sectionContainer}>
-          <Reveal>
-            <div className={styles.centerIntro}>
-              <span className={styles.sectionEyebrow}>
-                <span />
-                SIMPLE BY DESIGN
+        <div
+          className={`${styles.dashboardPreview} ${styles.reveal}`}
+        >
+          <div
+            className={
+              styles.previewTop
+            }
+          >
+            <div
+              className={
+                styles.previewBrand
+              }
+            >
+              <span>
+                C
               </span>
 
-              <h2>
-                From scattered work
-                <br />
-                to <span>one clear workflow.</span>
-              </h2>
-
-              <p>
-                ClubOps AI keeps the operational side of your club
-                simple, visible and organized.
-              </p>
+              ClubOps AI
             </div>
-          </Reveal>
 
-          <div className={styles.steps}>
-            {steps.map((step, index) => (
-              <Reveal
-                key={step.number}
-                className={styles[`stepDelay${index + 1}`]}
+            <div
+              className={
+                styles.previewDots
+              }
+            >
+              <i />
+              <i />
+              <i />
+            </div>
+          </div>
+
+          <div
+            className={
+              styles.previewBody
+            }
+          >
+            <aside
+              className={
+                styles.previewSidebar
+              }
+            >
+              <div
+                className={
+                  styles.previewSideLogo
+                }
               >
-                <div className={styles.step}>
-                  <div className={styles.stepNumber}>
-                    {step.number}
-                  </div>
+                C
+              </div>
 
-                  <div>
-                    <h3>{step.title}</h3>
-                    <p>{step.description}</p>
-                  </div>
+              <div
+                className={
+                  styles.previewSideActive
+                }
+              >
+                ◈
+              </div>
+
+              <div>
+                ✓
+              </div>
+
+              <div>
+                👥
+              </div>
+
+              <div>
+                ◷
+              </div>
+
+              <div>
+                ✦
+              </div>
+            </aside>
+
+            <div
+              className={
+                styles.previewMain
+              }
+            >
+              <div
+                className={
+                  styles.previewWelcome
+                }
+              >
+                <div>
+                  <small>
+                    LIVE WORKSPACE
+                  </small>
+
+                  <strong>
+                    Good morning,
+                    team 👋
+                  </strong>
                 </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* =========================================
-          ABOUT / WHY
-      ========================================= */}
-      <section className={styles.whySection} id="about">
-        <div className={styles.sectionContainer}>
-          <div className={styles.whyBox}>
-            <Reveal>
-              <div className={styles.whyHeading}>
-                <span className={styles.sectionEyebrow}>
-                  <span />
-                  BUILT FOR STUDENT TEAMS
+                <span>
+                  ADMIN
                 </span>
-
-                <h2>
-                  Your club should spend
-                  <br />
-                  more time <span>building.</span>
-                </h2>
               </div>
-            </Reveal>
 
-            <Reveal>
-              <div className={styles.whyContent}>
-                <p>
-                  Running a college club means coordinating people,
-                  deadlines, events, communication and countless small
-                  tasks. ClubOps AI brings those moving pieces together
-                  into one focused workspace.
-                </p>
+              <div
+                className={
+                  styles.previewStats
+                }
+              >
+                <div>
+                  <small>
+                    MEMBERS
+                  </small>
 
-                <Link href="/about" className={styles.textLink}>
-                  Learn more about ClubOps AI
-                  <ArrowRight size={16} />
-                </Link>
+                  <strong>
+                    128
+                  </strong>
+
+                  <span>
+                    +12 this month
+                  </span>
+                </div>
+
+                <div>
+                  <small>
+                    EVENTS
+                  </small>
+
+                  <strong>
+                    08
+                  </strong>
+
+                  <span>
+                    3 this week
+                  </span>
+                </div>
+
+                <div>
+                  <small>
+                    TASKS
+                  </small>
+
+                  <strong>
+                    76%
+                  </strong>
+
+                  <span>
+                    completion
+                  </span>
+                </div>
               </div>
-            </Reveal>
+
+              <div
+                className={
+                  styles.previewCards
+                }
+              >
+                <div>
+                  <small>
+                    UPCOMING EVENTS
+                  </small>
+
+                  <strong>
+                    Tech Fest 2026
+                  </strong>
+
+                  <span>
+                    24 Sep · Main Auditorium
+                  </span>
+
+                  <b>
+                    Upcoming
+                  </b>
+                </div>
+
+                <div>
+                  <small>
+                    AI ASSISTANT
+                  </small>
+
+                  <strong>
+                    Event plan generated
+                  </strong>
+
+                  <span>
+                    12 tasks · 4 risks · 8 volunteers
+                  </span>
+
+                  <b>
+                    ✦ Ready
+                  </b>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* =========================================
-          FINAL CTA
-      ========================================= */}
-      <section className={styles.finalCta}>
-        <div className={styles.finalCtaGlow} />
-
-        <Reveal>
-          <span className={styles.finalLabel}>
-            READY WHEN YOU ARE
+      <section
+        id="features"
+        className={
+          styles.featuresSection
+        }
+      >
+        <div
+          className={`${styles.sectionIntro} ${styles.reveal}`}
+        >
+          <span>
+            PLATFORM
           </span>
 
           <h2>
-            Run your club.
+            Everything your club
             <br />
-            <span>Smarter.</span>
+            needs to operate.
           </h2>
 
           <p>
-            Bring your club operations together with ClubOps AI.
+            Replace scattered spreadsheets,
+            chats and documents with one
+            structured operational system.
           </p>
+        </div>
 
-          <div className={styles.finalActions}>
-            <Link href="/register" className={styles.primaryButton}>
-              Create your workspace
-              <ArrowRight size={18} />
-            </Link>
+        <div
+          className={
+            styles.featureGrid
+          }
+        >
+          {features.map(
+            (feature) => {
+              const Icon =
+                feature.icon;
 
-            <Link href="/contact" className={styles.finalContact}>
-              Have a question?
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-        </Reveal>
+              return (
+                <article
+                  key={
+                    feature.number
+                  }
+                  className={`${styles.featureCard} ${styles.reveal}`}
+                >
+                  <div
+                    className={
+                      styles.featureTop
+                    }
+                  >
+                    <div
+                      className={
+                        styles.featureIcon
+                      }
+                    >
+                      <Icon
+                        size={19}
+                      />
+                    </div>
+
+                    <span>
+                      {
+                        feature.number
+                      }
+                    </span>
+                  </div>
+
+                  <h3>
+                    {
+                      feature.title
+                    }
+                  </h3>
+
+                  <p>
+                    {
+                      feature.description
+                    }
+                  </p>
+
+                  <ArrowUpRight
+                    size={17}
+                    className={
+                      styles.featureArrow
+                    }
+                  />
+                </article>
+              );
+            }
+          )}
+        </div>
       </section>
 
-      {/* =========================================
-          EXISTING FOOTER
-      ========================================= */}
+      <section
+        className={
+          styles.intelligence
+        }
+      >
+        <div
+          className={`${styles.intelligenceVisual} ${styles.revealLeft}`}
+        >
+          <div
+            className={
+              styles.aiCircle
+            }
+          >
+            <div
+              className={
+                styles.aiCore
+              }
+            >
+              <BrainCircuit
+                size={30}
+              />
+            </div>
+
+            <div
+              className={`${styles.aiOrbit} ${styles.aiOrbitOne}`}
+            />
+
+            <div
+              className={`${styles.aiOrbit} ${styles.aiOrbitTwo}`}
+            />
+
+            <div
+              className={`${styles.aiOrbit} ${styles.aiOrbitThree}`}
+            />
+          </div>
+
+          <div
+            className={
+              styles.aiFloating
+            }
+          >
+            <Zap size={14} />
+            <span>
+              AI planning
+            </span>
+          </div>
+        </div>
+
+        <div
+          className={`${styles.intelligenceContent} ${styles.revealRight}`}
+        >
+          <span>
+            INTELLIGENT OPERATIONS
+          </span>
+
+          <h2>
+            Stop spending
+            <br />
+            your time on
+            <em>
+              repetitive work.
+            </em>
+          </h2>
+
+          <p>
+            ClubOps AI is designed to
+            help student teams spend
+            less time coordinating
+            spreadsheets and more time
+            building meaningful
+            experiences.
+          </p>
+
+          <div
+            className={
+              styles.intelligenceList
+            }
+          >
+            <div>
+              <BrainCircuit
+                size={17}
+              />
+
+              <span>
+                Generate event plans
+                with AI
+              </span>
+            </div>
+
+            <div>
+              <ShieldCheck
+                size={17}
+              />
+
+              <span>
+                Identify operational
+                risks
+              </span>
+            </div>
+
+            <div>
+              <MessageSquareText
+                size={17}
+              />
+
+              <span>
+                Create communication
+                faster
+              </span>
+            </div>
+
+            <div>
+              <LayoutDashboard
+                size={17}
+              />
+
+              <span>
+                Understand your
+                workspace instantly
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className={
+          styles.workflow
+        }
+      >
+        <div
+          className={`${styles.sectionIntro} ${styles.reveal}`}
+        >
+          <span>
+            HOW IT WORKS
+          </span>
+
+          <h2>
+            From chaos to
+            <br />
+            organized operations.
+          </h2>
+        </div>
+
+        <div
+          className={
+            styles.steps
+          }
+        >
+          {steps.map(
+            (step, index) => (
+              <div
+                key={
+                  step.number
+                }
+                className={`${styles.step} ${styles.reveal}`}
+              >
+                <div
+                  className={
+                    styles.stepNumber
+                  }
+                >
+                  {
+                    step.number
+                  }
+                </div>
+
+                {index <
+                  steps.length -
+                    1 && (
+                  <div
+                    className={
+                      styles.stepLine
+                    }
+                  />
+                )}
+
+                <h3>
+                  {
+                    step.title
+                  }
+                </h3>
+
+                <p>
+                  {step.text}
+                </p>
+              </div>
+            )
+          )}
+        </div>
+      </section>
+
+      <section
+        className={
+          styles.statsSection
+        }
+      >
+        <div
+          className={`${styles.statFeature} ${styles.reveal}`}
+        >
+          <span>
+            <Users
+              size={17}
+            />
+          </span>
+
+          <strong>
+            One workspace
+          </strong>
+
+          <p>
+            Keep your club's people,
+            events and operations
+            connected.
+          </p>
+        </div>
+
+        <div
+          className={`${styles.statFeature} ${styles.reveal}`}
+        >
+          <span>
+            <Zap
+              size={17}
+            />
+          </span>
+
+          <strong>
+            Less coordination
+          </strong>
+
+          <p>
+            Reduce the repetitive
+            administrative work that
+            slows teams down.
+          </p>
+        </div>
+
+        <div
+          className={`${styles.statFeature} ${styles.reveal}`}
+        >
+          <span>
+            <UserCheck
+              size={17}
+            />
+          </span>
+
+          <strong>
+            Better visibility
+          </strong>
+
+          <p>
+            Know what is happening
+            across your club at a
+            glance.
+          </p>
+        </div>
+      </section>
+
+      {/*
+        IMPORTANT:
+        There is intentionally NO extra CTA/footer
+        section here.
+
+        Footer.jsx already contains the complete CTA
+        and footer. This prevents the duplicate-footer
+        appearance.
+      */}
+
       <Footer />
     </main>
   );
