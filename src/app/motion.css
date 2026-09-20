@@ -1,27 +1,6 @@
-css
 /* =========================================================
-   CLUBOPS AI — GLOBAL MOTION SYSTEM
-   Video-inspired animation system
-
-   Animation flow:
-   1. ClubOps AI logo appears
-   2. Brand name rises
-   3. Line expands
-   4. Intro moves away
-   5. Page enters
-   6. Sections reveal while scrolling
-   7. Images slowly scale
-   8. Cards/buttons/nav have subtle hover motion
-
-   IMPORTANT:
-   - Do NOT add another global animation library.
-   - Existing page-specific animations are protected
-     by ClubOpsMotion.jsx.
-========================================================= */
-
-
-/* =========================================================
-   0. GLOBAL MOTION VARIABLES
+   CLUBOPS AI
+   GLOBAL MOTION SYSTEM
 ========================================================= */
 
 :root {
@@ -35,37 +14,26 @@ css
 
 
 /* =========================================================
-   1. CLUBOPS AI INTRO / LOGO ANIMATION
+   INTRO SCREEN
 ========================================================= */
-
-/*
-   Full-screen opening animation.
-
-   Sequence:
-
-   Logo
-      ↓
-   ClubOps AI text
-      ↓
-   Line
-      ↓
-   Intro slides upward
-*/
 
 .co-intro {
   position: fixed;
+
   inset: 0;
 
   z-index: 99999;
 
-  pointer-events: none;
-
   display: grid;
+
   place-items: center;
 
-  background: var(--co-white);
+  background: #ffffff;
+
+  pointer-events: none;
 
   opacity: 1;
+
   visibility: visible;
 
   transform: translateY(0);
@@ -74,15 +42,13 @@ css
     coIntroOut
     900ms
     var(--co-motion-ease)
-    350ms
+    1200ms
     forwards;
 }
 
 
-/* Intro content container */
-
 .co-intro-center {
-  width: min(360px, 72vw);
+  width: min(360px, 80vw);
 
   text-align: center;
 
@@ -91,25 +57,28 @@ css
 
 
 /* =========================================================
-   2. CLUBOPS LOGO MARK
+   LOGO
 ========================================================= */
 
 .co-intro-mark {
   width: 68px;
+
   height: 68px;
 
-  margin: 0 auto 14px;
+  margin: 0 auto 16px;
 
   display: grid;
+
   place-items: center;
 
   border-radius: 18px;
 
   background: var(--co-indigo);
 
-  color: white;
+  color: #ffffff;
 
   font-size: 30px;
+
   font-weight: 800;
 
   letter-spacing: -0.04em;
@@ -117,7 +86,7 @@ css
   opacity: 0;
 
   transform:
-    translateY(22px)
+    translateY(24px)
     scale(0.88);
 
   animation:
@@ -129,18 +98,19 @@ css
 
   box-shadow:
     0 18px 55px
-    rgba(79, 70, 229, 0.20);
+    rgba(79, 70, 229, 0.18);
 }
 
 
 /* =========================================================
-   3. CLUBOPS AI NAME
+   BRAND NAME
 ========================================================= */
 
 .co-intro-name {
   color: var(--co-dark);
 
-  font-size: clamp(28px, 5vw, 48px);
+  font-size:
+    clamp(28px, 5vw, 48px);
 
   line-height: 1;
 
@@ -162,7 +132,7 @@ css
 
 
 /* =========================================================
-   4. INTRO LINE
+   INTRO LINE
 ========================================================= */
 
 .co-intro-line {
@@ -184,7 +154,7 @@ css
 
 
 /* =========================================================
-   5. LOGO KEYFRAME
+   LOGO ANIMATION
 ========================================================= */
 
 @keyframes coLogoIn {
@@ -193,7 +163,7 @@ css
     opacity: 0;
 
     transform:
-      translateY(22px)
+      translateY(24px)
       scale(0.88);
   }
 
@@ -209,7 +179,7 @@ css
 
 
 /* =========================================================
-   6. NAME KEYFRAME
+   NAME ANIMATION
 ========================================================= */
 
 @keyframes coNameIn {
@@ -232,7 +202,7 @@ css
 
 
 /* =========================================================
-   7. LINE KEYFRAME
+   LINE ANIMATION
 ========================================================= */
 
 @keyframes coLineIn {
@@ -249,7 +219,7 @@ css
 
 
 /* =========================================================
-   8. INTRO EXIT
+   INTRO EXIT
 ========================================================= */
 
 @keyframes coIntroOut {
@@ -285,11 +255,10 @@ css
 
 
 /* =========================================================
-   9. GLOBAL PAGE ENTRANCE
+   PAGE ENTRANCE
 ========================================================= */
 
 .co-page-shell {
-
   min-height: 100%;
 
   opacity: 0;
@@ -305,8 +274,6 @@ css
     forwards;
 }
 
-
-/* Page entrance */
 
 @keyframes coPageIn {
 
@@ -328,18 +295,8 @@ css
 
 
 /* =========================================================
-   10. SCROLL REVEAL
+   SCROLL REVEAL
 ========================================================= */
-
-/*
-   Elements initially stay slightly below their position.
-
-   When ClubOpsMotion.jsx detects them in the viewport,
-   it adds:
-
-   .co-visible
-*/
-
 
 .co-reveal {
 
@@ -361,8 +318,6 @@ css
 }
 
 
-/* Visible state */
-
 .co-reveal.co-visible {
 
   opacity: 1;
@@ -372,18 +327,8 @@ css
 }
 
 
-/*
-   Stop unnecessary GPU work after animation.
-*/
-
-.co-reveal:hover {
-
-  will-change: auto;
-}
-
-
 /* =========================================================
-   11. HERO TEXT
+   HERO TEXT
 ========================================================= */
 
 .co-hero-text {
@@ -402,12 +347,9 @@ css
 }
 
 
-/* Hero text animation */
-
 @keyframes coHeroTextIn {
 
   from {
-
     opacity: 0;
 
     transform:
@@ -415,7 +357,6 @@ css
   }
 
   to {
-
     opacity: 1;
 
     transform:
@@ -426,26 +367,13 @@ css
 
 
 /* =========================================================
-   12. IMAGE / VISUAL ANIMATION
+   IMAGE MOTION
 ========================================================= */
 
-/*
-   Images begin slightly zoomed.
-
-   When visible:
-
-   scale(1.035)
-        ↓
-   scale(1)
-*/
-
 .co-media {
-
   overflow: hidden;
 }
 
-
-/* Images */
 
 .co-media img,
 .co-media > img {
@@ -454,14 +382,14 @@ css
     scale(1.035);
 
   transition:
-    transform 1200ms var(--co-motion-ease);
+    transform
+    1200ms
+    var(--co-motion-ease);
 
   will-change:
     transform;
 }
 
-
-/* Image becomes normal size */
 
 .co-visible.co-media img,
 .co-visible.co-media > img {
@@ -471,7 +399,9 @@ css
 }
 
 
-/* Subtle image hover */
+/* =========================================================
+   IMAGE HOVER
+========================================================= */
 
 .co-media:hover img,
 .co-media:hover > img {
@@ -482,17 +412,10 @@ css
 
 
 /* =========================================================
-   13. SECTION LINE ACCENT
+   SECTION LINE
 ========================================================= */
 
-/*
-   Thin line inspired by the reference video.
-
-   The line grows when the section becomes visible.
-*/
-
 main section {
-
   position: relative;
 }
 
@@ -525,11 +448,11 @@ main section::after {
     left center;
 
   transition:
-    transform 900ms var(--co-motion-ease);
+    transform
+    900ms
+    var(--co-motion-ease);
 }
 
-
-/* Line appears */
 
 main section.co-visible::after {
 
@@ -539,13 +462,11 @@ main section.co-visible::after {
 
 
 /* =========================================================
-   14. NAVIGATION
+   NAVIGATION
 ========================================================= */
 
 nav a,
-.navbar a,
-.clubops-sidebar a,
-.clubops-topbar a {
+.navbar a {
 
   transition:
     color 220ms ease,
@@ -553,8 +474,6 @@ nav a,
     transform 220ms var(--co-fast-ease);
 }
 
-
-/* Navbar link movement */
 
 nav a:hover,
 .navbar a:hover {
@@ -564,11 +483,12 @@ nav a:hover,
 }
 
 
-/* Navigation underline */
+/* =========================================================
+   NAVIGATION UNDERLINE
+========================================================= */
 
 nav a::after,
-.navbar .navLinks a::after,
-.navbar .nav-links a::after {
+.navbar a::after {
 
   content: "";
 
@@ -584,35 +504,28 @@ nav a::after,
     currentColor;
 
   transition:
-    width 260ms var(--co-fast-ease);
+    width
+    260ms
+    var(--co-fast-ease);
 }
 
 
-/* Underline expands */
-
 nav a:hover::after,
-.navbar .navLinks a:hover::after,
-.navbar .nav-links a:hover::after {
+.navbar a:hover::after {
 
   width: 100%;
 }
 
 
 /* =========================================================
-   15. BUTTONS
+   BUTTONS
 ========================================================= */
-
-/*
-   Buttons intentionally use very small movement.
-
-   This prevents the "glitchy" feeling.
-*/
 
 button,
 a[class*="button"],
 a[class*="Button"],
-a[class*="Cta"],
-a[class*="cta"] {
+a[class*="cta"],
+a[class*="Cta"] {
 
   transition:
     transform 240ms var(--co-fast-ease),
@@ -622,26 +535,22 @@ a[class*="cta"] {
 }
 
 
-/* Button hover */
-
 button:hover,
 a[class*="button"]:hover,
 a[class*="Button"]:hover,
-a[class*="Cta"]:hover,
-a[class*="cta"]:hover {
+a[class*="cta"]:hover,
+a[class*="Cta"]:hover {
 
   transform:
     translateY(-2px);
 }
 
 
-/* Button click */
-
 button:active,
 a[class*="button"]:active,
 a[class*="Button"]:active,
-a[class*="Cta"]:active,
-a[class*="cta"]:active {
+a[class*="cta"]:active,
+a[class*="Cta"]:active {
 
   transform:
     translateY(0)
@@ -650,20 +559,8 @@ a[class*="cta"]:active {
 
 
 /* =========================================================
-   16. CARD ANIMATION
+   CARDS
 ========================================================= */
-
-/*
-   Used for:
-
-   Feature cards
-   Event cards
-   Statistics
-   Dashboard cards
-   Contact cards
-   Login cards
-   Settings cards
-*/
 
 .feature-card,
 .featureCard,
@@ -674,8 +571,8 @@ a[class*="cta"]:active {
 .stat-card,
 .statCard,
 
-.dashboard-panel,
 .dashboard-card,
+.dashboard-panel,
 
 .contact-detail-card,
 
@@ -686,16 +583,19 @@ a[class*="cta"]:active {
 .settings-card {
 
   transition:
-    transform 420ms var(--co-fast-ease),
-    box-shadow 420ms ease,
-    border-color 420ms ease;
+    transform
+    420ms
+    var(--co-fast-ease),
 
-  will-change:
-    transform;
+    box-shadow
+    420ms
+    ease,
+
+    border-color
+    420ms
+    ease;
 }
 
-
-/* Card hover */
 
 .feature-card:hover,
 .featureCard:hover,
@@ -706,10 +606,13 @@ a[class*="cta"]:active {
 .stat-card:hover,
 .statCard:hover,
 
-.dashboard-panel:hover,
 .dashboard-card:hover,
+.dashboard-panel:hover,
 
 .contact-detail-card:hover,
+
+.auth-card:hover,
+.login-card:hover,
 
 .profile-card:hover,
 .settings-card:hover {
@@ -720,7 +623,7 @@ a[class*="cta"]:active {
 
 
 /* =========================================================
-   17. FORM ANIMATION
+   FORM ELEMENTS
 ========================================================= */
 
 input,
@@ -734,8 +637,6 @@ select {
 }
 
 
-/* Form focus */
-
 input:focus,
 textarea:focus,
 select:focus {
@@ -746,7 +647,7 @@ select:focus {
 
 
 /* =========================================================
-   18. DASHBOARD SIDEBAR
+   DASHBOARD SIDEBAR
 ========================================================= */
 
 .clubops-sidebar,
@@ -759,7 +660,7 @@ select:focus {
 
 
 /* =========================================================
-   19. DASHBOARD TOPBAR
+   DASHBOARD TOPBAR
 ========================================================= */
 
 .clubops-topbar,
@@ -774,7 +675,7 @@ select:focus {
 
 
 /* =========================================================
-   20. DASHBOARD INTERACTIVE ELEMENTS
+   DASHBOARD INTERACTION
 ========================================================= */
 
 .clubops-notification,
@@ -793,8 +694,6 @@ select:focus {
 }
 
 
-/* Notification / avatar */
-
 .clubops-notification:hover,
 .notification-button:hover,
 
@@ -806,8 +705,6 @@ select:focus {
 }
 
 
-/* Sidebar links */
-
 .sidebar-link:hover {
 
   transform:
@@ -816,7 +713,7 @@ select:focus {
 
 
 /* =========================================================
-   21. FOOTER
+   FOOTER
 ========================================================= */
 
 footer a {
@@ -828,8 +725,6 @@ footer a {
 }
 
 
-/* Footer link hover */
-
 footer a:hover {
 
   transform:
@@ -838,13 +733,8 @@ footer a:hover {
 
 
 /* =========================================================
-   22. ACCESSIBILITY
+   REDUCED MOTION
 ========================================================= */
-
-/*
-   Users who have enabled reduced motion
-   should not receive large animations.
-*/
 
 @media (prefers-reduced-motion: reduce) {
 
@@ -866,15 +756,11 @@ footer a:hover {
   }
 
 
-  /* Remove intro */
-
   .co-intro {
 
     display: none;
   }
 
-
-  /* Make content immediately visible */
 
   .co-page-shell,
   .co-reveal,
@@ -887,8 +773,6 @@ footer a:hover {
   }
 
 
-  /* Show section lines */
-
   main section::after {
 
     transform:
@@ -899,13 +783,10 @@ footer a:hover {
 
 
 /* =========================================================
-   23. MOBILE
+   MOBILE
 ========================================================= */
 
 @media (max-width: 700px) {
-
-
-  /* Smaller intro logo */
 
   .co-intro-mark {
 
@@ -917,16 +798,12 @@ footer a:hover {
   }
 
 
-  /* Smaller intro title */
-
   .co-intro-name {
 
     font-size:
       32px;
   }
 
-
-  /* Smaller scroll movement */
 
   .co-reveal {
 
@@ -935,8 +812,6 @@ footer a:hover {
   }
 
 
-  /* Section line position */
-
   main section::after {
 
     left:
@@ -944,4 +819,3 @@ footer a:hover {
   }
 
 }
-
