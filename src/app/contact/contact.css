@@ -127,6 +127,28 @@
   animation-delay: -8s;
 }
 
+/* Shared ClubOps home theme */
+.contact-page {
+  --contact-bg: #f7f8fc;
+  --contact-surface: rgba(255, 255, 255, .78);
+  --contact-border: rgba(99, 91, 255, .14);
+  --contact-text: #111827;
+  --contact-muted: rgba(17, 24, 39, .62);
+  --contact-primary: #635bff;
+  background: radial-gradient(circle at 88% 0%, rgba(99, 91, 255, .14), transparent 30rem), var(--contact-bg);
+}
+.contact-page::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(120deg, rgba(255,255,255,.36), transparent 55%); }
+.contact-navbar { width: min(1180px, calc(100% - 10vw)); border-bottom-color: rgba(99, 91, 255, .14); }
+.contact-logo { color: #111827 !important; text-shadow: none; }
+.contact-logo span, .contact-logo strong { color: #111827 !important; }
+.contact-nav-button { color: #fff !important; background: linear-gradient(135deg, #635bff, #8b5cf6) !important; border-color: transparent; box-shadow: 0 10px 24px rgba(99, 91, 255, .24); }
+.contact-nav-links a { color: rgba(17, 24, 39, .62) !important; }
+.contact-nav-links a:hover, .contact-nav-links a.active { color: #635bff !important; }
+.contact-nav-links a:hover, .contact-nav-links a.active { color: #635bff; }
+.contact-glow-one { background: rgba(99, 91, 255, .13); }
+.contact-glow-two { background: rgba(139, 92, 246, .1); }
+.contact-glow-three { background: rgba(34, 211, 238, .06); }
+
 @keyframes contactFloat {
   0%,
   100% {

@@ -467,14 +467,39 @@
    ========================================= */
 
 .landingFooter {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2.5rem 6vw;
-  background: #0d0d0d;
+  gap: 1.5rem;
+  padding: 3.2rem 6vw;
+  background: linear-gradient(135deg, #111827 0%, #29215f 100%);
   color: #fff;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(99, 91, 255, .28);
+  overflow: hidden;
 }
+
+.landingFooter::before {
+  content: "";
+  position: absolute;
+  width: 28rem;
+  height: 28rem;
+  right: -8rem;
+  top: -16rem;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, .28);
+  filter: blur(20px);
+}
+
+.landingFooter::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.04), transparent);
+  pointer-events: none;
+}
+
+.landingFooter strong, .landingFooter span { position: relative; z-index: 1; }
 
 .landingFooter strong {
   font-size: 1.15rem;
