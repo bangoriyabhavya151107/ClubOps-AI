@@ -130,6 +130,28 @@
 }
 
 
+/* Shared ClubOps home theme */
+.about-page {
+  --about-bg: #f7f8fc;
+  --about-surface: rgba(255, 255, 255, .78);
+  --about-border: rgba(99, 91, 255, .14);
+  --about-text: #111827;
+  --about-muted: rgba(17, 24, 39, .62);
+  --about-primary: #635bff;
+  background: radial-gradient(circle at 88% 0%, rgba(99, 91, 255, .14), transparent 30rem), var(--about-bg);
+}
+.about-page::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(120deg, rgba(255,255,255,.36), transparent 55%); }
+.about-navbar { width: min(1180px, calc(100% - 10vw)); border-bottom-color: rgba(99, 91, 255, .14); }
+.about-logo { color: #111827 !important; text-shadow: none; }
+.about-logo span, .about-logo strong { color: #111827 !important; }
+.about-nav-button { color: #fff !important; background: linear-gradient(135deg, #635bff, #8b5cf6) !important; border-color: transparent; box-shadow: 0 10px 24px rgba(99, 91, 255, .24); }
+.about-nav-links a { color: rgba(17, 24, 39, .62) !important; }
+.about-nav-links a:hover, .about-nav-links a.active { color: #635bff !important; }
+.about-nav-links a:hover, .about-nav-links a.active { color: #635bff; }
+.about-glow-one { background: rgba(99, 91, 255, .13); }
+.about-glow-two { background: rgba(139, 92, 246, .1); }
+.about-glow-three { background: rgba(34, 211, 238, .06); }
+
 @keyframes aboutFloat {
   0%,
   100% {
