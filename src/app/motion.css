@@ -1,821 +1,511 @@
 /* =========================================================
-   CLUBOPS AI
-   GLOBAL MOTION SYSTEM
-========================================================= */
+   CLUBOPS AI — GLOBAL MOTION SYSTEM v2
+   ========================================================= */
 
 :root {
   --co-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --co-fast-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --co-bounce-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --co-indigo: #4f46e5;
-  --co-dark: #111827;
+  --co-indigo: #6366f1;
+  --co-violet: #8b5cf6;
+  --co-dark: #0f0f1a;
   --co-white: #ffffff;
 }
 
 
 /* =========================================================
    INTRO SCREEN
-========================================================= */
+   ========================================================= */
 
 .co-intro {
   position: fixed;
-
   inset: 0;
-
   z-index: 99999;
-
   display: grid;
-
   place-items: center;
-
-  background: #ffffff;
-
   pointer-events: none;
-
   opacity: 1;
-
   visibility: visible;
-
-  transform: translateY(0);
-
   animation:
-    coIntroOut
-    900ms
-    var(--co-motion-ease)
-    1200ms
-    forwards;
+    coIntroOut 900ms var(--co-motion-ease) 1400ms forwards;
 }
 
+.co-intro-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(99,102,241,0.3), transparent 40%),
+    radial-gradient(circle at 70% 70%, rgba(139,92,246,0.25), transparent 40%),
+    #050509;
+  animation: coBgPulse 2.1s ease forwards;
+}
+
+@keyframes coBgPulse {
+  0%   { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
 
 .co-intro-center {
-  width: min(360px, 80vw);
-
+  position: relative;
+  z-index: 1;
+  width: min(380px, 80vw);
   text-align: center;
-
-  overflow: hidden;
 }
 
 
 /* =========================================================
-   LOGO
-========================================================= */
+   INTRO LOGO
+   ========================================================= */
 
 .co-intro-mark {
-  width: 68px;
-
-  height: 68px;
-
-  margin: 0 auto 16px;
-
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 18px;
   display: grid;
-
   place-items: center;
-
-  border-radius: 18px;
-
-  background: var(--co-indigo);
-
-  color: #ffffff;
-
-  font-size: 30px;
-
-  font-weight: 800;
-
+  border-radius: 20px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  font-size: 32px;
+  font-weight: 900;
   letter-spacing: -0.04em;
-
   opacity: 0;
-
-  transform:
-    translateY(24px)
-    scale(0.88);
-
+  transform: translateY(28px) scale(0.85);
   animation:
-    coLogoIn
-    650ms
-    var(--co-motion-ease)
-    100ms
-    forwards;
-
+    coLogoIn 700ms var(--co-motion-ease) 100ms forwards;
   box-shadow:
-    0 18px 55px
-    rgba(79, 70, 229, 0.18);
+    0 20px 60px rgba(99,102,241,0.4),
+    0 0 0 1px rgba(255,255,255,0.08) inset;
 }
-
-
-/* =========================================================
-   BRAND NAME
-========================================================= */
 
 .co-intro-name {
-  color: var(--co-dark);
-
-  font-size:
-    clamp(28px, 5vw, 48px);
-
+  color: #fff;
+  font-size: clamp(28px, 5vw, 48px);
   line-height: 1;
-
-  font-weight: 700;
-
-  letter-spacing: -0.055em;
-
+  font-weight: 800;
+  letter-spacing: -0.05em;
   opacity: 0;
-
-  transform: translateY(28px);
-
+  transform: translateY(24px);
   animation:
-    coNameIn
-    700ms
-    var(--co-motion-ease)
-    220ms
-    forwards;
+    coNameIn 700ms var(--co-motion-ease) 250ms forwards;
 }
-
-
-/* =========================================================
-   INTRO LINE
-========================================================= */
 
 .co-intro-line {
   width: 0;
-
   height: 2px;
-
-  margin: 22px auto 0;
-
-  background: var(--co-indigo);
-
+  margin: 18px auto 0;
+  background: linear-gradient(90deg, transparent, #6366f1, transparent);
   animation:
-    coLineIn
-    600ms
-    var(--co-motion-ease)
-    430ms
-    forwards;
+    coLineIn 600ms var(--co-motion-ease) 500ms forwards;
+}
+
+.co-intro-tagline {
+  margin-top: 14px;
+  color: rgba(255,255,255,0.45);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  opacity: 0;
+  animation: coTaglineIn 500ms ease 700ms forwards;
+}
+
+@keyframes coTaglineIn {
+  to { opacity: 1; }
 }
 
 
 /* =========================================================
-   LOGO ANIMATION
-========================================================= */
+   KEYFRAMES
+   ========================================================= */
 
 @keyframes coLogoIn {
-
-  from {
-    opacity: 0;
-
-    transform:
-      translateY(24px)
-      scale(0.88);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      translateY(0)
-      scale(1);
-  }
-
+  from { opacity: 0; transform: translateY(28px) scale(0.85); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-
-
-/* =========================================================
-   NAME ANIMATION
-========================================================= */
 
 @keyframes coNameIn {
-
-  from {
-    opacity: 0;
-
-    transform:
-      translateY(28px);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      translateY(0);
-  }
-
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
-
-/* =========================================================
-   LINE ANIMATION
-========================================================= */
 
 @keyframes coLineIn {
-
-  from {
-    width: 0;
-  }
-
-  to {
-    width: 100%;
-  }
-
+  from { width: 0; }
+  to   { width: 120px; }
 }
-
-
-/* =========================================================
-   INTRO EXIT
-========================================================= */
 
 @keyframes coIntroOut {
-
-  0% {
-    opacity: 1;
-
-    visibility: visible;
-
-    transform:
-      translateY(0);
-  }
-
-  75% {
-    opacity: 1;
-
-    visibility: visible;
-
-    transform:
-      translateY(-100%);
-  }
-
-  100% {
-    opacity: 0;
-
-    visibility: hidden;
-
-    transform:
-      translateY(-100%);
-  }
-
+  0%   { opacity: 1; visibility: visible; transform: translateY(0); }
+  80%  { opacity: 1; visibility: visible; transform: translateY(-100%); }
+  100% { opacity: 0; visibility: hidden; transform: translateY(-100%); }
 }
 
 
 /* =========================================================
-   PAGE ENTRANCE
-========================================================= */
+   PAGE ENTRANCE (first load)
+   ========================================================= */
 
 .co-page-shell {
   min-height: 100%;
-
   opacity: 0;
-
-  transform:
-    translateY(12px);
-
+  transform: translateY(14px);
   animation:
-    coPageIn
-    700ms
-    var(--co-motion-ease)
-    650ms
-    forwards;
+    coPageIn 700ms var(--co-motion-ease) 700ms forwards;
 }
 
-
 @keyframes coPageIn {
-
-  from {
-    opacity: 0;
-
-    transform:
-      translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      translateY(0);
-  }
-
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 
 /* =========================================================
    SCROLL REVEAL
-========================================================= */
+   ========================================================= */
 
 .co-reveal {
-
   opacity: 0;
-
-  transform:
-    translateY(48px);
-
+  transform: translateY(40px);
   transition:
-    opacity 760ms var(--co-motion-ease),
-    transform 760ms var(--co-motion-ease);
-
-  transition-delay:
-    var(--co-delay, 0ms);
-
-  will-change:
-    opacity,
-    transform;
+    opacity 700ms var(--co-motion-ease),
+    transform 700ms var(--co-motion-ease);
+  transition-delay: var(--co-delay, 0ms);
+  will-change: opacity, transform;
 }
 
-
 .co-reveal.co-visible {
-
   opacity: 1;
-
-  transform:
-    translateY(0);
+  transform: translateY(0);
 }
 
 
 /* =========================================================
    HERO TEXT
-========================================================= */
+   ========================================================= */
 
 .co-hero-text {
-
   opacity: 0;
-
-  transform:
-    translateY(38px);
-
+  transform: translateY(36px);
   animation:
-    coHeroTextIn
-    850ms
-    var(--co-motion-ease)
-    850ms
-    forwards;
+    coHeroTextIn 850ms var(--co-motion-ease) 900ms forwards;
 }
 
-
 @keyframes coHeroTextIn {
-
-  from {
-    opacity: 0;
-
-    transform:
-      translateY(38px);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      translateY(0);
-  }
-
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 
 /* =========================================================
    IMAGE MOTION
-========================================================= */
+   ========================================================= */
 
-.co-media {
-  overflow: hidden;
-}
-
+.co-media { overflow: hidden; }
 
 .co-media img,
 .co-media > img {
-
-  transform:
-    scale(1.035);
-
-  transition:
-    transform
-    1200ms
-    var(--co-motion-ease);
-
-  will-change:
-    transform;
+  transform: scale(1.03);
+  transition: transform 1100ms var(--co-motion-ease);
+  will-change: transform;
 }
-
 
 .co-visible.co-media img,
 .co-visible.co-media > img {
-
-  transform:
-    scale(1);
+  transform: scale(1);
 }
-
-
-/* =========================================================
-   IMAGE HOVER
-========================================================= */
 
 .co-media:hover img,
 .co-media:hover > img {
-
-  transform:
-    scale(1.025);
-}
-
-
-/* =========================================================
-   SECTION LINE
-========================================================= */
-
-main section {
-  position: relative;
-}
-
-
-main section::after {
-
-  content: "";
-
-  position: absolute;
-
-  left:
-    clamp(20px, 6vw, 90px);
-
-  bottom: 0;
-
-  width:
-    min(110px, 18vw);
-
-  height: 1px;
-
-  background:
-    currentColor;
-
-  opacity: 0.08;
-
-  transform:
-    scaleX(0);
-
-  transform-origin:
-    left center;
-
-  transition:
-    transform
-    900ms
-    var(--co-motion-ease);
-}
-
-
-main section.co-visible::after {
-
-  transform:
-    scaleX(1);
+  transform: scale(1.02);
 }
 
 
 /* =========================================================
    NAVIGATION
-========================================================= */
+   ========================================================= */
 
 nav a,
 .navbar a {
-
   transition:
     color 220ms ease,
     opacity 220ms ease,
     transform 220ms var(--co-fast-ease);
 }
 
-
 nav a:hover,
 .navbar a:hover {
-
-  transform:
-    translateY(-1px);
+  transform: translateY(-1px);
 }
-
-
-/* =========================================================
-   NAVIGATION UNDERLINE
-========================================================= */
 
 nav a::after,
 .navbar a::after {
-
   content: "";
-
   display: block;
-
   width: 0;
-
   height: 1px;
-
-  margin-top: 4px;
-
-  background:
-    currentColor;
-
-  transition:
-    width
-    260ms
-    var(--co-fast-ease);
+  margin-top: 3px;
+  background: currentColor;
+  transition: width 250ms var(--co-fast-ease);
 }
-
 
 nav a:hover::after,
 .navbar a:hover::after {
-
   width: 100%;
 }
 
 
 /* =========================================================
    BUTTONS
-========================================================= */
+   ========================================================= */
 
 button,
 a[class*="button"],
 a[class*="Button"],
 a[class*="cta"],
-a[class*="Cta"] {
-
+a[class*="Cta"],
+a[class*="Btn"] {
   transition:
-    transform 240ms var(--co-fast-ease),
-    box-shadow 240ms ease,
-    background-color 240ms ease,
-    border-color 240ms ease;
+    transform 220ms var(--co-fast-ease),
+    box-shadow 220ms ease,
+    background-color 220ms ease,
+    border-color 220ms ease,
+    opacity 220ms ease;
 }
-
 
 button:hover,
 a[class*="button"]:hover,
 a[class*="Button"]:hover,
 a[class*="cta"]:hover,
-a[class*="Cta"]:hover {
-
-  transform:
-    translateY(-2px);
+a[class*="Cta"]:hover,
+a[class*="Btn"]:hover {
+  transform: translateY(-2px);
 }
-
 
 button:active,
 a[class*="button"]:active,
 a[class*="Button"]:active,
 a[class*="cta"]:active,
 a[class*="Cta"]:active {
-
-  transform:
-    translateY(0)
-    scale(0.985);
+  transform: translateY(0) scale(0.98);
 }
 
 
 /* =========================================================
    CARDS
-========================================================= */
+   ========================================================= */
 
-.feature-card,
-.featureCard,
-
-.event-card,
-.eventCard,
-
-.stat-card,
-.statCard,
-
-.dashboard-card,
-.dashboard-panel,
-
+[class*="featureCard"],
+[class*="feature-card"],
+[class*="eventCard"],
+[class*="event-card"],
+[class*="statCard"],
+[class*="stat-card"],
+[class*="dashboard-card"],
+[class*="dashboard-panel"],
 .contact-detail-card,
-
 .auth-card,
 .login-card,
-
 .profile-card,
-.settings-card {
-
+.settings-card,
+.clubops-stat,
+.clubops-panel {
   transition:
-    transform
-    420ms
-    var(--co-fast-ease),
-
-    box-shadow
-    420ms
-    ease,
-
-    border-color
-    420ms
-    ease;
+    transform 380ms var(--co-fast-ease),
+    box-shadow 380ms ease,
+    border-color 380ms ease;
 }
 
-
-.feature-card:hover,
-.featureCard:hover,
-
-.event-card:hover,
-.eventCard:hover,
-
-.stat-card:hover,
-.statCard:hover,
-
-.dashboard-card:hover,
-.dashboard-panel:hover,
-
-.contact-detail-card:hover,
-
-.auth-card:hover,
-.login-card:hover,
-
-.profile-card:hover,
-.settings-card:hover {
-
-  transform:
-    translateY(-6px);
+[class*="featureCard"]:hover,
+[class*="feature-card"]:hover,
+[class*="eventCard"]:hover,
+[class*="event-card"]:hover,
+[class*="statCard"]:hover,
+[class*="stat-card"]:hover,
+.clubops-stat:hover,
+.clubops-panel:hover {
+  transform: translateY(-5px);
 }
 
 
 /* =========================================================
    FORM ELEMENTS
-========================================================= */
+   ========================================================= */
 
 input,
 textarea,
 select {
-
   transition:
-    border-color 220ms ease,
-    box-shadow 220ms ease,
-    transform 220ms var(--co-fast-ease);
+    border-color 200ms ease,
+    box-shadow 200ms ease,
+    background-color 200ms ease;
 }
-
 
 input:focus,
 textarea:focus,
 select:focus {
-
-  transform:
-    translateY(-1px);
+  outline: none;
 }
 
 
 /* =========================================================
-   DASHBOARD SIDEBAR
-========================================================= */
+   SIDEBAR
+   ========================================================= */
 
 .clubops-sidebar,
 .dashboard-sidebar {
+  transition: width 280ms var(--co-fast-ease);
+}
 
+.clubops-nav-item {
   transition:
-    width 300ms var(--co-fast-ease),
-    transform 300ms var(--co-fast-ease);
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms var(--co-fast-ease),
+    padding-left 180ms ease;
+}
+
+.clubops-nav-item:hover {
+  transform: translateX(3px);
 }
 
 
 /* =========================================================
-   DASHBOARD TOPBAR
-========================================================= */
+   TOPBAR
+   ========================================================= */
 
 .clubops-topbar,
 .dashboard-header {
-
-  backdrop-filter:
-    blur(12px);
-
-  -webkit-backdrop-filter:
-    blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
 
 /* =========================================================
-   DASHBOARD INTERACTION
-========================================================= */
+   DASHBOARD AVATAR / NOTIFICATIONS
+   ========================================================= */
 
 .clubops-notification,
 .notification-button,
-
 .clubops-user-avatar,
-.avatar,
-
-.sidebar-link {
-
+.avatar {
   transition:
-    transform 220ms var(--co-fast-ease),
-    background-color 220ms ease,
-    color 220ms ease,
-    box-shadow 220ms ease;
+    transform 200ms var(--co-fast-ease),
+    background-color 200ms ease,
+    color 200ms ease,
+    box-shadow 200ms ease;
 }
-
 
 .clubops-notification:hover,
 .notification-button:hover,
-
 .clubops-user-avatar:hover,
 .avatar:hover {
-
-  transform:
-    translateY(-2px);
-}
-
-
-.sidebar-link:hover {
-
-  transform:
-    translateX(4px);
+  transform: translateY(-2px);
 }
 
 
 /* =========================================================
-   FOOTER
-========================================================= */
+   FOOTER LINKS
+   ========================================================= */
 
 footer a {
-
   transition:
-    transform 220ms var(--co-fast-ease),
-    color 220ms ease,
-    opacity 220ms ease;
+    transform 200ms var(--co-fast-ease),
+    color 200ms ease,
+    opacity 200ms ease;
+}
+
+footer a:hover {
+  transform: translateX(3px);
 }
 
 
-footer a:hover {
+/* =========================================================
+   SKELETON SCREENS
+   ========================================================= */
 
-  transform:
-    translateX(3px);
+@keyframes coSkeleton {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.clubops-skeleton,
+.co-skeleton {
+  background: linear-gradient(
+    90deg,
+    #e2e8f0 25%,
+    #f1f5f9 50%,
+    #e2e8f0 75%
+  );
+  background-size: 200% 100%;
+  animation: coSkeleton 1.5s ease infinite;
+  border-radius: 8px;
+}
+
+.co-skeleton-text {
+  height: 14px;
+  border-radius: 4px;
+}
+
+.co-skeleton-title {
+  height: 24px;
+  border-radius: 6px;
+  max-width: 220px;
+}
+
+.co-skeleton-card {
+  height: 90px;
+  border-radius: 14px;
+}
+
+
+/* =========================================================
+   SECTION DIVIDERS
+   ========================================================= */
+
+main section {
+  position: relative;
 }
 
 
 /* =========================================================
    REDUCED MOTION
-========================================================= */
+   ========================================================= */
 
 @media (prefers-reduced-motion: reduce) {
-
   *,
   *::before,
   *::after {
-
-    animation-duration:
-      1ms !important;
-
-    animation-iteration-count:
-      1 !important;
-
-    transition-duration:
-      1ms !important;
-
-    scroll-behavior:
-      auto !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
   }
 
-
-  .co-intro {
-
-    display: none;
-  }
-
+  .co-intro { display: none; }
 
   .co-page-shell,
   .co-reveal,
   .co-hero-text {
-
     opacity: 1 !important;
-
-    transform:
-      none !important;
+    transform: none !important;
   }
-
-
-  main section::after {
-
-    transform:
-      scaleX(1);
-  }
-
 }
 
 
 /* =========================================================
    MOBILE
-========================================================= */
+   ========================================================= */
 
 @media (max-width: 700px) {
-
   .co-intro-mark {
-
-    width: 58px;
-
-    height: 58px;
-
-    border-radius: 15px;
+    width: 60px;
+    height: 60px;
+    font-size: 26px;
   }
-
 
   .co-intro-name {
-
-    font-size:
-      32px;
+    font-size: 32px;
   }
-
-
-  .co-reveal {
-
-    transform:
-      translateY(28px);
-  }
-
-
-  main section::after {
-
-    left:
-      20px;
-  }
-
 }

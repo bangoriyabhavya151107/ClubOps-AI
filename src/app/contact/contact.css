@@ -9,33 +9,19 @@
 ========================================================= */
 
 .contact-page {
-  --contact-bg: #050507;
-  --contact-surface: rgba(255, 255, 255, 0.045);
-  --contact-border: rgba(255, 255, 255, 0.09);
-  --contact-text: #f8fafc;
-  --contact-muted: #94a3b8;
-  --contact-primary: #6366f1;
-  --contact-secondary: #8b5cf6;
-  --contact-cyan: #22d3ee;
+  --contact-bg: #f5f4ef;
+  --contact-surface: #ffffff;
+  --contact-border: rgba(0, 0, 0, 0.08);
+  --contact-text: #111111;
+  --contact-muted: rgba(17, 17, 17, 0.6);
+  --contact-primary: #111111;
+  --contact-secondary: #4f46e5;
+  --contact-cyan: #059669;
 
   position: relative;
   min-height: 100vh;
-
   overflow: hidden;
-
-  background:
-    radial-gradient(
-      circle at 20% 20%,
-      rgba(99, 102, 241, 0.13),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 80% 70%,
-      rgba(139, 92, 246, 0.10),
-      transparent 30%
-    ),
-    var(--contact-bg);
-
+  background: var(--contact-bg);
   color: var(--contact-text);
 
   font-family:

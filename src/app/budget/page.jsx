@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
-import { formatMoney, getWorkspace } from "@/lib/clubops";
+import { formatMoney, getWorkspace, normalizeRole } from "@/lib/clubops";
 
 export default function BudgetPage() {
   const [clubId, setClubId] = useState(null);
@@ -19,6 +20,7 @@ export default function BudgetPage() {
   });
 
   const [message, setMessage] = useState("");
+  const [role, setRole] = useState("ADMIN");
 
   useEffect(() => {
     load();
@@ -26,6 +28,8 @@ export default function BudgetPage() {
 
   async function load() {
     const workspace = await getWorkspace();
+    const userRole = normalizeRole(workspace?.role || workspace?.profile?.role || "VOLUNTEER");
+    setRole(userRole);
 
     setClubId(workspace.clubId);
 
@@ -124,6 +128,41 @@ export default function BudgetPage() {
   );
 
   const remaining = allocated - spent;
+
+  if (role !== "ADMIN") {
+    return (
+      <div className="clubops-dashboard">
+        <Sidebar />
+        <main className="clubops-main">
+          <Topbar />
+          <section className="clubops-content">
+            <div style={{
+              background: "#fff",
+              border: "1px solid rgba(0,0,0,0.08)",
+              borderRadius: "28px",
+              padding: "4rem 2rem",
+              textAlign: "center",
+              maxWidth: "600px",
+              margin: "4rem auto",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
+            }}>
+              <div style={{ fontSize: "2.8rem", marginBottom: "1rem" }}>🔒</div>
+              <span className="eyebrow">ACCESS RESTRICTED</span>
+              <h2 style={{ fontSize: "1.8rem", fontWeight: 800, margin: "0.5rem 0 1rem", color: "#111" }}>
+                Administrator Access Required
+              </h2>
+              <p style={{ color: "rgba(17,17,17,0.6)", lineHeight: 1.6, marginBottom: "2rem" }}>
+                Club financial budgets, allocations, and expenditures are restricted to Club Administrators.
+              </p>
+              <Link href="/dashboard" className="clubops-primary-button" style={{ display: "inline-block", textDecoration: "none" }}>
+                Return to Dashboard
+              </Link>
+            </div>
+          </section>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="clubops-dashboard">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
@@ -9,6 +10,7 @@ import {
   formatDate,
   formatTime,
   getWorkspace,
+  normalizeRole,
 } from "@/lib/clubops";
 
 import styles from "./ManagementPage.module.css";
@@ -97,9 +99,11 @@ const CONFIG = {
     ],
 
     columns: [
-      ["name", "Event"],
+      ["name", "Event Name"],
+      ["description", "Description"],
       ["event_date", "Date"],
-      ["start_time", "Time"],
+      ["start_time", "Start Time"],
+      ["end_time", "End Time"],
       ["location", "Location"],
       ["status", "Status"],
     ],
@@ -129,6 +133,7 @@ const CONFIG = {
           "Low",
           "Medium",
           "High",
+          "Urgent",
         ],
       ],
       [
@@ -152,11 +157,12 @@ const CONFIG = {
     ],
 
     columns: [
-      ["title", "Task"],
+      ["title", "Task Title"],
+      ["description", "Description"],
       ["priority", "Priority"],
       ["status", "Status"],
       ["due_date", "Deadline"],
-      ["assigned_name", "Assigned"],
+      ["assigned_name", "Assigned Volunteer"],
     ],
   },
 
@@ -174,7 +180,7 @@ const CONFIG = {
 
     fields: [
       ["title", "Meeting title", "text", true],
-      ["description", "Description", "textarea", false],
+      ["description", "Description / Agenda", "textarea", false],
       ["meeting_date", "Date", "date", true],
       ["start_time", "Start time", "time", false],
       ["end_time", "End time", "time", false],
@@ -195,9 +201,11 @@ const CONFIG = {
     ],
 
     columns: [
-      ["title", "Meeting"],
+      ["title", "Meeting Title"],
+      ["description", "Agenda / Notes"],
       ["meeting_date", "Date"],
-      ["start_time", "Time"],
+      ["start_time", "Start Time"],
+      ["end_time", "End Time"],
       ["location", "Location"],
       ["status", "Status"],
     ],
@@ -218,17 +226,19 @@ const CONFIG = {
     fields: [
       ["title", "Document title", "text", true],
       ["description", "Description", "textarea", false],
-      ["file_url", "File URL", "url", false],
+      ["file_url", "File URL / Resource link", "url", false],
       ["file_name", "File name", "text", false],
       ["file_type", "File type", "text", false],
-      ["file_size", "File size", "number", false],
+      ["file_size", "File size (KB)", "number", false],
     ],
 
     columns: [
-      ["title", "Document"],
+      ["title", "Document Title"],
+      ["description", "Description"],
       ["file_type", "Type"],
-      ["file_name", "File"],
-      ["created_at", "Created"],
+      ["file_name", "File Name"],
+      ["file_url", "File Link"],
+      ["created_at", "Uploaded Date"],
     ],
   },
 
@@ -274,9 +284,10 @@ const CONFIG = {
 
     columns: [
       ["title", "Title"],
+      ["content", "Message"],
       ["priority", "Priority"],
       ["status", "Status"],
-      ["created_at", "Created"],
+      ["created_at", "Date Published"],
     ],
   },
 
@@ -329,9 +340,9 @@ const CONFIG = {
     ],
 
     columns: [
-      ["member_name", "Member"],
-      ["event_name", "Event"],
-      ["attendance_date", "Date"],
+      ["member_name", "Member Name"],
+      ["event_name", "Event Name"],
+      ["attendance_date", "Attendance Date"],
       ["status", "Status"],
     ],
   },
@@ -386,8 +397,21 @@ export default function ManagementPage({
   const [message, setMessage] =
     useState("");
 
+  const [aiTopic, setAiTopic] =
+    useState("");
+
+  const [aiGenerating, setAiGenerating] =
+    useState(false);
+
   useEffect(() => {
     setForm(emptyForm(config));
+
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("new") === "1" || params.get("create") === "1") {
+        setShowForm(true);
+      }
+    }
 
     load();
   }, [resource]);
@@ -440,14 +464,17 @@ export default function ManagementPage({
           clubId
         );
       } else {
-        const { data, error } =
-          await supabase
-            .from(config.table)
-            .select("*")
-            .eq("club_id", clubId)
-            .order("created_at", {
-              ascending: false,
-            });
+        let query = supabase.from(config.table).select("*");
+
+        if (resource === "members") {
+          query = query.or(`club_id.eq.${clubId},club_id.is.null`);
+        } else {
+          query = query.eq("club_id", clubId);
+        }
+
+        const { data, error } = await query.order("created_at", {
+          ascending: false,
+        });
 
         if (error) {
           throw error;
@@ -456,28 +483,15 @@ export default function ManagementPage({
         let rows = data || [];
 
         if (resource === "tasks") {
-          rows =
-            await attachTaskNames(
-              supabase,
-              rows
-            );
-
-          await loadMembers(
-            supabase,
-            clubId
-          );
+          rows = await attachTaskNames(supabase, rows);
+          await loadMembers(supabase, clubId);
         }
 
         setRecords(rows);
       }
 
-      if (
-        resource === "events"
-      ) {
-        await loadMembers(
-          supabase,
-          clubId
-        );
+      if (resource === "events") {
+        await loadMembers(supabase, clubId);
       }
     } catch (error) {
       console.error(error);
@@ -491,19 +505,12 @@ export default function ManagementPage({
     }
   }
 
-  async function loadMembers(
-    supabase,
-    clubId
-  ) {
-    const { data, error } =
-      await supabase
-        .from("members")
-        .select(
-          "id,name,email,role,status,user_id"
-        )
-        .eq("club_id", clubId)
-        .eq("status", "Active")
-        .order("name");
+  async function loadMembers(supabase, clubId) {
+    const { data, error } = await supabase
+      .from("members")
+      .select("id,name,email,role,status,user_id")
+      .or(`club_id.eq.${clubId},club_id.is.null`)
+      .order("name");
 
     if (error) {
       throw error;
@@ -626,76 +633,187 @@ export default function ManagementPage({
     );
   }
 
-  async function getClubMemberIds(
-    supabase,
-    clubId
-  ) {
-    const { data, error } =
-      await supabase
-        .from("members")
-        .select("id")
-        .eq("club_id", clubId);
+  async function getClubMemberIds(supabase, clubId) {
+    const { data, error } = await supabase
+      .from("members")
+      .select("id")
+      .or(`club_id.eq.${clubId},club_id.is.null`);
 
     if (error) {
       throw error;
     }
 
-    return (data || [])
-      .map((item) => item.id)
-      .filter(Boolean);
+    return (data || []).map((item) => item.id).filter(Boolean);
   }
 
-  async function attachTaskNames(
-    supabase,
-    rows
-  ) {
-    const ids = rows
-      .map(
-        (row) =>
-          row.assigned_to
-      )
-      .filter(Boolean);
+  async function attachTaskNames(supabase, rows) {
+    const ids = rows.map((row) => row.assigned_to).filter(Boolean);
 
     if (!ids.length) {
-      return rows.map(
-        (row) => ({
-          ...row,
-          assigned_name:
-            "Unassigned",
-        })
-      );
+      return rows.map((row) => ({
+        ...row,
+        assigned_name: "Unassigned",
+      }));
     }
 
-    const { data } =
-      await supabase
-        .from("members")
-        .select(
-          "user_id,name"
-        )
-        .in(
-          "user_id",
-          ids
-        );
+    const { data: memberData } = await supabase
+      .from("members")
+      .select("id,user_id,name");
 
-    const map = new Map(
-      (data || []).map(
-        (item) => [
-          item.user_id,
-          item.name,
-        ]
-      )
-    );
+    const { data: profileData } = await supabase
+      .from("profiles")
+      .select("id,full_name");
 
-    return rows.map(
-      (row) => ({
-        ...row,
-        assigned_name:
-          map.get(
-            row.assigned_to
-          ) ||
-          "Unassigned",
-      })
-    );
+    const map = new Map();
+    (memberData || []).forEach((item) => {
+      if (item.user_id && item.name) map.set(item.user_id, item.name);
+      if (item.id && item.name) map.set(item.id, item.name);
+    });
+    (profileData || []).forEach((item) => {
+      if (item.id && item.full_name && !map.has(item.id)) {
+        map.set(item.id, item.full_name);
+      }
+    });
+
+    return rows.map((row) => ({
+      ...row,
+      assigned_name: map.get(row.assigned_to) || "Unassigned",
+    }));
+  }
+
+  const role = normalizeRole(
+    workspace?.role ||
+    workspace?.profile?.role ||
+    "VOLUNTEER"
+  );
+
+  // RBAC Matrix:
+  // All active club members (Admin, Coordinator, Volunteer) can create & participate in core club activities:
+  // Events, Tasks, Documents, Announcements, Meetings, and Attendance.
+  // Sensitive modules (Members, Budget, Reports) require Coordinator/Admin leadership.
+  // Deleting records is restricted to Admins.
+  const canEdit =
+    role === "ADMIN" ||
+    role === "COORDINATOR" ||
+    (resource !== "members" && resource !== "budget" && resource !== "reports");
+
+  const isRestrictedForVolunteer =
+    role === "VOLUNTEER" &&
+    (resource === "members" || resource === "budget" || resource === "reports");
+
+  // If coordinator is adding members, remove "Admin" from role options
+  const displayFields = useMemo(() => {
+    if (resource === "members" && role === "COORDINATOR") {
+      return config.fields.map((field) => {
+        if (field[0] === "role" && Array.isArray(field[4])) {
+          return [
+            field[0],
+            field[1],
+            field[2],
+            field[3],
+            field[4].filter((opt) => opt !== "Admin"),
+          ];
+        }
+        return field;
+      });
+    }
+    return config.fields;
+  }, [config, resource, role]);
+
+  async function handleAiGenerateEvent() {
+    if (!aiTopic.trim()) return;
+    setAiGenerating(true);
+    setMessage("");
+
+    try {
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: `Generate realistic event details for a college club event about: "${aiTopic.trim()}".
+Return a JSON object with these keys:
+"name": concise title (max 50 chars)
+"description": engaging 2-sentence description
+"start_time": HH:MM (e.g. "10:00")
+"end_time": HH:MM (e.g. "16:00")
+"location": suitable campus venue (e.g. "Main Auditorium" or "Computer Center Lab 3")
+
+Respond ONLY with valid JSON. No markdown fences.`,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "AI generation failed.");
+
+      let raw = (data.text || "").trim();
+      if (raw.startsWith("```")) {
+        raw = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
+      }
+
+      const parsed = JSON.parse(raw);
+      setForm((cur) => ({
+        ...cur,
+        name: parsed.name || cur.name,
+        description: parsed.description || cur.description,
+        start_time: parsed.start_time || "10:00",
+        end_time: parsed.end_time || "16:00",
+        location: parsed.location || "Campus Auditorium",
+        event_date: cur.event_date || new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+      }));
+
+      setMessage("✨ Event details generated by ClubOps AI! Review and save below.");
+    } catch (err) {
+      console.error("AI Event error:", err);
+      setMessage("Could not generate event with AI. You can enter details manually.");
+    } finally {
+      setAiGenerating(false);
+    }
+  }
+
+  async function handleAiGenerateTask() {
+    if (!aiTopic.trim()) return;
+    setAiGenerating(true);
+    setMessage("");
+
+    try {
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prompt: `Generate realistic task details for a college club task about: "${aiTopic.trim()}".
+Return a JSON object with these keys:
+"title": concise actionable title (max 50 chars)
+"description": clear 2-sentence instruction for volunteers
+"priority": "High" or "Medium" or "Low"
+
+Respond ONLY with valid JSON. No markdown fences.`,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "AI generation failed.");
+
+      let raw = (data.text || "").trim();
+      if (raw.startsWith("```")) {
+        raw = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "").trim();
+      }
+
+      const parsed = JSON.parse(raw);
+      setForm((cur) => ({
+        ...cur,
+        title: parsed.title || cur.title,
+        description: parsed.description || cur.description,
+        priority: parsed.priority || "Medium",
+        due_date: cur.due_date || new Date(Date.now() + 3 * 86400000).toISOString().slice(0, 10),
+      }));
+
+      setMessage("✨ Task details generated by ClubOps AI! Review and save below.");
+    } catch (err) {
+      console.error("AI Task error:", err);
+      setMessage("Could not generate task with AI. You can enter details manually.");
+    } finally {
+      setAiGenerating(false);
+    }
   }
 
   const filtered = useMemo(() => {
@@ -737,6 +855,16 @@ export default function ManagementPage({
 
   async function save(event) {
     event.preventDefault();
+
+    if (!canEdit) {
+      setMessage("You don't have permission to create or edit records.");
+      return;
+    }
+
+    if (resource === "members" && role === "COORDINATOR" && form.role === "Admin") {
+      setMessage("Coordinators cannot assign Administrator roles.");
+      return;
+    }
 
     if (!workspace?.clubId) {
       setMessage(
@@ -831,31 +959,28 @@ export default function ManagementPage({
         };
       }
 
-      if (
-        resource === "tasks"
-      ) {
+      if (resource === "tasks") {
+        let assignedUser = payload.assigned_to || null;
+        if (assignedUser) {
+          const matchedMember = members.find(
+            (m) => m.id === assignedUser || m.user_id === assignedUser
+          );
+          if (matchedMember?.user_id) {
+            assignedUser = matchedMember.user_id;
+          } else if (matchedMember) {
+            assignedUser = workspace.user.id;
+          }
+        }
+
         payload = {
-          title:
-            payload.title,
-          description:
-            payload.description ||
-            null,
-          priority:
-            payload.priority ||
-            "Medium",
-          status:
-            payload.status ||
-            "Pending",
-          due_date:
-            payload.due_date ||
-            null,
-          assigned_to:
-            payload.assigned_to ||
-            null,
-          club_id:
-            workspace.clubId,
-          created_by:
-            workspace.user.id,
+          title: payload.title,
+          description: payload.description || null,
+          priority: payload.priority || "Medium",
+          status: payload.status || "Pending",
+          due_date: payload.due_date || null,
+          assigned_to: assignedUser,
+          club_id: workspace.clubId,
+          created_by: workspace.user.id,
         };
       }
 
@@ -1007,6 +1132,11 @@ export default function ManagementPage({
       return;
     }
 
+    if (role !== "ADMIN") {
+      setMessage("Only Administrators have permission to delete records.");
+      return;
+    }
+
     const confirmed =
       window.confirm(
         `Delete this ${config.singular.toLowerCase()}?`
@@ -1108,6 +1238,41 @@ export default function ManagementPage({
     );
   }
 
+  if (isRestrictedForVolunteer) {
+    return (
+      <div className="clubops-dashboard">
+        <Sidebar />
+        <main className="clubops-main">
+          <Topbar />
+          <section className="clubops-content">
+            <div style={{
+              background: "#fff",
+              border: "1px solid rgba(0,0,0,0.08)",
+              borderRadius: "28px",
+              padding: "4rem 2rem",
+              textAlign: "center",
+              maxWidth: "600px",
+              margin: "4rem auto",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
+            }}>
+              <div style={{ fontSize: "2.8rem", marginBottom: "1rem" }}>🔒</div>
+              <span className="eyebrow">ACCESS RESTRICTED</span>
+              <h2 style={{ fontSize: "1.8rem", fontWeight: 800, margin: "0.5rem 0 1rem", color: "#111" }}>
+                Leadership Access Required
+              </h2>
+              <p style={{ color: "rgba(17,17,17,0.6)", lineHeight: 1.6, marginBottom: "2rem" }}>
+                As a Volunteer, you have full access to Events, Attendance, Tasks, Meetings, Documents, Announcements, and the AI Assistant. Access to {config.title} is restricted to Coordinators and Administrators.
+              </p>
+              <Link href="/dashboard" className="clubops-primary-button" style={{ display: "inline-block", textDecoration: "none" }}>
+                Return to Dashboard
+              </Link>
+            </div>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="clubops-dashboard">
       <Sidebar />
@@ -1131,6 +1296,7 @@ export default function ManagementPage({
               </p>
             </div>
 
+            {canEdit && (
             <button
               type="button"
               className="clubops-primary-button"
@@ -1150,6 +1316,7 @@ export default function ManagementPage({
                 ? "Close"
                 : `+ Add ${config.singular}`}
             </button>
+            )}
           </div>
 
           {message && (
@@ -1197,13 +1364,141 @@ export default function ManagementPage({
                 </button>
               </div>
 
+              {/* AI Auto-Fill Helper for Events */}
+              {resource === "events" && (
+                <div style={{
+                  background: "rgba(0,0,0,0.03)",
+                  border: "1px dashed rgba(0,0,0,0.18)",
+                  borderRadius: "18px",
+                  padding: "1.2rem 1.4rem",
+                  marginBottom: "1.5rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.8rem"
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <span style={{ fontSize: "1.1rem" }}>✨</span>
+                    <strong style={{ fontSize: "0.9rem", color: "#111" }}>Plan with ClubOps AI Copilot</strong>
+                    <span style={{ fontSize: "0.78rem", color: "rgba(17,17,17,0.5)" }}>
+                      Type a topic to automatically generate name, description, venue & times
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", gap: "0.8rem" }}>
+                    <input
+                      type="text"
+                      value={aiTopic}
+                      onChange={(e) => setAiTopic(e.target.value)}
+                      placeholder='e.g. "Annual Robotics Competition & Hackathon"'
+                      style={{
+                        flex: 1,
+                        padding: "0.65rem 1rem",
+                        borderRadius: "12px",
+                        border: "1px solid rgba(0,0,0,0.15)",
+                        background: "#fff",
+                        fontSize: "0.88rem",
+                        color: "#111"
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAiGenerateEvent();
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAiGenerateEvent}
+                      disabled={aiGenerating || !aiTopic.trim()}
+                      style={{
+                        padding: "0.65rem 1.3rem",
+                        borderRadius: "999px",
+                        border: 0,
+                        background: "#111",
+                        color: "#fff",
+                        fontSize: "0.85rem",
+                        fontWeight: 750,
+                        cursor: aiGenerating || !aiTopic.trim() ? "not-allowed" : "pointer",
+                        opacity: aiGenerating || !aiTopic.trim() ? 0.6 : 1,
+                        whiteSpace: "nowrap"
+                      }}
+                    >
+                      {aiGenerating ? "Generating..." : "✨ Auto-Fill with AI"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* AI Auto-Fill Helper for Tasks */}
+              {resource === "tasks" && (
+                <div style={{
+                  background: "rgba(0,0,0,0.03)",
+                  border: "1px dashed rgba(0,0,0,0.18)",
+                  borderRadius: "18px",
+                  padding: "1.2rem 1.4rem",
+                  marginBottom: "1.5rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.8rem"
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <span style={{ fontSize: "1.1rem" }}>✨</span>
+                    <strong style={{ fontSize: "0.9rem", color: "#111" }}>Plan Task with ClubOps AI</strong>
+                    <span style={{ fontSize: "0.78rem", color: "rgba(17,17,17,0.5)" }}>
+                      Type a task goal to generate title, instructions & priority
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", gap: "0.8rem" }}>
+                    <input
+                      type="text"
+                      value={aiTopic}
+                      onChange={(e) => setAiTopic(e.target.value)}
+                      placeholder='e.g. "Coordinate audio visual setup in auditorium"'
+                      style={{
+                        flex: 1,
+                        padding: "0.65rem 1rem",
+                        borderRadius: "12px",
+                        border: "1px solid rgba(0,0,0,0.15)",
+                        background: "#fff",
+                        fontSize: "0.88rem",
+                        color: "#111"
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleAiGenerateTask();
+                        }
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAiGenerateTask}
+                      disabled={aiGenerating || !aiTopic.trim()}
+                      style={{
+                        padding: "0.65rem 1.3rem",
+                        borderRadius: "999px",
+                        border: 0,
+                        background: "#111",
+                        color: "#fff",
+                        fontSize: "0.85rem",
+                        fontWeight: 750,
+                        cursor: aiGenerating || !aiTopic.trim() ? "not-allowed" : "pointer",
+                        opacity: aiGenerating || !aiTopic.trim() ? 0.6 : 1,
+                        whiteSpace: "nowrap"
+                      }}
+                    >
+                      {aiGenerating ? "Generating..." : "✨ Auto-Fill with AI"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <form onSubmit={save}>
                 <div
                   className={
                     styles.formGrid
                   }
                 >
-                  {config.fields.map(
+                  {displayFields.map(
                     (field) => {
                       const [
                         name,
@@ -1259,35 +1554,28 @@ export default function ManagementPage({
                                 Select volunteer
                               </option>
 
-                              {members
-                                .filter(
-                                  (
-                                    person
-                                  ) =>
-                                    person.user_id
+                              {members.map(
+                                (
+                                  person
+                                ) => (
+                                  <option
+                                    key={
+                                      person.id || person.user_id
+                                    }
+                                    value={
+                                      person.user_id || person.id
+                                    }
+                                  >
+                                    {
+                                      person.name
+                                    }{" "}
+                                    ·{" "}
+                                    {
+                                      person.role
+                                    }
+                                  </option>
                                 )
-                                .map(
-                                  (
-                                    person
-                                  ) => (
-                                    <option
-                                      key={
-                                        person.user_id
-                                      }
-                                      value={
-                                        person.user_id
-                                      }
-                                    >
-                                      {
-                                        person.name
-                                      }{" "}
-                                      ·{" "}
-                                      {
-                                        person.role
-                                      }
-                                    </option>
-                                  )
-                                )}
+                              )}
                             </select>
                           ) : type ===
                             "select-member" ? (
@@ -1564,6 +1852,7 @@ export default function ManagementPage({
                   using the button above.
                 </p>
 
+                {canEdit && (
                 <button
                   type="button"
                   className="clubops-primary-button"
@@ -1577,6 +1866,7 @@ export default function ManagementPage({
                   + Create{" "}
                   {config.singular}
                 </button>
+                )}
               </div>
             ) : (
               <div
@@ -1612,39 +1902,45 @@ export default function ManagementPage({
                           {config.columns.map(
                             ([key]) => (
                               <td key={key}>
-                                {key ===
-                                  "event_date" ||
-                                key ===
-                                  "due_date" ||
-                                key ===
-                                  "meeting_date" ||
-                                key ===
-                                  "attendance_date" ||
-                                key ===
-                                  "created_at"
-                                  ? formatDate(
-                                      record[
-                                        key
-                                      ]
-                                    )
-                                  : key ===
-                                    "start_time"
-                                  ? formatTime(
-                                      record[
-                                        key
-                                      ]
-                                    )
-                                  : key ===
-                                    "required"
-                                  ? record[
-                                      key
-                                    ]
-                                    ? "Yes"
-                                    : "No"
-                                  : record[
-                                      key
-                                    ] ||
-                                    "—"}
+                                {key === "event_date" ||
+                                key === "due_date" ||
+                                key === "meeting_date" ||
+                                key === "attendance_date" ||
+                                key === "created_at" ||
+                                key === "published_at"
+                                  ? formatDate(record[key])
+                                  : key === "start_time" ||
+                                    key === "end_time"
+                                  ? formatTime(record[key])
+                                  : key === "file_url" && record[key]
+                                  ? (
+                                    <a
+                                      href={record[key]}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      style={{ color: "#2563eb", textDecoration: "underline", fontWeight: 600 }}
+                                    >
+                                      View Link ↗
+                                    </a>
+                                  )
+                                  : key === "status" || key === "priority"
+                                  ? (
+                                    <span style={{
+                                      display: "inline-block",
+                                      padding: "0.25rem 0.75rem",
+                                      borderRadius: "999px",
+                                      fontSize: "0.74rem",
+                                      fontWeight: 650,
+                                      background: "rgba(0,0,0,0.05)",
+                                      border: "1px solid rgba(0,0,0,0.08)",
+                                      textTransform: "capitalize"
+                                    }}>
+                                      {record[key] || "—"}
+                                    </span>
+                                  )
+                                  : key === "required"
+                                  ? record[key] ? "Yes" : "No"
+                                  : record[key] || "—"}
                               </td>
                             )
                           )}
@@ -1684,6 +1980,7 @@ export default function ManagementPage({
                               </select>
                             )}
 
+                            {role === "ADMIN" && (
                             <button
                               type="button"
                               className={
@@ -1697,6 +1994,7 @@ export default function ManagementPage({
                             >
                               Delete
                             </button>
+                            )}
                           </td>
                         </tr>
                       )
