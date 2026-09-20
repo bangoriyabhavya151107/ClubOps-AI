@@ -1,17 +1,17 @@
 import ManagementPage from "@/components/clubops/ManagementPage";
 
-export default function EventsPage() {
+export default function MeetingsPage() {
   return (
     <ManagementPage
-      eyebrow="CLUB MANAGEMENT"
-      title="Events"
-      description="Create and manage club events. The list starts empty."
-      singular="Event"
+      eyebrow="WORKSPACE"
+      title="Meetings"
+      description="Schedule and manage club meetings. The list starts empty."
+      singular="Meeting"
       fields={[
         {
-          name: "name",
-          label: "Event name",
-          placeholder: "Enter event name",
+          name: "title",
+          label: "Meeting title",
+          placeholder: "Enter meeting title",
           required: true,
         },
         {
@@ -31,15 +31,15 @@ export default function EventsPage() {
           placeholder: "Enter location",
         },
         {
-          name: "description",
-          label: "Description",
+          name: "agenda",
+          label: "Agenda",
           type: "textarea",
-          placeholder: "Describe the event",
+          placeholder: "Enter meeting agenda",
           fullWidth: true,
         },
       ]}
       columns={[
-        { key: "name", label: "Event" },
+        { key: "title", label: "Meeting" },
         { key: "date", label: "Date" },
         { key: "time", label: "Time" },
         { key: "location", label: "Location" },
