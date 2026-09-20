@@ -13,6 +13,30 @@
    NAVBAR (PUBLIC)
    ========================================= */
 
+.navbar::after {
+  content: "";
+  position: absolute;
+  inset: auto 5vw -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99, 91, 255, .5), transparent);
+}
+
+.heroSection::before {
+  content: "";
+  position: absolute;
+  width: 34rem;
+  height: 34rem;
+  right: -10rem;
+  top: 8rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 91, 255, .18), transparent 68%);
+  filter: blur(10px);
+  pointer-events: none;
+  animation: homeGlow 8s ease-in-out infinite alternate;
+}
+
+@keyframes homeGlow { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(-30px, 20px, 0) scale(1.08); } }
+
 .navbar {
   position: fixed;
   top: 0;

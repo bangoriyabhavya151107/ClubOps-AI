@@ -365,6 +365,19 @@
   opacity: 0.4;
 }
 
+/* Dashboard visual polish */
+.dashboard { background: radial-gradient(circle at 88% 0%, rgba(99, 91, 255, .12), transparent 28rem), var(--bg-warm, #f7f8fc); }
+.content { padding-top: 2.5rem; }
+.hero { min-height: 32vh; padding: 2rem 0 2.8rem; }
+.hero h1 { background: linear-gradient(120deg, #111827 20%, #635bff 90%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.roleCard, .panel { border-color: rgba(99, 91, 255, .12); box-shadow: 0 18px 50px rgba(31, 41, 55, .07); transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease; }
+.roleCard:hover, .panel:hover { transform: translateY(-3px); box-shadow: 0 24px 60px rgba(31, 41, 55, .11); }
+.stat { border-top-color: rgba(99, 91, 255, .32); }
+.stat strong { color: #635bff; }
+.eventRow, .taskRow, .quickAction { background: rgba(255,255,255,.72); border-color: rgba(99, 91, 255, .1); }
+.eventRow:hover, .taskRow:hover, .quickAction:hover { border-color: rgba(99, 91, 255, .32); box-shadow: 0 10px 24px rgba(99, 91, 255, .08); }
+.dateBox { background: linear-gradient(135deg, #635bff, #8b5cf6); }
+
 @media (max-width: 960px) {
   .hero {
     flex-direction: column;
