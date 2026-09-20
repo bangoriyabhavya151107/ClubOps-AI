@@ -1,7 +1,9 @@
+```jsx
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 const mainMenu = [
   {
@@ -69,6 +71,14 @@ function isActivePath(pathname, href) {
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const supabase = createClient();
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    router.replace("/login");
+    router.refresh();
+  }
 
   return (
     <aside className="clubops-sidebar">
@@ -76,7 +86,7 @@ export default function Sidebar() {
       <div className="clubops-brand">
         <div className="clubops-brand-mark">C</div>
 
-        <div>
+        <div className="clubops-brand-text">
           <strong>ClubOps AI</strong>
           <span>Club Management</span>
         </div>
@@ -139,8 +149,20 @@ export default function Sidebar() {
         </div>
       </nav>
 
-      {/* Bottom */}
-      <div className="clubops-sidebar-bottom">
+      {/* Account */}
+      <div className="clubops-sidebar-account">
+        <span className="clubops-nav-label">ACCOUNT</span>
+
+        <Link
+          href="/profile"
+          className={`clubops-nav-item ${
+            isActivePath(pathname, "/profile") ? "active" : ""
+          }`}
+        >
+          <span className="clubops-nav-icon">◉</span>
+          <span>My Profile</span>
+        </Link>
+
         <Link
           href="/settings"
           className={`clubops-nav-item ${
@@ -151,25 +173,26 @@ export default function Sidebar() {
           <span>Settings</span>
         </Link>
 
-        <Link
-          href="/profile"
-          className={`clubops-nav-item ${
-            isActivePath(pathname, "/profile") ? "active" : ""
-          }`}
+        <button
+          type="button"
+          className="clubops-logout-button"
+          onClick={handleLogout}
         >
-          <span className="clubops-nav-icon">◉</span>
-          <span>Profile</span>
-        </Link>
+          <span className="clubops-nav-icon">↪</span>
+          <span>Logout</span>
+        </button>
+      </div>
 
-        <div className="clubops-sidebar-footer">
-          <div className="clubops-footer-avatar">C</div>
+      {/* User */}
+      <div className="clubops-sidebar-footer">
+        <div className="clubops-footer-avatar">CA</div>
 
-          <div>
-            <strong>Club Admin</strong>
-            <span>Administrator</span>
-          </div>
+        <div className="clubops-footer-user">
+          <strong>Club Admin</strong>
+          <span>Administrator</span>
         </div>
       </div>
     </aside>
   );
 }
+```

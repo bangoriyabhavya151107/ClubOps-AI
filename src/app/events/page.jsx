@@ -32,29 +32,33 @@ const events = [
 
 export default function EventsPage() {
   return (
-    <div className="dashboard-layout">
+  <div className="clubops-dashboard">
 
       <Sidebar />
 
-      <main className="main-content">
+   <main className="clubops-main">
 
         <Topbar />
 
-        <section className="dashboard-content">
+       <section className="clubops-content">
 
-          <div className="page-heading">
+         <div className="clubops-page-intro">
+  <div>
+    <span className="clubops-eyebrow">
+      CLUB MANAGEMENT
+    </span>
 
-            <div>
-              <h1>Events</h1>
-              <p>Create and manage club events</p>
-            </div>
+    <h2>Events</h2>
 
-            <button className="primary-button">
-              + Create Event
-            </button>
+    <p>
+      Create and manage club events.
+    </p>
+  </div>
 
-          </div>
-
+  <button className="clubops-primary-button">
+    + Create Event
+  </button>
+</div>
           <div className="events-page-grid">
 
             {events.map((event) => (

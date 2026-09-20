@@ -1,5 +1,7 @@
+```jsx
 "use client";
 
+import { useMemo, useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
 
@@ -31,50 +33,104 @@ const members = [
 ];
 
 export default function MembersPage() {
-  return (
-    <div className="dashboard-layout">
+  const [search, setSearch] = useState("");
+  const [role, setRole] = useState("All Roles");
 
+  const filteredMembers = useMemo(() => {
+    return members.filter((member) => {
+      const matchesSearch =
+        member.name
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        member.email
+          .toLowerCase()
+          .includes(search.toLowerCase());
+
+      const matchesRole =
+        role === "All Roles" || member.role === role;
+
+      return matchesSearch && matchesRole;
+    });
+  }, [search, role]);
+
+  return (
+    <div className="clubops-dashboard">
       <Sidebar />
 
-      <main className="main-content">
-
+      <main className="clubops-main">
         <Topbar />
 
-        <section className="dashboard-content">
-
-          <div className="page-heading">
+        <section className="clubops-content">
+          <div className="clubops-page-intro">
             <div>
-              <h1>Members</h1>
-              <p>Manage your club members</p>
+              <span className="clubops-eyebrow">
+                CLUB MANAGEMENT
+              </span>
+
+              <h2>Members</h2>
+
+              <p>
+                Manage members, volunteers and coordinators.
+              </p>
             </div>
 
-            <button className="primary-button">
+            <button className="clubops-primary-button">
               + Add Member
             </button>
           </div>
 
-          <div className="dashboard-card">
+          <div className="members-stats">
+            <div className="member-mini-card">
+              <span>Total Members</span>
+              <strong>248</strong>
+            </div>
 
-            <div className="search-bar">
+            <div className="member-mini-card">
+              <span>Active</span>
+              <strong>216</strong>
+            </div>
 
-              <input
-                type="text"
-                placeholder="Search members..."
-              />
+            <div className="member-mini-card">
+              <span>Volunteers</span>
+              <strong>32</strong>
+            </div>
 
-              <select>
+            <div className="member-mini-card">
+              <span>Coordinators</span>
+              <strong>12</strong>
+            </div>
+          </div>
+
+          <section className="clubops-card members-card">
+            <div className="members-toolbar">
+              <div className="members-search">
+                <span>⌕</span>
+
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(event) =>
+                    setSearch(event.target.value)
+                  }
+                  placeholder="Search members..."
+                />
+              </div>
+
+              <select
+                value={role}
+                onChange={(event) =>
+                  setRole(event.target.value)
+                }
+              >
                 <option>All Roles</option>
                 <option>Member</option>
                 <option>Volunteer</option>
                 <option>Coordinator</option>
               </select>
-
             </div>
 
-            <div className="table-wrapper">
-
-              <table>
-
+            <div className="members-table-wrapper">
+              <table className="members-table">
                 <thead>
                   <tr>
                     <th>Member</th>
@@ -86,51 +142,61 @@ export default function MembersPage() {
                 </thead>
 
                 <tbody>
-
-                  {members.map((member) => (
+                  {filteredMembers.map((member) => (
                     <tr key={member.email}>
-
                       <td>
-                        <div className="member-name">
-                          <div className="small-avatar">
+                        <div className="member-person">
+                          <div className="member-avatar">
                             {member.name.charAt(0)}
                           </div>
 
-                          {member.name}
+                          <div>
+                            <strong>{member.name}</strong>
+                            <span>{member.role}</span>
+                          </div>
                         </div>
                       </td>
 
                       <td>{member.email}</td>
 
-                      <td>{member.role}</td>
+                      <td>
+                        <span className="member-role">
+                          {member.role}
+                        </span>
+                      </td>
 
                       <td>
-                        <span className="status-badge">
+                        <span className="member-status">
+                          <i />
                           {member.status}
                         </span>
                       </td>
 
                       <td>
-                        <button className="action-button">
+                        <button className="member-view-button">
                           View
                         </button>
                       </td>
-
                     </tr>
                   ))}
 
+                  {filteredMembers.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan="5"
+                        className="members-empty"
+                      >
+                        No members found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
-
               </table>
-
             </div>
-
-          </div>
-
+          </section>
         </section>
-
       </main>
-
     </div>
   );
 }
+```
