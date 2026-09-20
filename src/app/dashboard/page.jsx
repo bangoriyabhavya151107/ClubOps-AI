@@ -31,6 +31,36 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const [copilotInput, setCopilotInput] = useState("");
+  const [copilotResponse, setCopilotResponse] = useState("");
+  const [copilotLoading, setCopilotLoading] = useState(false);
+  const [copilotCopied, setCopilotCopied] = useState(false);
+
+  async function handleAskCopilot(promptText = copilotInput) {
+    const text = promptText.trim();
+    if (!text) return;
+
+    setCopilotLoading(true);
+    setCopilotResponse("");
+
+    try {
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: text }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "AI generation failed.");
+      setCopilotResponse(data.text);
+    } catch (err) {
+      console.error("Copilot error:", err);
+      setCopilotResponse("AI Copilot is momentarily busy. You can also visit the dedicated AI Assistant page.");
+    } finally {
+      setCopilotLoading(false);
+    }
+  }
+
   useEffect(() => {
     loadDashboard();
   }, []);
@@ -99,8 +129,7 @@ export default function DashboardPage() {
         supabase
           .from("members")
           .select("*")
-          .eq("club_id", clubId)
-          .eq("status", "Active")
+          .or(`club_id.eq.${clubId},club_id.is.null`)
           .order("name"),
 
         supabase
@@ -380,7 +409,7 @@ export default function DashboardPage() {
                   icon="◈"
                   title="No upcoming events"
                   text="Create your first event to start planning club activities."
-                  href="/events"
+                  href="/events?new=1"
                   action="Create Event"
                 />
               ) : (
@@ -638,7 +667,7 @@ export default function DashboardPage() {
                   icon="◷"
                   title="No upcoming meetings"
                   text="Schedule your next club coordination meeting."
-                  href="/meetings"
+                  href="/meetings?new=1"
                   action="Schedule Meeting"
                 />
               )}
@@ -683,15 +712,179 @@ export default function DashboardPage() {
                   icon="!"
                   title="No announcements"
                   text="Important club communication will appear here."
-                  href="/announcements"
+                  href="/announcements?new=1"
                   action="Create Announcement"
                 />
               )}
             </div>
           </section>
 
+          {/* ClubOps AI Live Copilot Card */}
+          <section style={{
+            background: "#fff",
+            border: "1px solid rgba(0,0,0,0.08)",
+            borderRadius: "28px",
+            padding: "2.5rem",
+            marginBottom: "4rem",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+              <div>
+                <span className="eyebrow">INTELLIGENT OPERATIONS COPILOT</span>
+                <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", fontWeight: 800, letterSpacing: "-0.05em", margin: "0.2rem 0 0.4rem", color: "#111" }}>
+                  Ask ClubOps AI.
+                </h2>
+                <p style={{ margin: 0, fontSize: "0.95rem", color: "rgba(17,17,17,0.6)" }}>
+                  Need an event agenda, volunteer task breakdown, or campus announcement? Let Gemini accelerate your club.
+                </p>
+              </div>
+              <Link href="/ai-assistant" className="apple-ai-item" style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                padding: "0.6rem 1.2rem",
+                borderRadius: "999px",
+                border: "1px solid rgba(0,0,0,0.15)",
+                fontSize: "0.82rem",
+                fontWeight: 700,
+                textDecoration: "none"
+              }}>
+                <span>Full AI Suite →</span>
+              </Link>
+            </div>
+
+            {/* Quick Prompt Starters */}
+            <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", marginBottom: "1.2rem" }}>
+              {[
+                "Draft 2-Day Hackathon Schedule",
+                "Create Volunteer Task Checklist",
+                "Write Campus Registration Announcement",
+                "Suggest Budget Allocation for INR 50,000",
+              ].map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => {
+                    setCopilotInput(prompt);
+                    handleAskCopilot(prompt);
+                  }}
+                  style={{
+                    padding: "0.45rem 0.9rem",
+                    borderRadius: "999px",
+                    background: "rgba(0,0,0,0.04)",
+                    border: "1px solid rgba(0,0,0,0.08)",
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
+                    color: "rgba(17,17,17,0.8)",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease"
+                  }}
+                >
+                  ⚡ {prompt}
+                </button>
+              ))}
+            </div>
+
+            {/* Copilot Input */}
+            <form onSubmit={(e) => { e.preventDefault(); handleAskCopilot(); }} style={{ display: "flex", gap: "0.8rem", marginBottom: copilotResponse ? "1.5rem" : 0 }}>
+              <input
+                type="text"
+                value={copilotInput}
+                onChange={(e) => setCopilotInput(e.target.value)}
+                placeholder="Ask anything about running your club (e.g., 'What permissions does a Coordinator need?')"
+                style={{
+                  flex: 1,
+                  padding: "0.85rem 1.2rem",
+                  borderRadius: "14px",
+                  border: "1px solid rgba(0,0,0,0.15)",
+                  background: "#fafaf8",
+                  fontSize: "0.92rem",
+                  color: "#111"
+                }}
+              />
+              <button
+                type="submit"
+                disabled={copilotLoading || !copilotInput.trim()}
+                style={{
+                  padding: "0.85rem 1.6rem",
+                  borderRadius: "999px",
+                  border: 0,
+                  background: "#111",
+                  color: "#fff",
+                  fontWeight: 700,
+                  fontSize: "0.88rem",
+                  cursor: copilotLoading || !copilotInput.trim() ? "not-allowed" : "pointer",
+                  opacity: copilotLoading || !copilotInput.trim() ? 0.6 : 1,
+                  whiteSpace: "nowrap"
+                }}
+              >
+                {copilotLoading ? "Generating..." : "Ask AI"}
+              </button>
+            </form>
+
+            {/* Copilot Response Card */}
+            {copilotResponse && (
+              <div style={{
+                background: "#fafaf8",
+                border: "1px solid rgba(0,0,0,0.1)",
+                borderRadius: "18px",
+                padding: "1.5rem",
+                marginTop: "1rem"
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.8rem" }}>
+                  <span style={{ fontSize: "0.75rem", fontWeight: 750, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(17,17,17,0.5)" }}>
+                    AI GENERATED INSIGHT
+                  </span>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(copilotResponse);
+                        setCopilotCopied(true);
+                        setTimeout(() => setCopilotCopied(false), 2000);
+                      }}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid rgba(0,0,0,0.15)",
+                        padding: "0.3rem 0.8rem",
+                        borderRadius: "999px",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        cursor: "pointer"
+                      }}
+                    >
+                      {copilotCopied ? "✓ Copied" : "Copy"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCopilotResponse("")}
+                      style={{
+                        background: "transparent",
+                        border: 0,
+                        fontSize: "0.75rem",
+                        color: "rgba(17,17,17,0.5)",
+                        cursor: "pointer"
+                      }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+                <div style={{
+                  fontSize: "0.92rem",
+                  lineHeight: 1.65,
+                  color: "#111",
+                  whiteSpace: "pre-wrap",
+                  fontFamily: "inherit"
+                }}>
+                  {copilotResponse}
+                </div>
+              </div>
+            )}
+          </section>
+
           <section
-            className={styles.quickPanel}
+            className={styles.quick}
           >
             <div
               className={
@@ -715,14 +908,14 @@ export default function DashboardPage() {
               className={styles.quickGrid}
             >
               <QuickAction
-                href="/events"
+                href="/events?new=1"
                 icon="◈"
                 title="Create Event"
                 text="Plan your next club activity."
               />
 
               <QuickAction
-                href="/tasks"
+                href="/tasks?new=1"
                 icon="✓"
                 title="Assign Task"
                 text="Give work to a team member."

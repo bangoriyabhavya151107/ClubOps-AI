@@ -1,172 +1,291 @@
 "use client";
 
-import { useState } from "react";
-import Sidebar from "@/components/layout/Sidebar";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import Topbar from "@/components/layout/Topbar";
-import styles from "@/components/clubops/ManagementPage.module.css";
-
-const settingItems = [
-  {
-    key: "email",
-    title: "Email notifications",
-    description: "Receive account and club notifications by email.",
-  },
-  {
-    key: "events",
-    title: "Event reminders",
-    description: "Receive reminders for upcoming events.",
-  },
-  {
-    key: "tasks",
-    title: "Task reminders",
-    description: "Receive reminders for pending tasks.",
-  },
-  {
-    key: "announcements",
-    title: "Announcement alerts",
-    description: "Receive alerts when new announcements are published.",
-  },
-];
+import { getWorkspace, normalizeRole } from "@/lib/clubops";
+import { Bell, Shield, Sliders, Check, Globe, Sparkles, Building, Calendar, CheckSquare, Megaphone, Video, FileText, ClipboardCheck } from "lucide-react";
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState({
-    email: false,
-    events: false,
-    tasks: false,
-    announcements: false,
-  });
-
+  const [workspace, setWorkspace] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
 
+  const [settings, setSettings] = useState({
+    emailAlerts: true,
+    eventReminders: true,
+    taskAssignments: true,
+    announcements: true,
+    aiSuggestions: true,
+  });
+
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const ws = await getWorkspace();
+        if (mounted) setWorkspace(ws);
+      } catch (err) {
+        console.warn("Settings workspace load error:", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    load();
+
+    // Load local stored preferences if available
+    try {
+      const savedPref = localStorage.getItem("clubops_settings");
+      if (savedPref) {
+        setSettings(JSON.parse(savedPref));
+      }
+    } catch (_) {}
+
+    return () => { mounted = false; };
+  }, []);
+
   function toggle(key) {
-    setSettings((current) => ({
-      ...current,
-      [key]: !current[key],
-    }));
-    setSaved(false);
+    setSettings((cur) => {
+      const next = { ...cur, [key]: !cur[key] };
+      try {
+        localStorage.setItem("clubops_settings", JSON.stringify(next));
+      } catch (_) {}
+      return next;
+    });
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
   }
 
-  function save() {
-    setSaved(true);
-  }
+  const role = normalizeRole(workspace?.role || workspace?.profile?.role || "VOLUNTEER");
+  const clubName = workspace?.club?.name || "Campus Club Workspace";
 
   return (
     <div className="clubops-dashboard">
-      <Sidebar />
-
       <main className="clubops-main">
         <Topbar />
 
-        <section className="clubops-content">
-          <div className="clubops-page-intro">
-            <div>
-              <span className="clubops-eyebrow">ACCOUNT</span>
-              <h2>Settings</h2>
-              <p>Manage your ClubOps preferences.</p>
-            </div>
+        <section className="clubops-content" style={{ maxWidth: "1000px", margin: "0 auto" }}>
+          {/* Header */}
+          <div style={{ marginBottom: "3rem", paddingBottom: "1.5rem", borderBottom: "1px solid rgba(0,0,0,0.08)" }}>
+            <span className="eyebrow">PREFERENCES & CONFIGURATION</span>
+            <h1 style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)", fontWeight: 800, letterSpacing: "-0.06em", margin: "0 0 0.5rem", color: "#111" }}>
+              Workspace Settings.
+            </h1>
+            <p style={{ margin: 0, fontSize: "1.05rem", color: "rgba(17,17,17,0.6)" }}>
+              Customize notification alerts, operations dispatching, and view workspace connectivity.
+            </p>
           </div>
 
-          <div className={styles.settingsStack}>
-            <section className={styles.settingsCard}>
-              <div className="clubops-card-heading">
-                <div>
-                  <span className="clubops-section-label">
-                    NOTIFICATIONS
-                  </span>
+          {saved && (
+            <div style={{
+              padding: "1rem 1.5rem",
+              borderRadius: "16px",
+              background: "rgba(16,185,129,0.1)",
+              color: "#047857",
+              fontSize: "0.92rem",
+              fontWeight: 600,
+              marginBottom: "2rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.6rem",
+              border: "1px solid rgba(16,185,129,0.2)"
+            }}>
+              <Check size={18} /> Settings preferences saved successfully.
+            </div>
+          )}
 
-                  <h2>Notification Preferences</h2>
-
-                  <p>
-                    All preferences start disabled.
-                  </p>
-                </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "2.5rem" }}>
+            {/* Notifications Card */}
+            <div style={{
+              background: "#fff",
+              border: "1px solid rgba(0,0,0,0.08)",
+              borderRadius: "28px",
+              padding: "2.5rem",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
+                <Bell size={20} />
+                <h2 style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "-0.04em", margin: 0, color: "#111" }}>
+                  Operational Notifications
+                </h2>
               </div>
 
-              <div className={styles.settingsRows}>
-                {settingItems.map((item) => (
-                  <div className={styles.settingRow} key={item.key}>
-                    <div className={styles.settingText}>
-                      <strong>{item.title}</strong>
-                      <span>{item.description}</span>
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
+                {[
+                  { key: "emailAlerts", title: "Email Notifications", desc: "Receive immediate email alerts for critical club announcements and schedule updates." },
+                  { key: "eventReminders", title: "Event Reminders", desc: "Get 24-hour and 1-hour pre-event reminder broadcasts." },
+                  { key: "taskAssignments", title: "Task Assignments & Deadlines", desc: "Receive alerts when tasks are assigned to you or marked as completed." },
+                  { key: "announcements", title: "Executive Announcements", desc: "Push notices when leadership posts new club circulars." },
+                  { key: "aiSuggestions", title: "AI Copilot Suggestions", desc: "Receive automated recommendations for risk mitigation and task delegation." },
+                ].map((item) => (
+                  <div
+                    key={item.key}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "1.2rem 0",
+                      borderBottom: "1px solid rgba(0,0,0,0.06)"
+                    }}
+                  >
+                    <div style={{ maxWidth: "80%" }}>
+                      <strong style={{ display: "block", fontSize: "0.98rem", color: "#111", marginBottom: "0.2rem" }}>
+                        {item.title}
+                      </strong>
+                      <span style={{ fontSize: "0.85rem", color: "rgba(17,17,17,0.55)", lineHeight: 1.4, display: "block" }}>
+                        {item.desc}
+                      </span>
                     </div>
 
                     <button
                       type="button"
-                      className={
-                        styles.toggle +
-                        (settings[item.key]
-                          ? " " + styles.toggleOn
-                          : "")
-                      }
                       onClick={() => toggle(item.key)}
+                      style={{
+                        width: "52px",
+                        height: "28px",
+                        borderRadius: "999px",
+                        background: settings[item.key] ? "#111" : "rgba(0,0,0,0.15)",
+                        position: "relative",
+                        border: 0,
+                        cursor: "pointer",
+                        transition: "background 0.2s ease"
+                      }}
                       aria-pressed={settings[item.key]}
-                      aria-label={item.title}
-                    />
+                    >
+                      <span
+                        style={{
+                          width: "22px",
+                          height: "22px",
+                          borderRadius: "50%",
+                          background: "#fff",
+                          position: "absolute",
+                          top: "3px",
+                          left: settings[item.key] ? "27px" : "3px",
+                          transition: "left 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                          boxShadow: "0 2px 5px rgba(0,0,0,0.2)"
+                        }}
+                      />
+                    </button>
                   </div>
                 ))}
               </div>
+            </div>
 
-              <div className={styles.settingsFooter}>
-                {saved && (
-                  <span className={styles.success}>
-                    Settings saved for this session.
+            {/* Workspace Architecture Details */}
+            <div style={{
+              background: "#fff",
+              border: "1px solid rgba(0,0,0,0.08)",
+              borderRadius: "28px",
+              padding: "2.5rem",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
+                <Building size={20} />
+                <h2 style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "-0.04em", margin: 0, color: "#111" }}>
+                  Workspace Architecture
+                </h2>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1.5rem" }}>
+                <div style={{ borderTop: "1px solid rgba(0,0,0,0.15)", paddingTop: "1rem" }}>
+                  <span style={{ fontSize: "0.68rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(17,17,17,0.45)", display: "block" }}>
+                    CLUB ORGANIZATION
                   </span>
-                )}
+                  <strong style={{ fontSize: "1.3rem", display: "block", marginTop: "0.4rem", color: "#111" }}>
+                    {clubName}
+                  </strong>
+                  <small style={{ color: "rgba(17,17,17,0.5)" }}>Connected via Supabase</small>
+                </div>
 
-                <button
-                  type="button"
-                  className="clubops-primary-button"
-                  onClick={save}
-                >
-                  Save Settings
-                </button>
-              </div>
-            </section>
-
-            <section className={styles.settingsCard}>
-              <div className="clubops-card-heading">
-                <div>
-                  <span className="clubops-section-label">
-                    WORKSPACE
+                <div style={{ borderTop: "1px solid rgba(0,0,0,0.15)", paddingTop: "1rem" }}>
+                  <span style={{ fontSize: "0.68rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(17,17,17,0.45)", display: "block" }}>
+                    CURRENT ACCESS LEVEL
                   </span>
+                  <strong style={{ fontSize: "1.3rem", display: "block", marginTop: "0.4rem", color: "#111" }}>
+                    {role}
+                  </strong>
+                  <small style={{ color: "rgba(17,17,17,0.5)" }}>Role-based security active</small>
+                </div>
 
-                  <h2>Workspace Information</h2>
+                <div style={{ borderTop: "1px solid rgba(0,0,0,0.15)", paddingTop: "1rem" }}>
+                  <span style={{ fontSize: "0.68rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(17,17,17,0.45)", display: "block" }}>
+                    AI ACCELERATION ENGINE
+                  </span>
+                  <strong style={{ fontSize: "1.3rem", display: "block", marginTop: "0.4rem", color: "#111" }}>
+                    Gemini 3.6 Flash
+                  </strong>
+                  <small style={{ color: "rgba(17,17,17,0.5)" }}>Google GenAI active</small>
+                </div>
 
-                  <p>
-                    These values intentionally start empty.
-                  </p>
+                <div style={{ borderTop: "1px solid rgba(0,0,0,0.15)", paddingTop: "1rem" }}>
+                  <span style={{ fontSize: "0.68rem", letterSpacing: "0.14em", textTransform: "uppercase", color: "rgba(17,17,17,0.45)", display: "block" }}>
+                    DATABASE REPOSITORY
+                  </span>
+                  <strong style={{ fontSize: "1.3rem", display: "block", marginTop: "0.4rem", color: "#111" }}>
+                    Supabase PostgreSQL
+                  </strong>
+                  <small style={{ color: "rgba(17,17,17,0.5)" }}>RLS encryption enabled</small>
                 </div>
               </div>
+            </div>
 
-              <div className={styles.settingsRows}>
-                <div className={styles.settingRow}>
-                  <div className={styles.settingText}>
-                    <strong>Club name</strong>
-                    <span>Not configured</span>
-                  </div>
-
-                  <strong>0</strong>
-                </div>
-
-                <div className={styles.settingRow}>
-                  <div className={styles.settingText}>
-                    <strong>Timezone</strong>
-                    <span>Not configured</span>
-                  </div>
-
-                  <strong>0</strong>
-                </div>
-
-                <div className={styles.settingRow}>
-                  <div className={styles.settingText}>
-                    <strong>Members</strong>
-                    <span>No member data loaded.</span>
-                  </div>
-
-                  <strong>0</strong>
-                </div>
+            {/* Operational Modules Hub */}
+            <div style={{
+              background: "#fff",
+              border: "1px solid rgba(0,0,0,0.08)",
+              borderRadius: "28px",
+              padding: "2.5rem",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
+            }}>
+              <div style={{ marginBottom: "1.5rem" }}>
+                <span className="eyebrow">OPERATIONAL ACCESS</span>
+                <h2 style={{ fontSize: "1.4rem", fontWeight: 800, letterSpacing: "-0.04em", margin: "0.2rem 0 0.4rem", color: "#111" }}>
+                  Core Operational Modules
+                </h2>
+                <p style={{ margin: 0, fontSize: "0.9rem", color: "rgba(17,17,17,0.6)" }}>
+                  Direct access to manage events, assignments, announcements, attendance, and knowledge base.
+                </p>
               </div>
-            </section>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "1rem" }}>
+                {[
+                  { title: "Events & Schedules", href: "/events", icon: Calendar, desc: "Create, view and organize club activities" },
+                  { title: "Task Assignments", href: "/tasks", icon: CheckSquare, desc: "Assign volunteers and track deadlines" },
+                  { title: "Executive Circulars", href: "/announcements", icon: Megaphone, desc: "Publish urgent notices & club updates" },
+                  { title: "Meeting Dispatch", href: "/meetings", icon: Video, desc: "Schedule core coordination calls" },
+                  { title: "Document Vault", href: "/documents", icon: FileText, desc: "Repository for guidelines & records" },
+                  { title: "Attendance Roster", href: "/attendance", icon: ClipboardCheck, desc: "Record member participation" },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      style={{
+                        padding: "1.2rem",
+                        borderRadius: "18px",
+                        border: "1px solid rgba(0,0,0,0.08)",
+                        background: "#fafaf8",
+                        textDecoration: "none",
+                        color: "#111",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "0.4rem",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                        <Icon size={18} color="#111" />
+                        <strong style={{ fontSize: "0.95rem" }}>{item.title}</strong>
+                      </div>
+                      <span style={{ fontSize: "0.8rem", color: "rgba(17,17,17,0.55)" }}>
+                        {item.desc}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </section>
       </main>

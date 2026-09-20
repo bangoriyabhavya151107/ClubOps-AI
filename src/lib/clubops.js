@@ -76,7 +76,11 @@ export async function getWorkspace() {
 }
 
 export function normalizeRole(role) {
-  return String(role || "VOLUNTEER").toUpperCase();
+  const r = String(role || "VOLUNTEER").toUpperCase();
+  if (r === "ADMIN" || r === "COORDINATOR" || r === "VOLUNTEER") {
+    return r;
+  }
+  return "VOLUNTEER";
 }
 
 export function initials(name = "") {

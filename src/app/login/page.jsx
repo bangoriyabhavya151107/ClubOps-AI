@@ -1,19 +1,29 @@
 "use client";
 
+import { Suspense } from "react";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Eye, EyeOff } from "lucide-react";
 import styles from "./login.module.css";
 
-export default function LoginPage() {
+/* ======================================================
+   Inner component uses useSearchParams — must be inside Suspense
+   ====================================================== */
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+
+  const registered = searchParams.get("registered") === "1";
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   async function handleLogin(event) {
     event.preventDefault();
@@ -37,93 +47,54 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      /*
-       * STEP 1
-       * Authenticate with Supabase Auth.
-       */
-      const {
-        data: authData,
-        error: authError,
-      } = await supabase.auth.signInWithPassword({
-        email: cleanEmail,
-        password,
-      });
+      const { data: authData, error: authError } =
+        await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password,
+        });
 
       if (authError) {
-        console.error("Supabase authentication error:", authError);
-
         if (
-          authError.message?.toLowerCase().includes(
-            "invalid login credentials"
-          )
+          authError.message?.toLowerCase().includes("invalid login credentials")
         ) {
           throw new Error(
-            "Invalid email or password. Please check the exact email and password for your ClubOps account."
+            "Invalid email or password. Please check your credentials."
           );
         }
-
-        throw new Error(
-          authError.message || "Unable to sign in."
-        );
+        throw new Error(authError.message || "Unable to sign in.");
       }
 
       if (!authData?.user) {
-        throw new Error(
-          "Authentication succeeded but no user was returned."
-        );
+        throw new Error("Authentication succeeded but no user was returned.");
       }
 
-      /*
-       * STEP 2
-       * Make sure the user's ClubOps workspace exists.
-       *
-       * The database function now correctly stores
-       * ADMIN / COORDINATOR / VOLUNTEER in uppercase.
-       */
-      const {
-        data: workspace,
-        error: workspaceError,
-      } = await supabase.rpc("ensure_user_workspace");
+      const { data: workspace, error: workspaceError } =
+        await supabase.rpc("ensure_user_workspace");
 
       if (workspaceError) {
-        console.error(
-          "Workspace initialization error:",
-          workspaceError
-        );
-
         await supabase.auth.signOut();
-
         throw new Error(
           workspaceError.message ||
-            "Your account was authenticated, but your ClubOps workspace could not be initialized."
+            "Your workspace could not be initialized. Please contact your admin."
         );
       }
 
       if (!workspace) {
         await supabase.auth.signOut();
-
-        throw new Error(
-          "Your account was authenticated, but no ClubOps workspace was returned."
-        );
+        throw new Error("No workspace was returned for your account.");
       }
 
       if (!workspace?.club?.id) {
         await supabase.auth.signOut();
-
         throw new Error(
-          "Your account is not connected to a ClubOps club workspace."
+          "Your account is not connected to a club workspace. Please contact your admin."
         );
       }
 
-      /*
-       * STEP 3
-       * Login completed successfully.
-       */
-      router.replace("/dashboard");
+      router.replace(redirectTo);
       router.refresh();
     } catch (loginError) {
       console.error("Login error:", loginError);
-
       setError(
         loginError?.message ||
           "Unable to login. Please check your email and password."
@@ -134,11 +105,108 @@ export default function LoginPage() {
   }
 
   return (
+    <div className={styles.card}>
+      <span className={styles.smallLabel}>CLUBOPS AI</span>
+
+      <h2>Welcome back</h2>
+
+      <p className={styles.subtitle}>Sign in to your club workspace.</p>
+
+      {registered && (
+        <div className={styles.successMsg}>
+          Account created! Please sign in to continue.
+        </div>
+      )}
+
+      {error && (
+        <div className={styles.error} role="alert">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleLogin}>
+        <div className={styles.fieldGroup}>
+          <label className={styles.fieldLabel} htmlFor="email">
+            Email address
+          </label>
+          <div className={styles.inputWrap}>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              autoComplete="email"
+              autoFocus
+              disabled={loading}
+            />
+          </div>
+        </div>
+
+        <div className={styles.fieldGroup}>
+          <label className={styles.fieldLabel} htmlFor="password">
+            Password
+          </label>
+          <div className={styles.inputWrap}>
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Your password"
+              autoComplete="current-password"
+              disabled={loading}
+            />
+            <button
+              type="button"
+              className={styles.eyeBtn}
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
+          <div className={styles.forgotLink}>
+            <Link href="/forgot-password">Forgot password?</Link>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          className={styles.submitBtn}
+          disabled={loading}
+        >
+          {loading && <span className={styles.spinner} />}
+          {loading ? "Signing in..." : "Sign in"}
+        </button>
+      </form>
+
+      <div className={styles.divider}>
+        <span>OR</span>
+      </div>
+
+      <p className={styles.register}>
+        New to ClubOps?{" "}
+        <Link href="/register">Create your workspace</Link>
+      </p>
+
+      <Link href="/" className={styles.home}>
+        ← Back to home
+      </Link>
+    </div>
+  );
+}
+
+/* ======================================================
+   Page component — wraps LoginForm in Suspense
+   ====================================================== */
+export default function LoginPage() {
+  return (
     <main className={styles.page}>
+      {/* ==================== BRAND PANEL ==================== */}
       <section className={styles.brandPanel}>
         <div className={styles.brand}>
           <div className={styles.logo}>C</div>
-
           <div>
             <strong>ClubOps AI</strong>
             <span>Smart Club Operations</span>
@@ -147,7 +215,7 @@ export default function LoginPage() {
 
         <div className={styles.brandContent}>
           <span className={styles.badge}>
-            AI-POWERED CLUB MANAGEMENT
+            AI-POWERED CLUB MANAGEMENT · LIVE
           </span>
 
           <h1>
@@ -157,98 +225,42 @@ export default function LoginPage() {
           </h1>
 
           <p>
-            Events, volunteers, tasks, meetings, budgets,
-            risks and AI assistance in one workspace.
+            Events, volunteers, tasks, meetings, budgets, risks and AI
+            assistance in one modern workspace built for student clubs.
           </p>
 
           <div className={styles.features}>
-            <div>✓ Real-time event operations</div>
-            <div>✓ Volunteer and task management</div>
-            <div>✓ AI planning and communication</div>
-            <div>✓ Budget and risk visibility</div>
+            <div>Real-time event operations</div>
+            <div>Volunteer and task management</div>
+            <div>AI planning and communication</div>
+            <div>Budget and risk visibility</div>
           </div>
         </div>
       </section>
 
+      {/* ==================== FORM PANEL ==================== */}
       <section className={styles.formPanel}>
-        <div className={styles.card}>
-          <span className={styles.smallLabel}>
-            CLUBOPS AI
-          </span>
-
-          <h2>Welcome back</h2>
-
-          <p className={styles.subtitle}>
-            Sign in to your club workspace.
-          </p>
-
-          {error && (
-            <div
-              className={styles.error}
-              role="alert"
-            >
-              {error}
+        <Suspense
+          fallback={
+            <div className={styles.card}>
+              <div
+                style={{
+                  height: 14,
+                  width: 80,
+                  borderRadius: 4,
+                  background: "#f1f5f9",
+                  marginBottom: 12,
+                  animation: "skeletonShimmer 1.4s ease infinite",
+                  backgroundSize: "400px 100%",
+                  backgroundImage:
+                    "linear-gradient(90deg, #f1f5f9 25%, #e8eef5 50%, #f1f5f9 75%)",
+                }}
+              />
             </div>
-          )}
-
-          <form onSubmit={handleLogin}>
-            <label>
-              Email
-
-              <input
-                type="email"
-                value={email}
-                onChange={(event) =>
-                  setEmail(event.target.value)
-                }
-                placeholder="you@example.com"
-                autoComplete="email"
-                autoFocus
-                disabled={loading}
-              />
-            </label>
-
-            <label>
-              Password
-
-              <input
-                type="password"
-                value={password}
-                onChange={(event) =>
-                  setPassword(event.target.value)
-                }
-                placeholder="Your password"
-                autoComplete="current-password"
-                disabled={loading}
-              />
-            </label>
-
-            <button
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
-          </form>
-
-          <div className={styles.divider}>
-            <span>OR</span>
-          </div>
-
-          <p className={styles.register}>
-            New to ClubOps?{" "}
-            <Link href="/register">
-              Create your workspace
-            </Link>
-          </p>
-
-          <Link
-            href="/"
-            className={styles.home}
-          >
-            ← Back to home
-          </Link>
-        </div>
+          }
+        >
+          <LoginForm />
+        </Suspense>
       </section>
     </main>
   );

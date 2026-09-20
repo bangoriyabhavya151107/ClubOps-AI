@@ -4,34 +4,19 @@
 ========================================================= */
 
 .about-page {
-  --about-bg: #050507;
-  --about-surface: rgba(255, 255, 255, 0.045);
-  --about-border: rgba(255, 255, 255, 0.09);
-  --about-text: #f8fafc;
-  --about-muted: #94a3b8;
-  --about-primary: #6366f1;
-  --about-secondary: #8b5cf6;
-  --about-cyan: #22d3ee;
+  --about-bg: #f5f4ef;
+  --about-surface: #ffffff;
+  --about-border: rgba(0, 0, 0, 0.08);
+  --about-text: #111111;
+  --about-muted: rgba(17, 17, 17, 0.6);
+  --about-primary: #111111;
+  --about-secondary: #4f46e5;
+  --about-cyan: #059669;
 
   position: relative;
-
   min-height: 100vh;
-
   overflow: hidden;
-
-  background:
-    radial-gradient(
-      circle at 15% 10%,
-      rgba(99, 102, 241, 0.13),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 85% 45%,
-      rgba(139, 92, 246, 0.09),
-      transparent 30%
-    ),
-    var(--about-bg);
-
+  background: var(--about-bg);
   color: var(--about-text);
 
   font-family:
