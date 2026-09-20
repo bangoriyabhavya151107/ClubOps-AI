@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 import { createClient } from "@/lib/supabase/client";
 import styles from "./login.module.css";
 
@@ -13,63 +12,121 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function handleLogin(event) {
     event.preventDefault();
 
+    if (loading) return;
+
     setError("");
 
-    if (!email.trim() || !password) {
-      setError("Enter your email and password.");
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail) {
+      setError("Please enter your email address.");
+      return;
+    }
+
+    if (!password) {
+      setError("Please enter your password.");
       return;
     }
 
     try {
       setLoading(true);
 
-      const { data, error: loginError } =
-        await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password,
-        });
+      /*
+       * STEP 1
+       * Authenticate with Supabase Auth.
+       */
+      const {
+        data: authData,
+        error: authError,
+      } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
 
-      if (loginError) {
-        throw loginError;
+      if (authError) {
+        console.error("Supabase authentication error:", authError);
+
+        if (
+          authError.message?.toLowerCase().includes(
+            "invalid login credentials"
+          )
+        ) {
+          throw new Error(
+            "Invalid email or password. Please check the exact email and password for your ClubOps account."
+          );
+        }
+
+        throw new Error(
+          authError.message || "Unable to sign in."
+        );
       }
 
-      if (!data?.user) {
-        throw new Error("Login failed.");
+      if (!authData?.user) {
+        throw new Error(
+          "Authentication succeeded but no user was returned."
+        );
       }
 
-      const { data: workspace, error: workspaceError } =
-        await supabase.rpc("ensure_user_workspace");
+      /*
+       * STEP 2
+       * Make sure the user's ClubOps workspace exists.
+       *
+       * The database function now correctly stores
+       * ADMIN / COORDINATOR / VOLUNTEER in uppercase.
+       */
+      const {
+        data: workspace,
+        error: workspaceError,
+      } = await supabase.rpc("ensure_user_workspace");
 
       if (workspaceError) {
-        console.error(workspaceError);
+        console.error(
+          "Workspace initialization error:",
+          workspaceError
+        );
+
+        await supabase.auth.signOut();
 
         throw new Error(
           workspaceError.message ||
-            "Your account could not be connected to a workspace."
+            "Your account was authenticated, but your ClubOps workspace could not be initialized."
+        );
+      }
+
+      if (!workspace) {
+        await supabase.auth.signOut();
+
+        throw new Error(
+          "Your account was authenticated, but no ClubOps workspace was returned."
         );
       }
 
       if (!workspace?.club?.id) {
+        await supabase.auth.signOut();
+
         throw new Error(
-          "Your account does not have a club workspace yet."
+          "Your account is not connected to a ClubOps club workspace."
         );
       }
 
+      /*
+       * STEP 3
+       * Login completed successfully.
+       */
       router.replace("/dashboard");
       router.refresh();
-    } catch (error) {
-      console.error(error);
+    } catch (loginError) {
+      console.error("Login error:", loginError);
 
       setError(
-        error?.message ||
-          "Unable to login. Please check your credentials."
+        loginError?.message ||
+          "Unable to login. Please check your email and password."
       );
     } finally {
       setLoading(false);
@@ -100,9 +157,8 @@ export default function LoginPage() {
           </h1>
 
           <p>
-            Events, volunteers, tasks, meetings,
-            budgets, risks and AI assistance in one
-            intelligent workspace.
+            Events, volunteers, tasks, meetings, budgets,
+            risks and AI assistance in one workspace.
           </p>
 
           <div className={styles.features}>
@@ -127,7 +183,10 @@ export default function LoginPage() {
           </p>
 
           {error && (
-            <div className={styles.error}>
+            <div
+              className={styles.error}
+              role="alert"
+            >
               {error}
             </div>
           )}
@@ -144,6 +203,7 @@ export default function LoginPage() {
                 }
                 placeholder="you@example.com"
                 autoComplete="email"
+                autoFocus
                 disabled={loading}
               />
             </label>
@@ -167,9 +227,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
             >
-              {loading
-                ? "Opening workspace..."
-                : "Sign in"}
+              {loading ? "Signing in..." : "Sign in"}
             </button>
           </form>
 
