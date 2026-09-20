@@ -1,37 +1,103 @@
-```jsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
 
 export default function ProfilePage() {
-  const [saved, setSaved] = useState(false);
-
   const [profile, setProfile] = useState({
-    fullName: "Club Admin",
-    email: "admin@example.com",
-    phone: "+91 98765 43210",
-    role: "Administrator",
-    club: "ClubOps AI Club",
-    bio: "Club administrator responsible for managing club operations, members and events.",
+    full_name: "",
+    email: "",
+    phone: "",
+    role: "",
+    department: "",
+    availability: "",
+    bio: "",
+    profile_image: "",
+    skills: "",
   });
 
-  function handleChange(event) {
-    const { name, value } = event.target;
+  const [message, setMessage] = useState("");
 
+  useEffect(() => {
+    load();
+  }, []);
+
+  async function load() {
+    const supabase = (
+      await import("@/lib/supabase/client")
+    ).createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    if (!data) return;
+
+    setProfile({
+      ...data,
+      skills: Array.isArray(data.skills)
+        ? data.skills.join(", ")
+        : "",
+    });
+  }
+
+  function update(name, value) {
     setProfile((current) => ({
       ...current,
       [name]: value,
     }));
-
-    setSaved(false);
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  async function save(e) {
+    e.preventDefault();
 
-    setSaved(true);
+    const supabase = (
+      await import("@/lib/supabase/client")
+    ).createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        full_name: profile.full_name,
+        phone: profile.phone,
+        department: profile.department,
+        availability: profile.availability,
+        bio: profile.bio,
+        profile_image:
+          profile.profile_image,
+        skills: String(
+          profile.skills || ""
+        )
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean),
+        updated_at:
+          new Date().toISOString(),
+      })
+      .eq("id", user.id);
+
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    setMessage(
+      "Profile saved successfully."
+    );
   }
 
   return (
@@ -42,176 +108,217 @@ export default function ProfilePage() {
         <Topbar />
 
         <section className="clubops-content">
-          <div className="clubops-page-intro">
+
+          <div className="clubops-welcome">
             <div>
-              <span className="clubops-eyebrow">ACCOUNT</span>
-
+              <span>ACCOUNT</span>
               <h2>My Profile</h2>
-
               <p>
-                Manage your personal information and club profile.
+                Your profile is stored in Supabase.
               </p>
             </div>
           </div>
 
-          <div className="profile-layout">
-            {/* Profile card */}
-            <aside className="profile-summary-card">
-              <div className="profile-large-avatar">
-                CA
-              </div>
+          <section className="clubops-panel">
 
-              <h2>{profile.fullName}</h2>
+            <form
+              onSubmit={save}
+              style={{
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(2,minmax(0,1fr))",
+                gap: 15,
+              }}
+            >
 
-              <p>{profile.email}</p>
+              <Field
+                label="Full name"
+                value={profile.full_name}
+                onChange={(v) =>
+                  update("full_name", v)
+                }
+              />
 
-              <span className="profile-role">
-                {profile.role}
-              </span>
+              <Field
+                label="Email"
+                value={profile.email}
+                disabled
+              />
 
-              <div className="profile-divider" />
+              <Field
+                label="Phone"
+                value={profile.phone || ""}
+                onChange={(v) =>
+                  update("phone", v)
+                }
+              />
 
-              <div className="profile-summary-row">
-                <span>Club</span>
-                <strong>{profile.club}</strong>
-              </div>
+              <Field
+                label="Role"
+                value={profile.role}
+                disabled
+              />
 
-              <div className="profile-summary-row">
-                <span>Status</span>
-                <strong className="profile-active">
-                  Active
-                </strong>
-              </div>
-            </aside>
+              <Field
+                label="Department"
+                value={
+                  profile.department || ""
+                }
+                onChange={(v) =>
+                  update(
+                    "department",
+                    v
+                  )
+                }
+              />
 
-            {/* Edit form */}
-            <section className="clubops-card profile-form-card">
-              <div className="clubops-card-heading">
-                <div>
-                  <span className="clubops-section-label">
-                    PERSONAL INFORMATION
-                  </span>
+              <Field
+                label="Availability"
+                value={
+                  profile.availability ||
+                  ""
+                }
+                onChange={(v) =>
+                  update(
+                    "availability",
+                    v
+                  )
+                }
+              />
 
-                  <h2>Profile Details</h2>
+              <Field
+                label="Skills"
+                value={
+                  profile.skills || ""
+                }
+                onChange={(v) =>
+                  update(
+                    "skills",
+                    v
+                  )
+                }
+              />
 
-                  <p>
-                    Update the information associated with your
-                    ClubOps account.
-                  </p>
-                </div>
-              </div>
+              <Field
+                label="Profile image URL"
+                value={
+                  profile.profile_image ||
+                  ""
+                }
+                onChange={(v) =>
+                  update(
+                    "profile_image",
+                    v
+                  )
+                }
+              />
 
-              <form
-                className="clubops-form"
-                onSubmit={handleSubmit}
+              <label
+                style={{
+                  display: "grid",
+                  gap: 7,
+                  gridColumn:
+                    "1 / -1",
+                  color:
+                    "#374151",
+                  fontSize: 10,
+                  fontWeight: 800,
+                }}
               >
-                <div className="clubops-form-grid">
-                  <div className="clubops-form-field">
-                    <label htmlFor="fullName">
-                      Full Name
-                    </label>
+                Bio
 
-                    <input
-                      id="fullName"
-                      name="fullName"
-                      value={profile.fullName}
-                      onChange={handleChange}
-                      placeholder="Enter your name"
-                    />
-                  </div>
+                <textarea
+                  value={
+                    profile.bio || ""
+                  }
+                  onChange={(e) =>
+                    update(
+                      "bio",
+                      e.target.value
+                    )
+                  }
+                  rows={5}
+                  style={{
+                    padding: 12,
+                    border:
+                      "1px solid #dfe3ea",
+                    borderRadius: 9,
+                  }}
+                />
+              </label>
 
-                  <div className="clubops-form-field">
-                    <label htmlFor="email">
-                      Email Address
-                    </label>
-
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={profile.email}
-                      onChange={handleChange}
-                      placeholder="Enter your email"
-                    />
-                  </div>
-
-                  <div className="clubops-form-field">
-                    <label htmlFor="phone">
-                      Phone Number
-                    </label>
-
-                    <input
-                      id="phone"
-                      name="phone"
-                      value={profile.phone}
-                      onChange={handleChange}
-                      placeholder="Enter your phone"
-                    />
-                  </div>
-
-                  <div className="clubops-form-field">
-                    <label htmlFor="role">
-                      Role
-                    </label>
-
-                    <input
-                      id="role"
-                      name="role"
-                      value={profile.role}
-                      disabled
-                    />
-                  </div>
-
-                  <div className="clubops-form-field clubops-form-full">
-                    <label htmlFor="club">
-                      Club Name
-                    </label>
-
-                    <input
-                      id="club"
-                      name="club"
-                      value={profile.club}
-                      onChange={handleChange}
-                      placeholder="Enter your club name"
-                    />
-                  </div>
-
-                  <div className="clubops-form-field clubops-form-full">
-                    <label htmlFor="bio">
-                      About
-                    </label>
-
-                    <textarea
-                      id="bio"
-                      name="bio"
-                      rows="5"
-                      value={profile.bio}
-                      onChange={handleChange}
-                      placeholder="Tell us about yourself"
-                    />
-                  </div>
-                </div>
-
-                <div className="clubops-form-footer">
-                  {saved && (
-                    <span className="clubops-save-message">
-                      ✓ Profile updated
-                    </span>
-                  )}
-
-                  <button
-                    type="submit"
-                    className="clubops-primary-button"
+              <div
+                style={{
+                  gridColumn:
+                    "1 / -1",
+                  display: "flex",
+                  justifyContent:
+                    "flex-end",
+                  alignItems:
+                    "center",
+                  gap: 15,
+                }}
+              >
+                {message && (
+                  <span
+                    style={{
+                      color:
+                        "#15803d",
+                      fontSize: 10,
+                    }}
                   >
-                    Save Changes
-                  </button>
-                </div>
-              </form>
-            </section>
-          </div>
+                    {message}
+                  </span>
+                )}
+
+                <button
+                  className="clubops-primary-button"
+                  type="submit"
+                >
+                  Save Profile
+                </button>
+              </div>
+
+            </form>
+          </section>
         </section>
       </main>
     </div>
   );
 }
-```
+
+function Field({
+  label,
+  value,
+  onChange,
+  disabled = false,
+}) {
+  return (
+    <label
+      style={{
+        display: "grid",
+        gap: 7,
+        color: "#374151",
+        fontSize: 10,
+        fontWeight: 800,
+      }}
+    >
+      {label}
+
+      <input
+        value={value}
+        disabled={disabled}
+        onChange={(e) =>
+          onChange?.(e.target.value)
+        }
+        style={{
+          height: 42,
+          padding: "0 11px",
+          border:
+            "1px solid #dfe3ea",
+          borderRadius: 8,
+        }}
+      />
+    </label>
+  );
+}
