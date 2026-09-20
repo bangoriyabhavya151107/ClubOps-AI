@@ -21,32 +21,15 @@ import {
 import styles from "./dashboard.module.css";
 
 export default function DashboardPage() {
-  const [workspace, setWorkspace] =
-    useState(null);
-
-  const [events, setEvents] =
-    useState([]);
-
-  const [tasks, setTasks] =
-    useState([]);
-
-  const [meetings, setMeetings] =
-    useState([]);
-
-  const [announcements, setAnnouncements] =
-    useState([]);
-
-  const [members, setMembers] =
-    useState([]);
-
-  const [budget, setBudget] =
-    useState([]);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [error, setError] =
-    useState("");
+  const [workspace, setWorkspace] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [meetings, setMeetings] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [budget, setBudget] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     loadDashboard();
@@ -57,18 +40,15 @@ export default function DashboardPage() {
       setLoading(true);
       setError("");
 
-      const workspaceData =
-        await getWorkspace();
+      const workspaceData = await getWorkspace();
 
       setWorkspace(workspaceData);
 
-      const supabase =
-        (await import(
-          "@/lib/supabase/client"
-        )).createClient();
+      const supabase = (
+        await import("@/lib/supabase/client")
+      ).createClient();
 
-      const clubId =
-        workspaceData.clubId;
+      const clubId = workspaceData.clubId;
 
       const [
         eventResult,
@@ -147,29 +127,12 @@ export default function DashboardPage() {
         throw budgetResult.error;
       }
 
-      setEvents(
-        eventResult.data || []
-      );
-
-      setTasks(
-        taskResult.data || []
-      );
-
-      setMeetings(
-        meetingResult.data || []
-      );
-
-      setAnnouncements(
-        announcementResult.data || []
-      );
-
-      setMembers(
-        memberResult.data || []
-      );
-
-      setBudget(
-        budgetResult.data || []
-      );
+      setEvents(eventResult.data || []);
+      setTasks(taskResult.data || []);
+      setMeetings(meetingResult.data || []);
+      setAnnouncements(announcementResult.data || []);
+      setMembers(memberResult.data || []);
+      setBudget(budgetResult.data || []);
     } catch (error) {
       console.error(error);
 
@@ -185,116 +148,100 @@ export default function DashboardPage() {
   const today = useMemo(() => {
     const value = new Date();
 
-    value.setHours(
-      0,
-      0,
-      0,
-      0
-    );
+    value.setHours(0, 0, 0, 0);
 
     return value;
   }, []);
 
-  const upcomingEvents =
-    useMemo(
-      () =>
-        events.filter(
-          (event) => {
-            const date =
-              new Date(
-                `${event.event_date}T00:00:00`
-              );
-
-            return (
-              date >= today &&
-              event.status !==
-                "Cancelled"
-            );
-          }
-        ),
-      [events, today]
-    );
-
-  const completedTasks =
-    tasks.filter(
-      (task) =>
-        task.status ===
-        "Completed"
-    );
-
-  const pendingTasks =
-    tasks.filter(
-      (task) =>
-        task.status !==
-        "Completed"
-    );
-
-  const overdueTasks =
-    pendingTasks.filter(
-      (task) => {
-        if (!task.due_date) {
+  const upcomingEvents = useMemo(
+    () =>
+      events.filter((event) => {
+        if (!event.event_date) {
           return false;
         }
 
-        return (
-          new Date(
-            `${task.due_date}T00:00:00`
-          ) < today
+        const date = new Date(
+          `${event.event_date}T00:00:00`
         );
+
+        return (
+          date >= today &&
+          event.status !== "Cancelled"
+        );
+      }),
+    [events, today]
+  );
+
+  const completedTasks = tasks.filter(
+    (task) =>
+      String(task.status || "").toLowerCase() ===
+      "completed"
+  );
+
+  const pendingTasks = tasks.filter(
+    (task) =>
+      String(task.status || "").toLowerCase() !==
+      "completed"
+  );
+
+  const overdueTasks = pendingTasks.filter(
+    (task) => {
+      if (!task.due_date) {
+        return false;
       }
-    );
 
-  const taskProgress =
-    tasks.length
-      ? Math.round(
-          (completedTasks.length /
-            tasks.length) *
-            100
-        )
-      : 0;
+      return (
+        new Date(
+          `${task.due_date}T00:00:00`
+        ) < today
+      );
+    }
+  );
 
-  const totalBudget =
-    budget.reduce(
-      (sum, item) =>
-        sum +
-        Number(
-          item.allocated_amount ||
-            0
-        ),
-      0
-    );
+  const taskProgress = tasks.length
+    ? Math.round(
+        (completedTasks.length /
+          tasks.length) *
+          100
+      )
+    : 0;
 
-  const totalSpent =
-    budget.reduce(
-      (sum, item) =>
-        sum +
-        Number(
-          item.spent_amount ||
-            0
-        ),
-      0
-    );
+  const totalBudget = budget.reduce(
+    (sum, item) =>
+      sum +
+      Number(
+        item.allocated_amount || 0
+      ),
+    0
+  );
 
-  const nextMeeting =
-    meetings.find(
-      (meeting) =>
+  const totalSpent = budget.reduce(
+    (sum, item) =>
+      sum +
+      Number(
+        item.spent_amount || 0
+      ),
+    0
+  );
+
+  const nextMeeting = meetings.find(
+    (meeting) => {
+      if (!meeting.meeting_date) {
+        return false;
+      }
+
+      return (
         new Date(
           `${meeting.meeting_date}T00:00:00`
         ) >= today
-    );
+      );
+    }
+  );
 
   if (loading) {
     return (
-      <div
-        className={
-          styles.loadingPage
-        }
-      >
-        <div
-          className={
-            styles.loadingOrb
-          }
-        >
+      <div className={styles.loadingPage}>
+        <div className={styles.loadingOrb}>
           C
         </div>
 
@@ -310,88 +257,53 @@ export default function DashboardPage() {
   }
 
   return (
-    <div
-      className={
-        styles.dashboard
-      }
-    >
+    <div className={styles.dashboard}>
       <Sidebar />
 
-      <main
-        className={
-          styles.main
-        }
-      >
+      <main className={styles.main}>
         <Topbar />
 
-        <div
-          className={
-            styles.content
-          }
-        >
+        <div className={styles.content}>
           {error && (
-            <div
-              className={
-                styles.error
-              }
-            >
+            <div className={styles.error}>
               <strong>
                 Dashboard error
               </strong>
 
-              <span>
-                {error}
-              </span>
+              <span>{error}</span>
 
               <button
                 type="button"
-                onClick={
-                  loadDashboard
-                }
+                onClick={loadDashboard}
               >
                 Retry
               </button>
             </div>
           )}
 
-          <section
-            className={
-              styles.hero
-            }
-          >
+          <section className={styles.hero}>
             <div>
-              <span
-                className={
-                  styles.eyebrow
-                }
-              >
+              <span className={styles.eyebrow}>
                 CLUBOPS AI · LIVE WORKSPACE
               </span>
 
               <h1>
-                Welcome,{" "}
-                {workspace?.profile
-                  ?.full_name ||
+                Welcome{" "}
+                {workspace?.profile?.full_name ||
                   "Club Member"}
                 <span> 👋</span>
               </h1>
 
               <p>
-                Your club operations at
-                a glance. Everything here
-                is connected to your live
-                Supabase workspace.
+                Your club operations at a
+                glance. Everything here is
+                connected to your live Supabase
+                workspace.
               </p>
             </div>
 
-            <div
-              className={
-                styles.roleCard
-              }
-            >
-              <span>
-                CURRENT ROLE
-              </span>
+            <div className={styles.roleCard}>
+              <span>CURRENT ROLE</span>
 
               <strong>
                 {workspace?.role ||
@@ -404,35 +316,25 @@ export default function DashboardPage() {
             </div>
           </section>
 
-          <section
-            className={
-              styles.stats
-            }
-          >
+          <section className={styles.stats}>
             <Stat
               icon="👥"
               label="Active Members"
-              value={
-                members.length
-              }
+              value={members.length}
               note="People in your workspace"
             />
 
             <Stat
               icon="◈"
               label="Upcoming Events"
-              value={
-                upcomingEvents.length
-              }
+              value={upcomingEvents.length}
               note="Scheduled events"
             />
 
             <Stat
               icon="✓"
               label="Pending Tasks"
-              value={
-                pendingTasks.length
-              }
+              value={pendingTasks.length}
               note={`${overdueTasks.length} overdue`}
             />
 
@@ -446,33 +348,22 @@ export default function DashboardPage() {
             <Stat
               icon="₹"
               label="Budget"
-              value={formatMoney(
-                totalBudget
-              )}
+              value={formatMoney(totalBudget)}
               note={`${formatMoney(
                 totalSpent
               )} spent`}
             />
           </section>
 
-          <section
-            className={
-              styles.grid
-            }
-          >
-            <div
-              className={
-                styles.panel
-              }
-            >
+          <section className={styles.grid}>
+            <div className={styles.panel}>
               <PanelHeader
                 eyebrow="EVENT MANAGEMENT"
                 title="Upcoming Events"
                 href="/events"
               />
 
-              {upcomingEvents.length ===
-              0 ? (
+              {upcomingEvents.length === 0 ? (
                 <EmptyState
                   icon="◈"
                   title="No upcoming events"
@@ -481,91 +372,72 @@ export default function DashboardPage() {
                   action="Create Event"
                 />
               ) : (
-                <div
-                  className={
-                    styles.eventList
-                  }
-                >
+                <div className={styles.eventList}>
                   {upcomingEvents
                     .slice(0, 5)
-                    .map(
-                      (event) => (
+                    .map((event) => (
+                      <div
+                        key={event.id}
+                        className={styles.eventRow}
+                      >
                         <div
-                          key={
-                            event.id
-                          }
                           className={
-                            styles.eventRow
+                            styles.dateBox
                           }
                         >
-                          <div
-                            className={
-                              styles.dateBox
-                            }
-                          >
-                            <strong>
-                              {new Date(
-                                `${event.event_date}T00:00:00`
-                              ).getDate()}
-                            </strong>
+                          <strong>
+                            {new Date(
+                              `${event.event_date}T00:00:00`
+                            ).getDate()}
+                          </strong>
 
-                            <span>
-                              {new Date(
-                                `${event.event_date}T00:00:00`
-                              ).toLocaleDateString(
-                                "en-IN",
-                                {
-                                  month:
-                                    "short",
-                                }
-                              )}
-                            </span>
-                          </div>
-
-                          <div
-                            className={
-                              styles.eventInfo
-                            }
-                          >
-                            <strong>
+                          <span>
+                            {new Date(
+                              `${event.event_date}T00:00:00`
+                            ).toLocaleDateString(
+                              "en-IN",
                               {
-                                event.name
+                                month: "short",
                               }
-                            </strong>
-
-                            <p>
-                              {event.location ||
-                                "Location not set"}
-                            </p>
-
-                            <small>
-                              {formatTime(
-                                event.start_time
-                              )}
-                            </small>
-                          </div>
-
-                          <span
-                            className={
-                              styles.badge
-                            }
-                          >
-                            {
-                              event.status
-                            }
+                            )}
                           </span>
                         </div>
-                      )
-                    )}
+
+                        <div
+                          className={
+                            styles.eventInfo
+                          }
+                        >
+                          <strong>
+                            {event.name}
+                          </strong>
+
+                          <p>
+                            {event.location ||
+                              "Location not set"}
+                          </p>
+
+                          <small>
+                            {formatTime(
+                              event.start_time
+                            )}
+                          </small>
+                        </div>
+
+                        <span
+                          className={
+                            styles.badge
+                          }
+                        >
+                          {event.status}
+                        </span>
+                      </div>
+                    ))}
                 </div>
               )}
             </div>
 
-            <div
-              className={
-                styles.panel
-              }
-            >
+            <div className={styles.panel}>
               <PanelHeader
                 eyebrow="TASK MANAGEMENT"
                 title="Task Progress"
@@ -604,16 +476,10 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div
-                className={
-                  styles.taskStats
-                }
-              >
+              <div className={styles.taskStats}>
                 <div>
                   <strong>
-                    {
-                      completedTasks.length
-                    }
+                    {completedTasks.length}
                   </strong>
 
                   <span>
@@ -623,9 +489,7 @@ export default function DashboardPage() {
 
                 <div>
                   <strong>
-                    {
-                      pendingTasks.length
-                    }
+                    {pendingTasks.length}
                   </strong>
 
                   <span>
@@ -635,9 +499,7 @@ export default function DashboardPage() {
 
                 <div>
                   <strong>
-                    {
-                      overdueTasks.length
-                    }
+                    {overdueTasks.length}
                   </strong>
 
                   <span>
@@ -646,22 +508,22 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              <div
-                className={
-                  styles.taskList
-                }
-              >
+              <div className={styles.taskList}>
                 {pendingTasks
                   .slice(0, 4)
-                  .map(
-                    (task) => (
+                  .map((task) => {
+                    const priorityClass =
+                      `priority${String(
+                        task.priority ||
+                          "Medium"
+                      )
+                        .replace(/\s/g, "")
+                        .toLowerCase()}`;
+
+                    return (
                       <div
-                        key={
-                          task.id
-                        }
-                        className={
-                          styles.taskRow
-                        }
+                        key={task.id}
+                        className={styles.taskRow}
                       >
                         <div
                           className={
@@ -673,9 +535,7 @@ export default function DashboardPage() {
 
                         <div>
                           <strong>
-                            {
-                              task.title
-                            }
+                            {task.title}
                           </strong>
 
                           <span>
@@ -689,50 +549,32 @@ export default function DashboardPage() {
                         <em
                           className={
                             styles[
-                              `priority${String(
-                                task.priority ||
-                                  "Medium"
-                              )
-                                .replace(
-                                  /\s/g,
-                                  ""
-                                )
-                                .toLowerCase()}`
+                              priorityClass
+                            ]
                           }
                         >
-                          {
-                            task.priority
-                          }
+                          {task.priority ||
+                            "Medium"}
                         </em>
                       </div>
-                    )
-                  )}
+                    );
+                  })}
 
-                {pendingTasks.length ===
-                  0 && (
+                {pendingTasks.length === 0 && (
                   <div
                     className={
                       styles.miniEmpty
                     }
                   >
-                    All tasks are
-                    completed.
+                    All tasks are completed.
                   </div>
                 )}
               </div>
             </div>
           </section>
 
-          <section
-            className={
-              styles.grid
-            }
-          >
-            <div
-              className={
-                styles.panel
-              }
-            >
+          <section className={styles.grid}>
+            <div className={styles.panel}>
               <PanelHeader
                 eyebrow="MEETING INTELLIGENCE"
                 title="Next Meeting"
@@ -755,9 +597,7 @@ export default function DashboardPage() {
 
                   <div>
                     <strong>
-                      {
-                        nextMeeting.title
-                      }
+                      {nextMeeting.title}
                     </strong>
 
                     <p>
@@ -788,11 +628,7 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div
-              className={
-                styles.panel
-              }
-            >
+            <div className={styles.panel}>
               <PanelHeader
                 eyebrow="COMMUNICATION"
                 title="Latest Announcement"
@@ -806,30 +642,20 @@ export default function DashboardPage() {
                   }
                 >
                   <span>
-                    {
-                      announcements[0]
-                        .priority
-                    }
+                    {announcements[0].priority}
                   </span>
 
                   <h3>
-                    {
-                      announcements[0]
-                        .title
-                    }
+                    {announcements[0].title}
                   </h3>
 
                   <p>
-                    {
-                      announcements[0]
-                        .content
-                    }
+                    {announcements[0].content}
                   </p>
 
                   <small>
                     {formatDate(
-                      announcements[0]
-                        .created_at
+                      announcements[0].created_at
                     )}
                   </small>
                 </div>
@@ -846,9 +672,7 @@ export default function DashboardPage() {
           </section>
 
           <section
-            className={
-              styles.quickPanel
-            }
+            className={styles.quickPanel}
           >
             <div
               className={
@@ -856,9 +680,7 @@ export default function DashboardPage() {
               }
             >
               <div>
-                <span>
-                  OPERATIONS
-                </span>
+                <span>OPERATIONS</span>
 
                 <h2>
                   Quick Actions
@@ -871,9 +693,7 @@ export default function DashboardPage() {
             </div>
 
             <div
-              className={
-                styles.quickGrid
-              }
+              className={styles.quickGrid}
             >
               <QuickAction
                 href="/events"
@@ -931,40 +751,24 @@ function Stat({
   note,
 }) {
   return (
-    <article
-      className={
-        styles.stat
-      }
-    >
-      <div
-        className={
-          styles.statTop
-        }
-      >
+    <article className={styles.stat}>
+      <div className={styles.statTop}>
         <span
-          className={
-            styles.statIcon
-          }
+          className={styles.statIcon}
         >
           {icon}
         </span>
 
         <span
-          className={
-            styles.statLabel
-          }
+          className={styles.statLabel}
         >
           {label}
         </span>
       </div>
 
-      <strong>
-        {value}
-      </strong>
+      <strong>{value}</strong>
 
-      <p>
-        {note}
-      </p>
+      <p>{note}</p>
     </article>
   );
 }
@@ -976,18 +780,12 @@ function PanelHeader({
 }) {
   return (
     <div
-      className={
-        styles.panelHeader
-      }
+      className={styles.panelHeader}
     >
       <div>
-        <span>
-          {eyebrow}
-        </span>
+        <span>{eyebrow}</span>
 
-        <h2>
-          {title}
-        </h2>
+        <h2>{title}</h2>
       </div>
 
       {href && (
@@ -1007,26 +805,16 @@ function EmptyState({
   action,
 }) {
   return (
-    <div
-      className={
-        styles.empty
-      }
-    >
+    <div className={styles.empty}>
       <div
-        className={
-          styles.emptyIcon
-        }
+        className={styles.emptyIcon}
       >
         {icon}
       </div>
 
-      <strong>
-        {title}
-      </strong>
+      <strong>{title}</strong>
 
-      <p>
-        {text}
-      </p>
+      <p>{text}</p>
 
       {href && (
         <Link
@@ -1055,18 +843,12 @@ function QuickAction({
         styles.quickAction
       }
     >
-      <span>
-        {icon}
-      </span>
+      <span>{icon}</span>
 
       <div>
-        <strong>
-          {title}
-        </strong>
+        <strong>{title}</strong>
 
-        <p>
-          {text}
-        </p>
+        <p>{text}</p>
       </div>
 
       <b>→</b>
