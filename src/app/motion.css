@@ -1,0 +1,947 @@
+css
+/* =========================================================
+   CLUBOPS AI — GLOBAL MOTION SYSTEM
+   Video-inspired animation system
+
+   Animation flow:
+   1. ClubOps AI logo appears
+   2. Brand name rises
+   3. Line expands
+   4. Intro moves away
+   5. Page enters
+   6. Sections reveal while scrolling
+   7. Images slowly scale
+   8. Cards/buttons/nav have subtle hover motion
+
+   IMPORTANT:
+   - Do NOT add another global animation library.
+   - Existing page-specific animations are protected
+     by ClubOpsMotion.jsx.
+========================================================= */
+
+
+/* =========================================================
+   0. GLOBAL MOTION VARIABLES
+========================================================= */
+
+:root {
+  --co-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --co-fast-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --co-indigo: #4f46e5;
+  --co-dark: #111827;
+  --co-white: #ffffff;
+}
+
+
+/* =========================================================
+   1. CLUBOPS AI INTRO / LOGO ANIMATION
+========================================================= */
+
+/*
+   Full-screen opening animation.
+
+   Sequence:
+
+   Logo
+      ↓
+   ClubOps AI text
+      ↓
+   Line
+      ↓
+   Intro slides upward
+*/
+
+.co-intro {
+  position: fixed;
+  inset: 0;
+
+  z-index: 99999;
+
+  pointer-events: none;
+
+  display: grid;
+  place-items: center;
+
+  background: var(--co-white);
+
+  opacity: 1;
+  visibility: visible;
+
+  transform: translateY(0);
+
+  animation:
+    coIntroOut
+    900ms
+    var(--co-motion-ease)
+    350ms
+    forwards;
+}
+
+
+/* Intro content container */
+
+.co-intro-center {
+  width: min(360px, 72vw);
+
+  text-align: center;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   2. CLUBOPS LOGO MARK
+========================================================= */
+
+.co-intro-mark {
+  width: 68px;
+  height: 68px;
+
+  margin: 0 auto 14px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 18px;
+
+  background: var(--co-indigo);
+
+  color: white;
+
+  font-size: 30px;
+  font-weight: 800;
+
+  letter-spacing: -0.04em;
+
+  opacity: 0;
+
+  transform:
+    translateY(22px)
+    scale(0.88);
+
+  animation:
+    coLogoIn
+    650ms
+    var(--co-motion-ease)
+    100ms
+    forwards;
+
+  box-shadow:
+    0 18px 55px
+    rgba(79, 70, 229, 0.20);
+}
+
+
+/* =========================================================
+   3. CLUBOPS AI NAME
+========================================================= */
+
+.co-intro-name {
+  color: var(--co-dark);
+
+  font-size: clamp(28px, 5vw, 48px);
+
+  line-height: 1;
+
+  font-weight: 700;
+
+  letter-spacing: -0.055em;
+
+  opacity: 0;
+
+  transform: translateY(28px);
+
+  animation:
+    coNameIn
+    700ms
+    var(--co-motion-ease)
+    220ms
+    forwards;
+}
+
+
+/* =========================================================
+   4. INTRO LINE
+========================================================= */
+
+.co-intro-line {
+  width: 0;
+
+  height: 2px;
+
+  margin: 22px auto 0;
+
+  background: var(--co-indigo);
+
+  animation:
+    coLineIn
+    600ms
+    var(--co-motion-ease)
+    430ms
+    forwards;
+}
+
+
+/* =========================================================
+   5. LOGO KEYFRAME
+========================================================= */
+
+@keyframes coLogoIn {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(22px)
+      scale(0.88);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+}
+
+
+/* =========================================================
+   6. NAME KEYFRAME
+========================================================= */
+
+@keyframes coNameIn {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(28px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+
+}
+
+
+/* =========================================================
+   7. LINE KEYFRAME
+========================================================= */
+
+@keyframes coLineIn {
+
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+
+}
+
+
+/* =========================================================
+   8. INTRO EXIT
+========================================================= */
+
+@keyframes coIntroOut {
+
+  0% {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+      translateY(0);
+  }
+
+  75% {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+      translateY(-100%);
+  }
+
+  100% {
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform:
+      translateY(-100%);
+  }
+
+}
+
+
+/* =========================================================
+   9. GLOBAL PAGE ENTRANCE
+========================================================= */
+
+.co-page-shell {
+
+  min-height: 100%;
+
+  opacity: 0;
+
+  transform:
+    translateY(12px);
+
+  animation:
+    coPageIn
+    700ms
+    var(--co-motion-ease)
+    650ms
+    forwards;
+}
+
+
+/* Page entrance */
+
+@keyframes coPageIn {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+
+}
+
+
+/* =========================================================
+   10. SCROLL REVEAL
+========================================================= */
+
+/*
+   Elements initially stay slightly below their position.
+
+   When ClubOpsMotion.jsx detects them in the viewport,
+   it adds:
+
+   .co-visible
+*/
+
+
+.co-reveal {
+
+  opacity: 0;
+
+  transform:
+    translateY(48px);
+
+  transition:
+    opacity 760ms var(--co-motion-ease),
+    transform 760ms var(--co-motion-ease);
+
+  transition-delay:
+    var(--co-delay, 0ms);
+
+  will-change:
+    opacity,
+    transform;
+}
+
+
+/* Visible state */
+
+.co-reveal.co-visible {
+
+  opacity: 1;
+
+  transform:
+    translateY(0);
+}
+
+
+/*
+   Stop unnecessary GPU work after animation.
+*/
+
+.co-reveal:hover {
+
+  will-change: auto;
+}
+
+
+/* =========================================================
+   11. HERO TEXT
+========================================================= */
+
+.co-hero-text {
+
+  opacity: 0;
+
+  transform:
+    translateY(38px);
+
+  animation:
+    coHeroTextIn
+    850ms
+    var(--co-motion-ease)
+    850ms
+    forwards;
+}
+
+
+/* Hero text animation */
+
+@keyframes coHeroTextIn {
+
+  from {
+
+    opacity: 0;
+
+    transform:
+      translateY(38px);
+  }
+
+  to {
+
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+
+}
+
+
+/* =========================================================
+   12. IMAGE / VISUAL ANIMATION
+========================================================= */
+
+/*
+   Images begin slightly zoomed.
+
+   When visible:
+
+   scale(1.035)
+        ↓
+   scale(1)
+*/
+
+.co-media {
+
+  overflow: hidden;
+}
+
+
+/* Images */
+
+.co-media img,
+.co-media > img {
+
+  transform:
+    scale(1.035);
+
+  transition:
+    transform 1200ms var(--co-motion-ease);
+
+  will-change:
+    transform;
+}
+
+
+/* Image becomes normal size */
+
+.co-visible.co-media img,
+.co-visible.co-media > img {
+
+  transform:
+    scale(1);
+}
+
+
+/* Subtle image hover */
+
+.co-media:hover img,
+.co-media:hover > img {
+
+  transform:
+    scale(1.025);
+}
+
+
+/* =========================================================
+   13. SECTION LINE ACCENT
+========================================================= */
+
+/*
+   Thin line inspired by the reference video.
+
+   The line grows when the section becomes visible.
+*/
+
+main section {
+
+  position: relative;
+}
+
+
+main section::after {
+
+  content: "";
+
+  position: absolute;
+
+  left:
+    clamp(20px, 6vw, 90px);
+
+  bottom: 0;
+
+  width:
+    min(110px, 18vw);
+
+  height: 1px;
+
+  background:
+    currentColor;
+
+  opacity: 0.08;
+
+  transform:
+    scaleX(0);
+
+  transform-origin:
+    left center;
+
+  transition:
+    transform 900ms var(--co-motion-ease);
+}
+
+
+/* Line appears */
+
+main section.co-visible::after {
+
+  transform:
+    scaleX(1);
+}
+
+
+/* =========================================================
+   14. NAVIGATION
+========================================================= */
+
+nav a,
+.navbar a,
+.clubops-sidebar a,
+.clubops-topbar a {
+
+  transition:
+    color 220ms ease,
+    opacity 220ms ease,
+    transform 220ms var(--co-fast-ease);
+}
+
+
+/* Navbar link movement */
+
+nav a:hover,
+.navbar a:hover {
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* Navigation underline */
+
+nav a::after,
+.navbar .navLinks a::after,
+.navbar .nav-links a::after {
+
+  content: "";
+
+  display: block;
+
+  width: 0;
+
+  height: 1px;
+
+  margin-top: 4px;
+
+  background:
+    currentColor;
+
+  transition:
+    width 260ms var(--co-fast-ease);
+}
+
+
+/* Underline expands */
+
+nav a:hover::after,
+.navbar .navLinks a:hover::after,
+.navbar .nav-links a:hover::after {
+
+  width: 100%;
+}
+
+
+/* =========================================================
+   15. BUTTONS
+========================================================= */
+
+/*
+   Buttons intentionally use very small movement.
+
+   This prevents the "glitchy" feeling.
+*/
+
+button,
+a[class*="button"],
+a[class*="Button"],
+a[class*="Cta"],
+a[class*="cta"] {
+
+  transition:
+    transform 240ms var(--co-fast-ease),
+    box-shadow 240ms ease,
+    background-color 240ms ease,
+    border-color 240ms ease;
+}
+
+
+/* Button hover */
+
+button:hover,
+a[class*="button"]:hover,
+a[class*="Button"]:hover,
+a[class*="Cta"]:hover,
+a[class*="cta"]:hover {
+
+  transform:
+    translateY(-2px);
+}
+
+
+/* Button click */
+
+button:active,
+a[class*="button"]:active,
+a[class*="Button"]:active,
+a[class*="Cta"]:active,
+a[class*="cta"]:active {
+
+  transform:
+    translateY(0)
+    scale(0.985);
+}
+
+
+/* =========================================================
+   16. CARD ANIMATION
+========================================================= */
+
+/*
+   Used for:
+
+   Feature cards
+   Event cards
+   Statistics
+   Dashboard cards
+   Contact cards
+   Login cards
+   Settings cards
+*/
+
+.feature-card,
+.featureCard,
+
+.event-card,
+.eventCard,
+
+.stat-card,
+.statCard,
+
+.dashboard-panel,
+.dashboard-card,
+
+.contact-detail-card,
+
+.auth-card,
+.login-card,
+
+.profile-card,
+.settings-card {
+
+  transition:
+    transform 420ms var(--co-fast-ease),
+    box-shadow 420ms ease,
+    border-color 420ms ease;
+
+  will-change:
+    transform;
+}
+
+
+/* Card hover */
+
+.feature-card:hover,
+.featureCard:hover,
+
+.event-card:hover,
+.eventCard:hover,
+
+.stat-card:hover,
+.statCard:hover,
+
+.dashboard-panel:hover,
+.dashboard-card:hover,
+
+.contact-detail-card:hover,
+
+.profile-card:hover,
+.settings-card:hover {
+
+  transform:
+    translateY(-6px);
+}
+
+
+/* =========================================================
+   17. FORM ANIMATION
+========================================================= */
+
+input,
+textarea,
+select {
+
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms var(--co-fast-ease);
+}
+
+
+/* Form focus */
+
+input:focus,
+textarea:focus,
+select:focus {
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* =========================================================
+   18. DASHBOARD SIDEBAR
+========================================================= */
+
+.clubops-sidebar,
+.dashboard-sidebar {
+
+  transition:
+    width 300ms var(--co-fast-ease),
+    transform 300ms var(--co-fast-ease);
+}
+
+
+/* =========================================================
+   19. DASHBOARD TOPBAR
+========================================================= */
+
+.clubops-topbar,
+.dashboard-header {
+
+  backdrop-filter:
+    blur(12px);
+
+  -webkit-backdrop-filter:
+    blur(12px);
+}
+
+
+/* =========================================================
+   20. DASHBOARD INTERACTIVE ELEMENTS
+========================================================= */
+
+.clubops-notification,
+.notification-button,
+
+.clubops-user-avatar,
+.avatar,
+
+.sidebar-link {
+
+  transition:
+    transform 220ms var(--co-fast-ease),
+    background-color 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+
+/* Notification / avatar */
+
+.clubops-notification:hover,
+.notification-button:hover,
+
+.clubops-user-avatar:hover,
+.avatar:hover {
+
+  transform:
+    translateY(-2px);
+}
+
+
+/* Sidebar links */
+
+.sidebar-link:hover {
+
+  transform:
+    translateX(4px);
+}
+
+
+/* =========================================================
+   21. FOOTER
+========================================================= */
+
+footer a {
+
+  transition:
+    transform 220ms var(--co-fast-ease),
+    color 220ms ease,
+    opacity 220ms ease;
+}
+
+
+/* Footer link hover */
+
+footer a:hover {
+
+  transform:
+    translateX(3px);
+}
+
+
+/* =========================================================
+   22. ACCESSIBILITY
+========================================================= */
+
+/*
+   Users who have enabled reduced motion
+   should not receive large animations.
+*/
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+
+    animation-duration:
+      1ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      1ms !important;
+
+    scroll-behavior:
+      auto !important;
+  }
+
+
+  /* Remove intro */
+
+  .co-intro {
+
+    display: none;
+  }
+
+
+  /* Make content immediately visible */
+
+  .co-page-shell,
+  .co-reveal,
+  .co-hero-text {
+
+    opacity: 1 !important;
+
+    transform:
+      none !important;
+  }
+
+
+  /* Show section lines */
+
+  main section::after {
+
+    transform:
+      scaleX(1);
+  }
+
+}
+
+
+/* =========================================================
+   23. MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+
+  /* Smaller intro logo */
+
+  .co-intro-mark {
+
+    width: 58px;
+
+    height: 58px;
+
+    border-radius: 15px;
+  }
+
+
+  /* Smaller intro title */
+
+  .co-intro-name {
+
+    font-size:
+      32px;
+  }
+
+
+  /* Smaller scroll movement */
+
+  .co-reveal {
+
+    transform:
+      translateY(28px);
+  }
+
+
+  /* Section line position */
+
+  main section::after {
+
+    left:
+      20px;
+  }
+
+}
+
