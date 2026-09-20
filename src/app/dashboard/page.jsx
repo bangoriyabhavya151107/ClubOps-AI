@@ -50,6 +50,12 @@ export default function DashboardPage() {
 
       const clubId = workspaceData.clubId;
 
+      if (!clubId) {
+        throw new Error(
+          "No club workspace is connected to this account."
+        );
+      }
+
       const [
         eventResult,
         taskResult,
@@ -133,11 +139,14 @@ export default function DashboardPage() {
       setAnnouncements(announcementResult.data || []);
       setMembers(memberResult.data || []);
       setBudget(budgetResult.data || []);
-    } catch (error) {
-      console.error(error);
+    } catch (dashboardError) {
+      console.error(
+        "Dashboard loading error:",
+        dashboardError
+      );
 
       setError(
-        error?.message ||
+        dashboardError?.message ||
           "Unable to load the dashboard."
       );
     } finally {
@@ -153,39 +162,42 @@ export default function DashboardPage() {
     return value;
   }, []);
 
-  const upcomingEvents = useMemo(
-    () =>
-      events.filter((event) => {
-        if (!event.event_date) {
-          return false;
-        }
+  const upcomingEvents = useMemo(() => {
+    return events.filter((event) => {
+      if (!event.event_date) {
+        return false;
+      }
 
-        const date = new Date(
-          `${event.event_date}T00:00:00`
-        );
+      const date = new Date(
+        `${event.event_date}T00:00:00`
+      );
 
-        return (
-          date >= today &&
-          event.status !== "Cancelled"
-        );
-      }),
-    [events, today]
-  );
+      return (
+        date >= today &&
+        String(event.status || "").toLowerCase() !==
+          "cancelled"
+      );
+    });
+  }, [events, today]);
 
-  const completedTasks = tasks.filter(
-    (task) =>
-      String(task.status || "").toLowerCase() ===
-      "completed"
-  );
+  const completedTasks = useMemo(() => {
+    return tasks.filter(
+      (task) =>
+        String(task.status || "").toLowerCase() ===
+        "completed"
+    );
+  }, [tasks]);
 
-  const pendingTasks = tasks.filter(
-    (task) =>
-      String(task.status || "").toLowerCase() !==
-      "completed"
-  );
+  const pendingTasks = useMemo(() => {
+    return tasks.filter(
+      (task) =>
+        String(task.status || "").toLowerCase() !==
+        "completed"
+    );
+  }, [tasks]);
 
-  const overdueTasks = pendingTasks.filter(
-    (task) => {
+  const overdueTasks = useMemo(() => {
+    return pendingTasks.filter((task) => {
       if (!task.due_date) {
         return false;
       }
@@ -195,8 +207,8 @@ export default function DashboardPage() {
           `${task.due_date}T00:00:00`
         ) < today
       );
-    }
-  );
+    });
+  }, [pendingTasks, today]);
 
   const taskProgress = tasks.length
     ? Math.round(
@@ -420,7 +432,8 @@ export default function DashboardPage() {
                           <small>
                             {formatTime(
                               event.start_time
-                            )}
+                            ) ||
+                              "Time not set"}
                           </small>
                         </div>
 
@@ -429,7 +442,8 @@ export default function DashboardPage() {
                             styles.badge
                           }
                         >
-                          {event.status}
+                          {event.status ||
+                            "Planned"}
                         </span>
                       </div>
                     ))}
@@ -535,7 +549,8 @@ export default function DashboardPage() {
 
                         <div>
                           <strong>
-                            {task.title}
+                            {task.title ||
+                              "Untitled task"}
                           </strong>
 
                           <span>
@@ -597,7 +612,8 @@ export default function DashboardPage() {
 
                   <div>
                     <strong>
-                      {nextMeeting.title}
+                      {nextMeeting.title ||
+                        "Club Meeting"}
                     </strong>
 
                     <p>
@@ -642,7 +658,9 @@ export default function DashboardPage() {
                   }
                 >
                   <span>
-                    {announcements[0].priority}
+                    {announcements[0]
+                      .priority ||
+                      "Normal"}
                   </span>
 
                   <h3>
@@ -655,7 +673,8 @@ export default function DashboardPage() {
 
                   <small>
                     {formatDate(
-                      announcements[0].created_at
+                      announcements[0]
+                        .created_at
                     )}
                   </small>
                 </div>

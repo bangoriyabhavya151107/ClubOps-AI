@@ -2,39 +2,105 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+
 import { createClient } from "@/lib/supabase/client";
-import { initials } from "@/lib/clubops";
+import {
+  getWorkspace,
+  initials,
+  normalizeRole,
+} from "@/lib/clubops";
+
+function getRoleLabel(role) {
+  switch (normalizeRole(role)) {
+    case "ADMIN":
+      return "Administrator";
+
+    case "COORDINATOR":
+      return "Coordinator";
+
+    case "VOLUNTEER":
+      return "Volunteer";
+
+    default:
+      return "Club Member";
+  }
+}
 
 export default function Topbar() {
+  const [profile, setProfile] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(true);
+
   const supabase = createClient();
 
-  const [profile, setProfile] = useState(null);
-
   useEffect(() => {
-    async function load() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    let mounted = true;
 
-      if (!user) return;
+    async function loadProfile() {
+      try {
+        const {
+          data: {
+            user,
+          },
+        } = await supabase.auth.getUser();
 
-      const { data } = await supabase
-        .from("profiles")
-        .select("full_name,email,role,profile_image")
-        .eq("id", user.id)
-        .maybeSingle();
+        if (!user) {
+          return;
+        }
 
-      setProfile(data);
+        const { data } =
+          await supabase
+            .from("profiles")
+            .select(
+              "full_name,email,role,profile_image"
+            )
+            .eq("id", user.id)
+            .maybeSingle();
+
+        if (mounted) {
+          setProfile(data);
+        }
+      } catch (error) {
+        console.error(
+          "Topbar profile error:",
+          error
+        );
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
     }
 
-    load();
+    loadProfile();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
+
+  const role =
+    normalizeRole(
+      profile?.role ||
+        "VOLUNTEER"
+    );
+
+  const roleLabel =
+    getRoleLabel(role);
 
   return (
     <header className="clubops-topbar">
       <div>
-        <span>CLUBOPS AI</span>
-        <h1>Operations Workspace</h1>
+        <span>
+          CLUBOPS AI
+        </span>
+
+        <h1>
+          Operations Workspace
+        </h1>
+
         <p>
           Manage your club from one place.
         </p>
@@ -45,21 +111,33 @@ export default function Topbar() {
           {profile?.profile_image ? (
             <img
               src={profile.profile_image}
-              alt=""
+              alt={
+                profile.full_name ||
+                "Profile"
+              }
             />
           ) : (
             <strong>
-              {initials(profile?.full_name)}
+              {loading
+                ? "…"
+                : initials(
+                    profile?.full_name
+                  )}
             </strong>
           )}
 
           <div>
             <b>
-              {profile?.full_name || "Club Member"}
+              {loading
+                ? "Loading..."
+                : profile?.full_name ||
+                  "Club Member"}
             </b>
 
             <small>
-              {profile?.role || "VOLUNTEER"}
+              {loading
+                ? "Loading role..."
+                : roleLabel}
             </small>
           </div>
         </Link>
