@@ -1,163 +1,1306 @@
 /* =========================================================
-   CLUBOPS AI — GLOBAL MOTION SYSTEM v2
+   CLUBOPS AI
+   GLOBAL MOTION SYSTEM
    ========================================================= */
 
 :root {
-  --co-motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --co-fast-ease: cubic-bezier(0.16, 1, 0.3, 1);
-  --co-bounce-ease: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --co-motion-ease:
+    cubic-bezier(0.22, 1, 0.36, 1);
 
-  --co-indigo: #6366f1;
-  --co-violet: #8b5cf6;
-  --co-dark: #0f0f1a;
-  --co-white: #ffffff;
+  --co-fast-ease:
+    cubic-bezier(0.16, 1, 0.3, 1);
+
+  --co-bounce-ease:
+    cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --co-indigo:
+    #6366f1;
+
+  --co-violet:
+    #8b5cf6;
+
+  --co-purple:
+    #a855f7;
+
+  --co-scroll-progress-value:
+    0;
 }
 
 
 /* =========================================================
-   INTRO SCREEN
+   SCROLL PROGRESS
+   ========================================================= */
+
+.scroll-progress {
+  position: fixed;
+
+  top: 0;
+  left: 0;
+  right: 0;
+
+  height: 3px;
+
+  z-index: 10000;
+
+  pointer-events: none;
+
+  overflow: hidden;
+}
+
+
+.scroll-progress-bar {
+  width: 100%;
+
+  height: 100%;
+
+  transform-origin:
+    left center;
+
+  transform:
+    scaleX(
+      var(--co-scroll-progress-value)
+    );
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--co-indigo),
+      var(--co-violet),
+      var(--co-purple)
+    );
+}
+
+
+/* =========================================================
+   STARTUP INTRO
    ========================================================= */
 
 .co-intro {
   position: fixed;
+
   inset: 0;
+
   z-index: 99999;
+
   display: grid;
+
   place-items: center;
+
+  overflow: hidden;
+
   pointer-events: none;
-  opacity: 1;
-  visibility: visible;
+
+  background:
+    #050509;
+
   animation:
-    coIntroOut 900ms var(--co-motion-ease) 1400ms forwards;
+    coIntroFadeOut
+    650ms
+    var(--co-motion-ease)
+    2050ms
+    forwards;
 }
+
+
+/* =========================================================
+   INTRO BACKGROUND
+   ========================================================= */
 
 .co-intro-bg {
   position: absolute;
+
   inset: 0;
+
   background:
-    radial-gradient(circle at 30% 30%, rgba(99,102,241,0.3), transparent 40%),
-    radial-gradient(circle at 70% 70%, rgba(139,92,246,0.25), transparent 40%),
+    radial-gradient(
+      circle at 30% 30%,
+      rgba(99, 102, 241, 0.32),
+      transparent 38%
+    ),
+
+    radial-gradient(
+      circle at 70% 70%,
+      rgba(139, 92, 246, 0.24),
+      transparent 42%
+    ),
+
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(168, 85, 247, 0.08),
+      transparent 45%
+    ),
+
     #050509;
-  animation: coBgPulse 2.1s ease forwards;
+
+  animation:
+    coIntroBackground
+    2700ms
+    ease
+    forwards;
 }
 
-@keyframes coBgPulse {
-  0%   { opacity: 1; }
-  80%  { opacity: 1; }
-  100% { opacity: 0; }
+
+@keyframes coIntroBackground {
+  0% {
+    transform:
+      scale(1);
+  }
+
+  100% {
+    transform:
+      scale(1.08);
+  }
 }
+
+
+/* =========================================================
+   INTRO CENTER
+   ========================================================= */
 
 .co-intro-center {
   position: relative;
-  z-index: 1;
-  width: min(380px, 80vw);
+
+  z-index: 3;
+
+  width:
+    min(400px, 86vw);
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
   text-align: center;
+
+  animation:
+    coIntroContentExit
+    550ms
+    var(--co-motion-ease)
+    1850ms
+    forwards;
+}
+
+
+@keyframes coIntroContentExit {
+  0% {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translateY(-25px)
+      scale(0.94);
+  }
 }
 
 
 /* =========================================================
-   INTRO LOGO
+   LARGE INTRO LOGO
    ========================================================= */
 
 .co-intro-mark {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 18px;
+  position: relative;
+
+  width: 88px;
+
+  height: 88px;
+
   display: grid;
+
   place-items: center;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  color: #fff;
-  font-size: 32px;
-  font-weight: 900;
-  letter-spacing: -0.04em;
+
+  border-radius: 25px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--co-indigo),
+      var(--co-violet)
+    );
+
+  color: #ffffff;
+
   opacity: 0;
-  transform: translateY(28px) scale(0.85);
-  animation:
-    coLogoIn 700ms var(--co-motion-ease) 100ms forwards;
+
+  transform:
+    translateY(25px)
+    scale(0.65)
+    rotate(-8deg);
+
   box-shadow:
-    0 20px 60px rgba(99,102,241,0.4),
-    0 0 0 1px rgba(255,255,255,0.08) inset;
+    0 30px 80px
+    rgba(99, 102, 241, 0.42),
+
+    inset 0 1px 0
+    rgba(255,255,255,0.35);
+
+  animation:
+    coIntroLogoIn
+    750ms
+    var(--co-bounce-ease)
+    100ms
+    forwards;
 }
 
-.co-intro-name {
-  color: #fff;
-  font-size: clamp(28px, 5vw, 48px);
-  line-height: 1;
-  font-weight: 800;
-  letter-spacing: -0.05em;
+
+.co-intro-mark::before {
+  content: "";
+
+  position: absolute;
+
+  inset: -7px;
+
+  border-radius: 31px;
+
+  border:
+    1px solid
+    rgba(255,255,255,0.25);
+
   opacity: 0;
-  transform: translateY(24px);
+
   animation:
-    coNameIn 700ms var(--co-motion-ease) 250ms forwards;
+    coIntroRing
+    700ms
+    var(--co-motion-ease)
+    350ms
+    forwards;
 }
+
+
+.co-intro-mark::after {
+  content: "";
+
+  position: absolute;
+
+  width: 130px;
+
+  height: 130px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(139, 92, 246, 0.2);
+
+  opacity: 0;
+
+  animation:
+    coIntroOrbit
+    1800ms
+    linear
+    350ms
+    forwards;
+}
+
+
+.co-intro-mark-letter {
+  position: relative;
+
+  z-index: 2;
+
+  color: #ffffff;
+
+  font-size: 48px;
+
+  font-weight: 900;
+
+  line-height: 1;
+
+  letter-spacing:
+    -0.08em;
+
+  opacity: 0;
+
+  transform:
+    scale(0.5);
+
+  animation:
+    coIntroLetter
+    500ms
+    var(--co-bounce-ease)
+    350ms
+    forwards;
+}
+
+
+@keyframes coIntroLogoIn {
+  0% {
+    opacity: 0;
+
+    transform:
+      translateY(25px)
+      scale(0.65)
+      rotate(-8deg);
+  }
+
+  65% {
+    opacity: 1;
+
+    transform:
+      translateY(-3px)
+      scale(1.08)
+      rotate(2deg);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1)
+      rotate(0);
+  }
+}
+
+
+@keyframes coIntroLetter {
+  0% {
+    opacity: 0;
+
+    transform:
+      scale(0.5);
+  }
+
+  70% {
+    opacity: 1;
+
+    transform:
+      scale(1.12);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      scale(1);
+  }
+}
+
+
+@keyframes coIntroRing {
+  from {
+    opacity: 0;
+
+    transform:
+      scale(0.7);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      scale(1);
+  }
+}
+
+
+@keyframes coIntroOrbit {
+  0% {
+    opacity: 0;
+
+    transform:
+      rotate(0deg)
+      scale(0.7);
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.3;
+
+    transform:
+      rotate(360deg)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   INTRO BRAND
+   ========================================================= */
+
+.co-intro-name {
+  margin-top: 24px;
+
+  color: #ffffff;
+
+  font-size:
+    clamp(34px, 6vw, 54px);
+
+  font-weight: 850;
+
+  line-height: 1;
+
+  letter-spacing:
+    -0.06em;
+
+  opacity: 0;
+
+  transform:
+    translateY(20px);
+
+  animation:
+    coNameIn
+    650ms
+    var(--co-motion-ease)
+    450ms
+    forwards;
+}
+
+
+@keyframes coNameIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   INTRO LINE
+   ========================================================= */
 
 .co-intro-line {
   width: 0;
+
   height: 2px;
-  margin: 18px auto 0;
-  background: linear-gradient(90deg, transparent, #6366f1, transparent);
+
+  margin-top: 20px;
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--co-indigo),
+      var(--co-violet),
+      transparent
+    );
+
   animation:
-    coLineIn 600ms var(--co-motion-ease) 500ms forwards;
+    coLineIn
+    650ms
+    var(--co-motion-ease)
+    650ms
+    forwards;
 }
+
+
+.co-intro-line span {
+  display: block;
+
+  width: 45%;
+
+  height: 100%;
+
+  background:
+    rgba(255,255,255,0.8);
+
+  transform:
+    translateX(-150%);
+
+  animation:
+    coLineSweep
+    650ms
+    ease
+    700ms
+    forwards;
+}
+
+
+@keyframes coLineIn {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 145px;
+  }
+}
+
+
+@keyframes coLineSweep {
+  to {
+    transform:
+      translateX(400%);
+  }
+}
+
+
+/* =========================================================
+   TAGLINE
+   ========================================================= */
 
 .co-intro-tagline {
   margin-top: 14px;
-  color: rgba(255,255,255,0.45);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1.8px;
-  text-transform: uppercase;
+
+  color:
+    rgba(255,255,255,0.42);
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  letter-spacing:
+    2.5px;
+
   opacity: 0;
-  animation: coTaglineIn 500ms ease 700ms forwards;
+
+  transform:
+    translateY(8px);
+
+  animation:
+    coTaglineIn
+    500ms
+    ease
+    800ms
+    forwards;
 }
+
 
 @keyframes coTaglineIn {
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
 }
 
 
 /* =========================================================
-   KEYFRAMES
+   =========================================================
+   LOGO → NAVBAR FLIGHT
+   =========================================================
+   =========================================================
+
+   IMPORTANT:
+
+   This is NOT an approximate fixed animation.
+
+   ClubOpsMotion.jsx measures the real navbar logo:
+
+       .apple-logo-badge
+
+   and sends its coordinates here as:
+
+       --co-logo-target-x
+       --co-logo-target-y
+
+   Therefore the animation adapts to desktop/mobile.
    ========================================================= */
 
-@keyframes coLogoIn {
-  from { opacity: 0; transform: translateY(28px) scale(0.85); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
 
-@keyframes coNameIn {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+.co-logo-flight {
+  position: fixed;
 
-@keyframes coLineIn {
-  from { width: 0; }
-  to   { width: 120px; }
-}
+  top: 50%;
 
-@keyframes coIntroOut {
-  0%   { opacity: 1; visibility: visible; transform: translateY(0); }
-  80%  { opacity: 1; visibility: visible; transform: translateY(-100%); }
-  100% { opacity: 0; visibility: hidden; transform: translateY(-100%); }
-}
+  left: 50%;
 
+  z-index: 100002;
 
-/* =========================================================
-   PAGE ENTRANCE (first load)
-   ========================================================= */
+  width: 88px;
 
-.co-page-shell {
-  min-height: 100%;
+  height: 88px;
+
+  margin-left: -44px;
+
+  margin-top: -44px;
+
+  display: grid;
+
+  place-items: center;
+
+  pointer-events: none;
+
   opacity: 0;
-  transform: translateY(14px);
-  animation:
-    coPageIn 700ms var(--co-motion-ease) 700ms forwards;
+
+  transform:
+    translate3d(
+      0,
+      0,
+      0
+    )
+    scale(0.7);
+
+  visibility: hidden;
 }
 
-@keyframes coPageIn {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
+
+/*
+ * We only start the flight when the actual navbar logo
+ * position has been measured.
+ */
+
+.co-logo-flight-ready {
+  visibility: visible;
+
+  animation:
+    coLogoTravelToNavbar
+    1050ms
+    var(--co-motion-ease)
+    1450ms
+    forwards;
+}
+
+
+/* =========================================================
+   FLYING LOGO
+   ========================================================= */
+
+.co-logo-flight-inner {
+  width: 88px;
+
+  height: 88px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 25px;
+
+  background:
+    linear-gradient(
+      135deg,
+      var(--co-indigo),
+      var(--co-violet)
+    );
+
+  color: #ffffff;
+
+  font-size: 48px;
+
+  font-weight: 900;
+
+  line-height: 1;
+
+  letter-spacing:
+    -0.08em;
+
+  box-shadow:
+    0 28px 75px
+    rgba(99,102,241,0.48),
+
+    0 0 0 1px
+    rgba(255,255,255,0.18)
+    inset;
+
+  animation:
+    coFlyingLogoScale
+    1050ms
+    var(--co-motion-ease)
+    1450ms
+    forwards;
+}
+
+
+.co-logo-flight-inner::before {
+  content: "";
+
+  position: absolute;
+
+  width: 125px;
+
+  height: 125px;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(139,92,246,0.25);
+
+  animation:
+    coFlyingOrbit
+    1050ms
+    linear
+    1450ms
+    forwards;
+}
+
+
+@keyframes coLogoTravelToNavbar {
+
+  /*
+   * 0%
+   *
+   * Logo is hidden in the middle.
+   */
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translate3d(
+        0,
+        0,
+        0
+      )
+      scale(0.7);
+  }
+
+
+  /*
+   * Logo appears.
+   */
+
+  12% {
+    opacity: 1;
+
+    transform:
+      translate3d(
+        0,
+        0,
+        0
+      )
+      scale(1);
+  }
+
+
+  /*
+   * Logo rises.
+   */
+
+  38% {
+    opacity: 1;
+
+    transform:
+      translate3d(
+        calc(
+          var(--co-logo-target-x) * 0.20
+        ),
+        calc(
+          var(--co-logo-target-y) * 0.20
+        ),
+        0
+      )
+      scale(0.9);
+  }
+
+
+  /*
+   * Logo gets close to navbar.
+   */
+
+  68% {
+    opacity: 1;
+
+    transform:
+      translate3d(
+        calc(
+          var(--co-logo-target-x) * 0.72
+        ),
+        calc(
+          var(--co-logo-target-y) * 0.72
+        ),
+        0
+      )
+      scale(0.68);
+  }
+
+
+  /*
+   * Logo reaches the real navbar logo.
+   */
+
+  88% {
+    opacity: 1;
+
+    transform:
+      translate3d(
+        var(--co-logo-target-x),
+        var(--co-logo-target-y),
+        0
+      )
+      scale(
+        calc(
+          var(--co-logo-target-width) / 88
+        )
+      );
+  }
+
+
+  /*
+   * Final moment.
+   */
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate3d(
+        var(--co-logo-target-x),
+        var(--co-logo-target-y),
+        0
+      )
+      scale(
+        calc(
+          var(--co-logo-target-width) / 88
+        )
+      );
+  }
+}
+
+
+@keyframes coFlyingLogoScale {
+
+  0% {
+    border-radius: 25px;
+
+    box-shadow:
+      0 28px 75px
+      rgba(99,102,241,0.48),
+
+      0 0 0 1px
+      rgba(255,255,255,0.18)
+      inset;
+  }
+
+  55% {
+    border-radius: 22px;
+
+    box-shadow:
+      0 20px 50px
+      rgba(99,102,241,0.38);
+  }
+
+  100% {
+    border-radius: 999px;
+
+    box-shadow:
+      0 5px 18px
+      rgba(99,102,241,0.16);
+  }
+}
+
+
+@keyframes coFlyingOrbit {
+  0% {
+    opacity: 0;
+
+    transform:
+      rotate(0deg)
+      scale(0.7);
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      rotate(360deg)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   LOGO TRAIL
+   ========================================================= */
+
+.co-logo-trail {
+  position: fixed;
+
+  top: 50%;
+
+  left: 50%;
+
+  width: 120px;
+
+  height: 120px;
+
+  margin-left: -60px;
+
+  margin-top: -60px;
+
+  z-index: 100001;
+
+  border-radius: 50%;
+
+  border:
+    1px solid
+    rgba(99,102,241,0.16);
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  animation:
+    coTrail
+    900ms
+    ease
+    1450ms
+    forwards;
+}
+
+
+@keyframes coTrail {
+  0% {
+    opacity: 0;
+
+    transform:
+      scale(0.6);
+  }
+
+  20% {
+    opacity: 1;
+
+    transform:
+      scale(1);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      scale(1.8);
+  }
+}
+
+
+/* =========================================================
+   HIDE REAL NAVBAR LOGO DURING FLIGHT
+   =========================================================
+
+   Your actual Topbar.jsx already uses:
+
+       .apple-logo-badge
+
+   So we don't have to modify Topbar.jsx.
+   ========================================================= */
+
+body.co-logo-intro-active
+.apple-logo-badge {
+  opacity: 0 !important;
+
+  transform:
+    scale(0.65) !important;
+
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease !important;
+}
+
+
+/*
+ * The real logo becomes visible after the flying logo
+ * finishes.
+ */
+
+body:not(.co-logo-intro-active)
+.apple-logo-badge {
+  opacity: 1;
+
+  transform:
+    scale(1);
+
+  transition:
+    opacity 350ms ease,
+    transform 450ms var(--co-bounce-ease);
+}
+
+
+/* =========================================================
+   NAVBAR ENTRANCE
+   ========================================================= */
+
+.apple-navbar-container {
+  animation:
+    coNavbarEnter
+    650ms
+    var(--co-motion-ease)
+    1850ms
+    both;
+}
+
+
+@keyframes coNavbarEnter {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   NAVBAR BRAND
+   ========================================================= */
+
+.apple-brand {
+  transition:
+    transform 250ms
+    var(--co-fast-ease);
+}
+
+
+.apple-brand:hover {
+  transform:
+    translateY(-1px);
+}
+
+
+.apple-logo-badge {
+  position: relative;
+
+  overflow: hidden;
+
+  transition:
+    transform 300ms
+    var(--co-bounce-ease),
+    box-shadow 300ms ease;
+}
+
+
+.apple-logo-badge::after {
+  content: "";
+
+  position: absolute;
+
+  top: -120%;
+
+  left: -100%;
+
+  width: 45%;
+
+  height: 340%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,0.55),
+      transparent
+    );
+
+  transform:
+    rotate(25deg);
+
+  animation:
+    coNavbarLogoShine
+    3.8s
+    ease-in-out
+    2800ms
+    infinite;
+}
+
+
+@keyframes coNavbarLogoShine {
+  0% {
+    left: -100%;
+  }
+
+  30% {
+    left: 160%;
+  }
+
+  100% {
+    left: 160%;
+  }
+}
+
+
+.apple-brand:hover
+.apple-logo-badge {
+  transform:
+    scale(1.08)
+    rotate(-3deg);
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.apple-nav-item {
+  transition:
+    transform 220ms
+    var(--co-fast-ease),
+    color 220ms ease,
+    background 220ms ease,
+    box-shadow 220ms ease;
+}
+
+
+.apple-nav-item:hover {
+  transform:
+    translateY(-2px);
+}
+
+
+.apple-nav-item.active {
+  animation:
+    coActiveNav
+    450ms
+    var(--co-bounce-ease);
+}
+
+
+@keyframes coActiveNav {
+  0% {
+    transform:
+      scale(0.97);
+  }
+
+  70% {
+    transform:
+      scale(1.03);
+  }
+
+  100% {
+    transform:
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   USER PROFILE
+   ========================================================= */
+
+.apple-avatar-btn {
+  transition:
+    transform 220ms
+    var(--co-fast-ease),
+    box-shadow 220ms ease;
+}
+
+
+.apple-avatar-btn:hover {
+  transform:
+    translateY(-2px);
+}
+
+
+.apple-avatar-circle {
+  transition:
+    transform 250ms
+    var(--co-bounce-ease);
+}
+
+
+.apple-avatar-btn:hover
+.apple-avatar-circle {
+  transform:
+    scale(1.07);
+}
+
+
+/* =========================================================
+   DROPDOWN
+   ========================================================= */
+
+.apple-dropdown {
+  transform-origin:
+    top right;
+
+  animation:
+    coDropdown
+    220ms
+    var(--co-fast-ease)
+    both;
+}
+
+
+@keyframes coDropdown {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(-7px)
+      scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+button {
+  -webkit-tap-highlight-color:
+    transparent;
+}
+
+
+button:active {
+  transform:
+    scale(0.97);
+}
+
+
+/* =========================================================
+   CARDS
+   ========================================================= */
+
+.clubops-stat,
+.clubops-panel,
+.dashboard-card,
+.dashboard-panel,
+.feature-card,
+.event-card,
+.announcement-card {
+  transition:
+    transform 350ms
+    var(--co-fast-ease),
+    box-shadow 350ms ease;
+}
+
+
+.clubops-stat:hover,
+.clubops-panel:hover,
+.dashboard-card:hover,
+.dashboard-panel:hover,
+.feature-card:hover,
+.event-card:hover,
+.announcement-card:hover {
+  transform:
+    translateY(-5px);
 }
 
 
@@ -167,330 +1310,135 @@
 
 .co-reveal {
   opacity: 0;
-  transform: translateY(40px);
+
+  transform:
+    translateY(35px);
+
   transition:
-    opacity 700ms var(--co-motion-ease),
-    transform 700ms var(--co-motion-ease);
-  transition-delay: var(--co-delay, 0ms);
-  will-change: opacity, transform;
+    opacity 700ms
+    var(--co-motion-ease),
+
+    transform 700ms
+    var(--co-motion-ease);
+
+  transition-delay:
+    var(--co-delay, 0ms);
+
+  will-change:
+    opacity,
+    transform;
 }
+
 
 .co-reveal.co-visible {
   opacity: 1;
-  transform: translateY(0);
+
+  transform:
+    translateY(0);
 }
 
 
 /* =========================================================
-   HERO TEXT
+   HERO
    ========================================================= */
 
 .co-hero-text {
   opacity: 0;
-  transform: translateY(36px);
+
+  transform:
+    translateY(30px);
+
   animation:
-    coHeroTextIn 850ms var(--co-motion-ease) 900ms forwards;
+    coHeroText
+    800ms
+    var(--co-motion-ease)
+    800ms
+    forwards;
 }
 
-@keyframes coHeroTextIn {
-  from { opacity: 0; transform: translateY(36px); }
-  to   { opacity: 1; transform: translateY(0); }
+
+@keyframes coHeroText {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
 }
 
 
 /* =========================================================
-   IMAGE MOTION
+   MEDIA
    ========================================================= */
 
-.co-media { overflow: hidden; }
+.co-media {
+  overflow: hidden;
+}
+
 
 .co-media img,
 .co-media > img {
-  transform: scale(1.03);
-  transition: transform 1100ms var(--co-motion-ease);
-  will-change: transform;
+  transform:
+    scale(1.03);
+
+  transition:
+    transform 900ms
+    var(--co-motion-ease);
 }
 
-.co-visible.co-media img,
-.co-visible.co-media > img {
-  transform: scale(1);
-}
 
 .co-media:hover img,
 .co-media:hover > img {
-  transform: scale(1.02);
+  transform:
+    scale(1.07);
 }
 
 
 /* =========================================================
-   NAVIGATION
-   ========================================================= */
-
-nav a,
-.navbar a {
-  transition:
-    color 220ms ease,
-    opacity 220ms ease,
-    transform 220ms var(--co-fast-ease);
-}
-
-nav a:hover,
-.navbar a:hover {
-  transform: translateY(-1px);
-}
-
-nav a::after,
-.navbar a::after {
-  content: "";
-  display: block;
-  width: 0;
-  height: 1px;
-  margin-top: 3px;
-  background: currentColor;
-  transition: width 250ms var(--co-fast-ease);
-}
-
-nav a:hover::after,
-.navbar a:hover::after {
-  width: 100%;
-}
-
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
-
-button,
-a[class*="button"],
-a[class*="Button"],
-a[class*="cta"],
-a[class*="Cta"],
-a[class*="Btn"] {
-  transition:
-    transform 220ms var(--co-fast-ease),
-    box-shadow 220ms ease,
-    background-color 220ms ease,
-    border-color 220ms ease,
-    opacity 220ms ease;
-}
-
-button:hover,
-a[class*="button"]:hover,
-a[class*="Button"]:hover,
-a[class*="cta"]:hover,
-a[class*="Cta"]:hover,
-a[class*="Btn"]:hover {
-  transform: translateY(-2px);
-}
-
-button:active,
-a[class*="button"]:active,
-a[class*="Button"]:active,
-a[class*="cta"]:active,
-a[class*="Cta"]:active {
-  transform: translateY(0) scale(0.98);
-}
-
-
-/* =========================================================
-   CARDS
-   ========================================================= */
-
-[class*="featureCard"],
-[class*="feature-card"],
-[class*="eventCard"],
-[class*="event-card"],
-[class*="statCard"],
-[class*="stat-card"],
-[class*="dashboard-card"],
-[class*="dashboard-panel"],
-.contact-detail-card,
-.auth-card,
-.login-card,
-.profile-card,
-.settings-card,
-.clubops-stat,
-.clubops-panel {
-  transition:
-    transform 380ms var(--co-fast-ease),
-    box-shadow 380ms ease,
-    border-color 380ms ease;
-}
-
-[class*="featureCard"]:hover,
-[class*="feature-card"]:hover,
-[class*="eventCard"]:hover,
-[class*="event-card"]:hover,
-[class*="statCard"]:hover,
-[class*="stat-card"]:hover,
-.clubops-stat:hover,
-.clubops-panel:hover {
-  transform: translateY(-5px);
-}
-
-
-/* =========================================================
-   FORM ELEMENTS
-   ========================================================= */
-
-input,
-textarea,
-select {
-  transition:
-    border-color 200ms ease,
-    box-shadow 200ms ease,
-    background-color 200ms ease;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-}
-
-
-/* =========================================================
-   SIDEBAR
-   ========================================================= */
-
-.clubops-sidebar,
-.dashboard-sidebar {
-  transition: width 280ms var(--co-fast-ease);
-}
-
-.clubops-nav-item {
-  transition:
-    background-color 180ms ease,
-    color 180ms ease,
-    transform 180ms var(--co-fast-ease),
-    padding-left 180ms ease;
-}
-
-.clubops-nav-item:hover {
-  transform: translateX(3px);
-}
-
-
-/* =========================================================
-   TOPBAR
-   ========================================================= */
-
-.clubops-topbar,
-.dashboard-header {
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-
-/* =========================================================
-   DASHBOARD AVATAR / NOTIFICATIONS
-   ========================================================= */
-
-.clubops-notification,
-.notification-button,
-.clubops-user-avatar,
-.avatar {
-  transition:
-    transform 200ms var(--co-fast-ease),
-    background-color 200ms ease,
-    color 200ms ease,
-    box-shadow 200ms ease;
-}
-
-.clubops-notification:hover,
-.notification-button:hover,
-.clubops-user-avatar:hover,
-.avatar:hover {
-  transform: translateY(-2px);
-}
-
-
-/* =========================================================
-   FOOTER LINKS
-   ========================================================= */
-
-footer a {
-  transition:
-    transform 200ms var(--co-fast-ease),
-    color 200ms ease,
-    opacity 200ms ease;
-}
-
-footer a:hover {
-  transform: translateX(3px);
-}
-
-
-/* =========================================================
-   SKELETON SCREENS
+   SKELETON
    ========================================================= */
 
 @keyframes coSkeleton {
-  0%   { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.clubops-skeleton,
-.co-skeleton {
-  background: linear-gradient(
-    90deg,
-    #e2e8f0 25%,
-    #f1f5f9 50%,
-    #e2e8f0 75%
-  );
-  background-size: 200% 100%;
-  animation: coSkeleton 1.5s ease infinite;
-  border-radius: 8px;
-}
-
-.co-skeleton-text {
-  height: 14px;
-  border-radius: 4px;
-}
-
-.co-skeleton-title {
-  height: 24px;
-  border-radius: 6px;
-  max-width: 220px;
-}
-
-.co-skeleton-card {
-  height: 90px;
-  border-radius: 14px;
-}
-
-
-/* =========================================================
-   SECTION DIVIDERS
-   ========================================================= */
-
-main section {
-  position: relative;
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 1ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 1ms !important;
-    scroll-behavior: auto !important;
+  0% {
+    background-position:
+      -200% 0;
   }
 
-  .co-intro { display: none; }
-
-  .co-page-shell,
-  .co-reveal,
-  .co-hero-text {
-    opacity: 1 !important;
-    transform: none !important;
+  100% {
+    background-position:
+      200% 0;
   }
+}
+
+
+.co-skeleton,
+.clubops-skeleton {
+  background:
+    linear-gradient(
+      90deg,
+      #e5e7eb 25%,
+      #f3f4f6 50%,
+      #e5e7eb 75%
+    );
+
+  background-size:
+    200% 100%;
+
+  animation:
+    coSkeleton
+    1.5s
+    ease
+    infinite;
+
+  border-radius:
+    8px;
 }
 
 
@@ -498,14 +1446,142 @@ main section {
    MOBILE
    ========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 900px) {
+
   .co-intro-mark {
-    width: 60px;
-    height: 60px;
-    font-size: 26px;
+    width: 78px;
+
+    height: 78px;
+
+    border-radius: 22px;
   }
 
+
+  .co-intro-mark-letter {
+    font-size: 42px;
+  }
+
+
   .co-intro-name {
-    font-size: 32px;
+    font-size: 38px;
+  }
+
+
+  .apple-nav-links {
+    gap: 3px;
+  }
+}
+
+
+@media (max-width: 700px) {
+
+  .co-intro-mark {
+    width: 70px;
+
+    height: 70px;
+
+    border-radius: 20px;
+  }
+
+
+  .co-intro-mark-letter {
+    font-size: 38px;
+  }
+
+
+  .co-intro-name {
+    font-size: 34px;
+  }
+
+
+  .co-intro-tagline {
+    font-size: 8px;
+
+    letter-spacing:
+      1.8px;
+  }
+
+
+  .co-logo-flight {
+    width: 70px;
+
+    height: 70px;
+
+    margin-left: -35px;
+
+    margin-top: -35px;
+  }
+
+
+  .co-logo-flight-inner {
+    width: 70px;
+
+    height: 70px;
+
+    border-radius: 20px;
+
+    font-size: 38px;
+  }
+
+
+  .co-logo-flight-inner::before {
+    width: 100px;
+
+    height: 100px;
+  }
+
+
+  .apple-avatar-name {
+    display: none;
+  }
+
+
+  .apple-role-pill span {
+    display: none;
+  }
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration:
+      1ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      1ms !important;
+
+    scroll-behavior:
+      auto !important;
+  }
+
+
+  .co-intro {
+    display: none;
+  }
+
+
+  .co-page-shell {
+    opacity: 1 !important;
+
+    transform:
+      none !important;
+  }
+
+
+  .apple-logo-badge {
+    opacity: 1 !important;
+
+    transform:
+      none !important;
   }
 }
