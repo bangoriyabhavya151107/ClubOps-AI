@@ -1,5 +1,7 @@
 import "./globals.css";
-import Footer from "@/components/layout/Footer";
+import "./motion.css";
+
+import ClubOpsMotion from "@/components/animation/ClubOpsMotion";
 
 export const metadata = {
   title: "ClubOps AI",
@@ -10,8 +12,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        {children}
-        <Footer />
+        <ClubOpsMotion>
+          {children}
+        </ClubOpsMotion>
       </body>
     </html>
   );
