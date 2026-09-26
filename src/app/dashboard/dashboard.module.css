@@ -1,0 +1,389 @@
+/* =========================================================
+   CLUBOPS AI — PRAVAS SAATHI 2.0 DASHBOARD STYLES
+   ========================================================= */
+
+.dashboard {
+  min-height: 100vh;
+  background: var(--bg-warm, #f5f4ef);
+  color: var(--ink, #111);
+}
+
+.main {
+  width: 100%;
+}
+
+.content {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 4rem 5vw 8rem;
+}
+
+/* =========================================
+   DASHBOARD HERO
+   ========================================= */
+
+.hero {
+  min-height: 38vh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 3rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.eyebrow {
+  display: block;
+  margin-bottom: 1.2rem;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(3.6rem, 7vw, 7.5rem);
+  line-height: 0.82;
+  letter-spacing: -0.08em;
+  font-weight: 800;
+  color: #111;
+}
+
+.hero h1 span {
+  font-style: normal;
+  color: rgba(17, 17, 17, 0.35);
+}
+
+.hero p {
+  max-width: 520px;
+  margin-top: 1.8rem;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: rgba(17, 17, 17, 0.6);
+}
+
+.roleCard {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 1.2rem 1.6rem;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+}
+
+.roleCard span {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: rgba(17, 17, 17, 0.45);
+}
+
+.roleCard strong {
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #111;
+}
+
+.roleCard small {
+  font-size: 0.8rem;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+/* =========================================
+   STATS GRID (PRAVAS SAATHI TOP-LINE STYLE)
+   ========================================= */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2.5rem 2rem;
+  margin: 4.5rem 0 6rem;
+}
+
+.stat {
+  min-height: 170px;
+  padding: 1.8rem 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.25s ease;
+}
+
+.stat:hover {
+  transform: translateY(-4px);
+}
+
+.statHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.statIcon {
+  font-size: 1.1rem;
+  opacity: 0.7;
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.stat strong {
+  font-size: 3.2rem;
+  letter-spacing: -0.06em;
+  line-height: 0.88;
+  font-weight: 800;
+  color: #111;
+  margin: 0.8rem 0;
+}
+
+.stat p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+/* =========================================
+   GRID & PANELS
+   ========================================= */
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 3rem;
+  margin-bottom: 5rem;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 28px;
+  padding: 2.5rem;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.03);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.panelHeader span {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: rgba(17, 17, 17, 0.45);
+  text-transform: uppercase;
+}
+
+.panelHeader h2,
+.panelHeader h3 {
+  margin: 4px 0 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #111;
+}
+
+.panelHeader a {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #111;
+  text-decoration: underline;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.panelHeader a:hover {
+  opacity: 1;
+}
+
+/* Event & Task List Rows */
+.eventList,
+.taskList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.eventRow,
+.taskRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 1.4rem;
+  border-radius: 18px;
+  background: #fbfbf9;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.eventRow:hover,
+.taskRow:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.dateBox {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #111;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.dateBox strong {
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.dateBox span {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+.eventInfo,
+.taskInfo {
+  flex: 1;
+  margin: 0 1.2rem;
+}
+
+.eventInfo strong,
+.taskInfo strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: #111;
+}
+
+.eventInfo p,
+.taskInfo p {
+  margin: 4px 0 0;
+  font-size: 0.82rem;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.empty {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.emptyIcon {
+  font-size: 1.8rem;
+  opacity: 0.4;
+  margin-bottom: 4px;
+}
+
+.empty strong {
+  font-size: 1.1rem;
+  color: #111;
+}
+
+.empty p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.emptyAction {
+  margin-top: 1rem;
+  display: inline-flex;
+  padding: 0.75rem 1.4rem;
+  border-radius: 999px;
+  background: #111;
+  color: #fff !important;
+  font-size: 0.85rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.quickAction {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 1.2rem 1.4rem;
+  border-radius: 18px;
+  background: #fbfbf9;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  margin-bottom: 1rem;
+  text-decoration: none;
+  color: #111;
+  transition: all 0.2s ease;
+}
+
+.quickAction:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 0, 0, 0.15);
+  background: #ffffff;
+}
+
+.quickAction span {
+  font-size: 1.4rem;
+}
+
+.quickAction strong {
+  display: block;
+  font-size: 0.98rem;
+}
+
+.quickAction p {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  color: rgba(17, 17, 17, 0.55);
+}
+
+.quickAction b {
+  margin-left: auto;
+  font-size: 1.2rem;
+  opacity: 0.4;
+}
+
+/* Dashboard visual polish */
+.dashboard { background: radial-gradient(circle at 88% 0%, rgba(99, 91, 255, .12), transparent 28rem), var(--bg-warm, #f7f8fc); }
+.content { padding-top: 2.5rem; }
+.hero { min-height: 32vh; padding: 2rem 0 2.8rem; }
+.hero h1 { background: linear-gradient(120deg, #111827 20%, #635bff 90%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.roleCard, .panel { border-color: rgba(99, 91, 255, .12); box-shadow: 0 18px 50px rgba(31, 41, 55, .07); transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease; }
+.roleCard:hover, .panel:hover { transform: translateY(-3px); box-shadow: 0 24px 60px rgba(31, 41, 55, .11); }
+.stat { border-top-color: rgba(99, 91, 255, .32); }
+.stat strong { color: #635bff; }
+.eventRow, .taskRow, .quickAction { background: rgba(255,255,255,.72); border-color: rgba(99, 91, 255, .1); }
+.eventRow:hover, .taskRow:hover, .quickAction:hover { border-color: rgba(99, 91, 255, .32); box-shadow: 0 10px 24px rgba(99, 91, 255, .08); }
+.dateBox { background: linear-gradient(135deg, #635bff, #8b5cf6); }
+
+@media (max-width: 960px) {
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

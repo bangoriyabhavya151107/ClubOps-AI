@@ -1,28 +1,41 @@
 "use client";
 
+import { Suspense } from "react";
 import { useState } from "react";
 import Link from "next/link";
-
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { Eye, EyeOff } from "lucide-react";
+import styles from "./login.module.css";
 
-export default function LoginPage() {
+/* ======================================================
+   Inner component uses useSearchParams — must be inside Suspense
+   ====================================================== */
+function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClient();
+
+  const registered = searchParams.get("registered") === "1";
+  const redirectTo = searchParams.get("redirect") || "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  async function handleLogin(e) {
-    e.preventDefault();
+  async function handleLogin(event) {
+    event.preventDefault();
+
+    if (loading) return;
 
     setError("");
-    setSuccess("");
 
-    if (!email.trim()) {
-      setError("Please enter your email.");
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail) {
+      setError("Please enter your email address.");
       return;
     }
 
@@ -34,263 +47,221 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      const { data, error: loginError } =
+      const { data: authData, error: authError } =
         await supabase.auth.signInWithPassword({
-          email: email.trim(),
+          email: cleanEmail,
           password,
         });
 
-      if (loginError) {
-        setError(loginError.message);
-        return;
+      if (authError) {
+        if (
+          authError.message?.toLowerCase().includes("invalid login credentials")
+        ) {
+          throw new Error(
+            "Invalid email or password. Please check your credentials."
+          );
+        }
+        throw new Error(authError.message || "Unable to sign in.");
       }
 
-      if (!data?.user) {
-        setError("Login failed. Please try again.");
-        return;
+      if (!authData?.user) {
+        throw new Error("Authentication succeeded but no user was returned.");
       }
 
-      setSuccess("Login successful! Opening dashboard...");
+      const { data: workspace, error: workspaceError } =
+        await supabase.rpc("ensure_user_workspace");
 
-      setTimeout(() => {
-        window.location.href = "/dashboard";
-      }, 500);
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("Something went wrong. Please try again.");
+      if (workspaceError) {
+        await supabase.auth.signOut();
+        throw new Error(
+          workspaceError.message ||
+            "Your workspace could not be initialized. Please contact your admin."
+        );
+      }
+
+      if (!workspace) {
+        await supabase.auth.signOut();
+        throw new Error("No workspace was returned for your account.");
+      }
+
+      if (!workspace?.club?.id) {
+        await supabase.auth.signOut();
+        throw new Error(
+          "Your account is not connected to a club workspace. Please contact your admin."
+        );
+      }
+
+      router.replace(redirectTo);
+      router.refresh();
+    } catch (loginError) {
+      console.error("Login error:", loginError);
+      setError(
+        loginError?.message ||
+          "Unable to login. Please check your email and password."
+      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="login-page">
-      <div className="login-container">
+    <div className={styles.card}>
+      <span className={styles.smallLabel}>CLUBOPS AI</span>
 
-        {/* LEFT SIDE */}
-        <section className="login-info">
+      <h2>Welcome back</h2>
 
-          <Link href="/" className="login-logo">
+      <p className={styles.subtitle}>Sign in to your club workspace.</p>
 
-            <div className="login-logo-icon">
-              C
-            </div>
+      {registered && (
+        <div className={styles.successMsg}>
+          Account created! Please sign in to continue.
+        </div>
+      )}
 
-            <div>
-              <strong>ClubOps AI</strong>
-              <span>College Club Management</span>
-            </div>
+      {error && (
+        <div className={styles.error} role="alert">
+          {error}
+        </div>
+      )}
 
-          </Link>
-
-
-          <div className="login-info-content">
-
-            <span className="login-badge">
-              ✨ AI-Powered Club Management
-            </span>
-
-            <h1>
-              Welcome back to
-              <span> ClubOps AI</span>
-            </h1>
-
-            <p>
-              Manage your college club, events, members,
-              tasks and activities from one intelligent platform.
-            </p>
-
-
-            <div className="login-features">
-
-              <div>
-
-                <span>📅</span>
-
-                <div>
-                  <strong>Manage Events</strong>
-
-                  <p>
-                    Plan and organize club events.
-                  </p>
-                </div>
-
-              </div>
-
-
-              <div>
-
-                <span>👥</span>
-
-                <div>
-                  <strong>Manage Members</strong>
-
-                  <p>
-                    Coordinate your complete team.
-                  </p>
-                </div>
-
-              </div>
-
-
-              <div>
-
-                <span>🤖</span>
-
-                <div>
-                  <strong>AI Assistant</strong>
-
-                  <p>
-                    Get intelligent help for your club.
-                  </p>
-                </div>
-
-              </div>
-
-            </div>
-
+      <form onSubmit={handleLogin}>
+        <div className={styles.fieldGroup}>
+          <label className={styles.fieldLabel} htmlFor="email">
+            Email address
+          </label>
+          <div className={styles.inputWrap}>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              autoComplete="email"
+              autoFocus
+              disabled={loading}
+            />
           </div>
+        </div>
 
-        </section>
-
-
-        {/* RIGHT SIDE */}
-        <section className="login-card-wrapper">
-
-          <div className="login-card">
-
-            <div className="login-card-header">
-
-              <div className="mobile-login-logo">
-
-                <div className="login-logo-icon">
-                  C
-                </div>
-
-              </div>
-
-              <h2>
-                Welcome Back
-              </h2>
-
-              <p>
-                Login to your ClubOps AI account
-              </p>
-
-            </div>
-
-
-            {/* ERROR MESSAGE */}
-            {error && (
-              <div className="login-error">
-                ❌ {error}
-              </div>
-            )}
-
-
-            {/* SUCCESS MESSAGE */}
-            {success && (
-              <div className="login-success">
-                ✅ {success}
-              </div>
-            )}
-
-
-            <form onSubmit={handleLogin}>
-
-              {/* EMAIL */}
-              <div className="login-field">
-
-                <label htmlFor="email">
-                  Email Address
-                </label>
-
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  disabled={loading}
-                />
-
-              </div>
-
-
-              {/* PASSWORD */}
-              <div className="login-field">
-
-                <div className="password-label-row">
-
-                  <label htmlFor="password">
-                    Password
-                  </label>
-
-                  <Link href="/forgot-password">
-                    Forgot Password?
-                  </Link>
-
-                </div>
-
-                <input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="current-password"
-                  disabled={loading}
-                />
-
-              </div>
-
-
-              {/* LOGIN BUTTON */}
-              <button
-                type="submit"
-                className="login-submit"
-                disabled={loading}
-              >
-                {loading
-                  ? "Logging in..."
-                  : "Login"}
-              </button>
-
-            </form>
-
-
-            {/* DIVIDER */}
-            <div className="login-divider">
-              <span>OR</span>
-            </div>
-
-
-            {/* REGISTER */}
-            <p className="register-link">
-
-              Don't have an account?{" "}
-
-              <Link href="/register">
-                Create Account
-              </Link>
-
-            </p>
-
-
-            {/* HOME */}
-            <Link
-              href="/"
-              className="back-home"
+        <div className={styles.fieldGroup}>
+          <label className={styles.fieldLabel} htmlFor="password">
+            Password
+          </label>
+          <div className={styles.inputWrap}>
+            <input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Your password"
+              autoComplete="current-password"
+              disabled={loading}
+            />
+            <button
+              type="button"
+              className={styles.eyeBtn}
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              ← Back to Home
-            </Link>
-
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
           </div>
+          <div className={styles.forgotLink}>
+            <Link href="/forgot-password">Forgot password?</Link>
+          </div>
+        </div>
 
-        </section>
+        <button
+          type="submit"
+          className={styles.submitBtn}
+          disabled={loading}
+        >
+          {loading && <span className={styles.spinner} />}
+          {loading ? "Signing in..." : "Sign in"}
+        </button>
+      </form>
 
+      <div className={styles.divider}>
+        <span>OR</span>
       </div>
+
+      <p className={styles.register}>
+        New to ClubOps?{" "}
+        <Link href="/register">Create your workspace</Link>
+      </p>
+
+      <Link href="/" className={styles.home}>
+        ← Back to home
+      </Link>
+    </div>
+  );
+}
+
+/* ======================================================
+   Page component — wraps LoginForm in Suspense
+   ====================================================== */
+export default function LoginPage() {
+  return (
+    <main className={styles.page}>
+      {/* ==================== BRAND PANEL ==================== */}
+      <section className={styles.brandPanel}>
+        <div className={styles.brand}>
+          <div className={styles.logo}>C</div>
+          <div>
+            <strong>ClubOps AI</strong>
+            <span>Smart Club Operations</span>
+          </div>
+        </div>
+
+        <div className={styles.brandContent}>
+          <span className={styles.badge}>
+            AI-POWERED CLUB MANAGEMENT · LIVE
+          </span>
+
+          <h1>
+            Run your club.
+            <br />
+            <span>Not your spreadsheets.</span>
+          </h1>
+
+          <p>
+            Events, volunteers, tasks, meetings, budgets, risks and AI
+            assistance in one modern workspace built for student clubs.
+          </p>
+
+          <div className={styles.features}>
+            <div>Real-time event operations</div>
+            <div>Volunteer and task management</div>
+            <div>AI planning and communication</div>
+            <div>Budget and risk visibility</div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== FORM PANEL ==================== */}
+      <section className={styles.formPanel}>
+        <Suspense
+          fallback={
+            <div className={styles.card}>
+              <div
+                style={{
+                  height: 14,
+                  width: 80,
+                  borderRadius: 4,
+                  background: "#f1f5f9",
+                  marginBottom: 12,
+                  animation: "skeletonShimmer 1.4s ease infinite",
+                  backgroundSize: "400px 100%",
+                  backgroundImage:
+                    "linear-gradient(90deg, #f1f5f9 25%, #e8eef5 50%, #f1f5f9 75%)",
+                }}
+              />
+            </div>
+          }
+        >
+          <LoginForm />
+        </Suspense>
+      </section>
     </main>
   );
 }

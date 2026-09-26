@@ -1,0 +1,424 @@
+/* =========================================================
+   CLUBOPS AI — PRAVAS SAATHI 2.0 FEATURES PAGE STYLING
+   ========================================================= */
+
+.page {
+  min-height: 100vh;
+  background: var(--bg-warm, #f5f4ef);
+  color: var(--ink, #111);
+  overflow-x: hidden;
+}
+
+/* =========================================
+   NAVBAR (PUBLIC)
+   ========================================= */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 5vw;
+  background: rgba(245, 244, 239, 0.78);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+}
+
+.logo {
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 1.2rem;
+  letter-spacing: -0.04em;
+  color: #111;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logoIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.navLinks a {
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #111;
+  opacity: 0.65;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.navLinks a:hover,
+.navLinks a.active {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.navCta {
+  text-decoration: none;
+  padding: 0.75rem 1.35rem;
+  border-radius: 999px;
+  background: #111;
+  color: #fff !important;
+  font-size: 0.88rem;
+  font-weight: 650;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.navCta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+}
+
+/* =========================================
+   HERO
+   ========================================= */
+
+.hero {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 11rem 6vw 6rem;
+  text-align: center;
+}
+
+.heroBadge {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(3.8rem, 7.5vw, 7.5rem);
+  line-height: 0.84;
+  letter-spacing: -0.08em;
+  font-weight: 800;
+  color: #111;
+}
+
+.hero h1 span {
+  font-style: normal;
+  color: rgba(17, 17, 17, 0.35);
+}
+
+.hero p {
+  max-width: 600px;
+  margin: 2rem auto 0;
+  font-size: 1.1rem;
+  line-height: 1.75;
+  color: rgba(17, 17, 17, 0.62);
+}
+
+/* =========================================
+   FEATURE ROWS
+   ========================================= */
+
+.featureSection {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 4rem 6vw 8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+}
+
+.featureRow {
+  width: 100%;
+}
+
+.featureCard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  padding: 4rem;
+  border-radius: 32px;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.04);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 25px 65px rgba(0, 0, 0, 0.08);
+}
+
+.featureVisual {
+  position: relative;
+  min-height: 320px;
+  padding: 2.5rem;
+  border-radius: 24px;
+  background: #fbfbf9;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.floatingMini {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.featureCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.featureNumber {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: rgba(17, 17, 17, 0.4);
+}
+
+.featureIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: #111;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.featureTag {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: rgba(17, 17, 17, 0.5);
+  text-transform: uppercase;
+}
+
+.featureCopy h2 {
+  margin: 0;
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #111;
+}
+
+.featureCopy p {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: rgba(17, 17, 17, 0.6);
+}
+
+.featureCopy ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.8rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.featureCopy li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.95rem;
+  color: #111;
+  font-weight: 550;
+}
+
+.featureCopy li svg {
+  color: #059669;
+  flex-shrink: 0;
+}
+
+.featureLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: #111;
+  text-decoration: underline;
+  transition: transform 0.2s ease;
+}
+
+.featureLink:hover {
+  transform: translateX(4px);
+}
+
+/* =========================================
+   AI STRIP & FINAL CTA
+   ========================================= */
+
+.aiSection {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 2rem 6vw 7rem;
+}
+
+.aiInner {
+  padding: 5rem 4vw;
+  border-radius: 32px;
+  background: #111111;
+  color: #ffffff;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.aiIcon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.5rem;
+  border-radius: 20px;
+  background: #ffffff;
+  color: #111111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aiLabel {
+  display: inline-block;
+  margin-bottom: 1.2rem;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.aiInner h2 {
+  margin: 0 0 1.5rem;
+  font-size: clamp(3rem, 5.5vw, 5.5rem);
+  line-height: 0.88;
+  letter-spacing: -0.07em;
+  font-weight: 800;
+  color: #fff;
+}
+
+.aiInner h2 span {
+  opacity: 0.4;
+}
+
+.aiInner p {
+  max-width: 580px;
+  margin: 0 auto 2.5rem;
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.aiButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 1.05rem 2rem;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111 !important;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.15);
+  transition: transform 0.25s ease;
+}
+
+.aiButton:hover {
+  transform: translateY(-3px);
+}
+
+.finalCta {
+  padding: 8rem 6vw 10rem;
+  text-align: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.finalCta span {
+  display: block;
+  margin-bottom: 1.2rem;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.5);
+}
+
+.finalCta h2 {
+  margin: 0 0 2.5rem;
+  font-size: clamp(3.2rem, 6vw, 6rem);
+  line-height: 0.88;
+  letter-spacing: -0.07em;
+  font-weight: 800;
+  color: #111;
+}
+
+.finalCta h2 strong {
+  font-style: normal;
+  color: rgba(17, 17, 17, 0.35);
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 1.1rem 2.2rem;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff !important;
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: transform 0.25s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.22);
+}
+
+@media (max-width: 900px) {
+  .featureCard {
+    grid-template-columns: 1fr;
+    padding: 2.5rem 2rem;
+  }
+  .navLinks {
+    display: none;
+  }
+}

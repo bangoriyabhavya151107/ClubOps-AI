@@ -1,405 +1,1069 @@
 "use client";
 
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import Link from "next/link";
+
 import Sidebar from "@/components/layout/Sidebar";
 import Topbar from "@/components/layout/Topbar";
 
-const stats = [
-  {
-    title: "Total Members",
-    value: "248",
-    description: "Active club members",
-    change: "+12%",
-    changeText: "vs last month",
-    icon: "👥",
-    tone: "purple",
-  },
-  {
-    title: "Upcoming Events",
-    value: "18",
-    description: "Events scheduled",
-    change: "+5%",
-    changeText: "vs last month",
-    icon: "📅",
-    tone: "blue",
-  },
-  {
-    title: "Pending Tasks",
-    value: "42",
-    description: "Tasks need attention",
-    change: "+8%",
-    changeText: "vs last month",
-    icon: "✓",
-    tone: "orange",
-  },
-  {
-    title: "Attendance",
-    value: "87%",
-    description: "Average attendance",
-    change: "+4%",
-    changeText: "vs last month",
-    icon: "📊",
-    tone: "green",
-  },
-];
+import {
+  formatDate,
+  formatMoney,
+  formatTime,
+  getWorkspace,
+} from "@/lib/clubops";
 
-const events = [
-  {
-    day: "24",
-    month: "SEP",
-    name: "Annual Club Meeting",
-    description: "Monthly club coordination meeting",
-    time: "10:00 AM",
-    location: "Conference Room",
-  },
-  {
-    day: "27",
-    month: "SEP",
-    name: "Volunteer Training",
-    description: "Training session for new volunteers",
-    time: "02:00 PM",
-    location: "Seminar Hall",
-  },
-  {
-    day: "30",
-    month: "SEP",
-    name: "Community Workshop",
-    description: "Community outreach workshop",
-    time: "11:00 AM",
-    location: "Main Auditorium",
-  },
-];
-
-const tasks = [
-  {
-    name: "Prepare event documents",
-    category: "Annual Club Meeting",
-    priority: "High",
-    priorityClass: "high",
-  },
-  {
-    name: "Contact volunteers",
-    category: "Volunteer Training",
-    priority: "Medium",
-    priorityClass: "medium",
-  },
-  {
-    name: "Update member records",
-    category: "Administration",
-    priority: "Low",
-    priorityClass: "low",
-  },
-  {
-    name: "Prepare presentation",
-    category: "Community Workshop",
-    priority: "Medium",
-    priorityClass: "medium",
-  },
-];
-
-const quickActions = [
-  {
-    icon: "＋",
-    title: "Create Event",
-    description: "Schedule a new club event",
-    href: "/events/create",
-    className: "purple",
-  },
-  {
-    icon: "👤",
-    title: "Manage Members",
-    description: "View and manage members",
-    href: "/members",
-    className: "blue",
-  },
-  {
-    icon: "✓",
-    title: "Add Task",
-    description: "Create and assign a task",
-    href: "/tasks",
-    className: "orange",
-  },
-  {
-    icon: "🤖",
-    title: "Ask AI Assistant",
-    description: "Get help with club operations",
-    href: "/ai-assistant",
-    className: "green",
-  },
-];
+import styles from "./dashboard.module.css";
 
 export default function DashboardPage() {
+  const [workspace, setWorkspace] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [meetings, setMeetings] = useState([]);
+  const [announcements, setAnnouncements] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [budget, setBudget] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const [copilotInput, setCopilotInput] = useState("");
+  const [copilotResponse, setCopilotResponse] = useState("");
+  const [copilotLoading, setCopilotLoading] = useState(false);
+  const [copilotCopied, setCopilotCopied] = useState(false);
+
+  async function handleAskCopilot(promptText = copilotInput) {
+    const text = promptText.trim();
+    if (!text) return;
+
+    setCopilotLoading(true);
+    setCopilotResponse("");
+
+    try {
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: text }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "AI generation failed.");
+      setCopilotResponse(data.text);
+    } catch (err) {
+      console.error("Copilot error:", err);
+      setCopilotResponse("AI Copilot is momentarily busy. You can also visit the dedicated AI Assistant page.");
+    } finally {
+      setCopilotLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadDashboard();
+  }, []);
+
+  async function loadDashboard() {
+    try {
+      setLoading(true);
+      setError("");
+
+      const workspaceData = await getWorkspace();
+
+      setWorkspace(workspaceData);
+
+      const supabase = (
+        await import("@/lib/supabase/client")
+      ).createClient();
+
+      const clubId = workspaceData.clubId;
+
+      if (!clubId) {
+        throw new Error(
+          "No club workspace is connected to this account."
+        );
+      }
+
+      const [
+        eventResult,
+        taskResult,
+        meetingResult,
+        announcementResult,
+        memberResult,
+        budgetResult,
+      ] = await Promise.all([
+        supabase
+          .from("events")
+          .select("*")
+          .eq("club_id", clubId)
+          .order("event_date", {
+            ascending: true,
+          }),
+
+        supabase
+          .from("tasks")
+          .select("*")
+          .eq("club_id", clubId)
+          .order("due_date", {
+            ascending: true,
+          }),
+
+        supabase
+          .from("meetings")
+          .select("*")
+          .eq("club_id", clubId)
+          .order("meeting_date", {
+            ascending: true,
+          }),
+
+        supabase
+          .from("announcements")
+          .select("*")
+          .eq("club_id", clubId)
+          .order("created_at", {
+            ascending: false,
+          }),
+
+        supabase
+          .from("members")
+          .select("*")
+          .or(`club_id.eq.${clubId},club_id.is.null`)
+          .order("name"),
+
+        supabase
+          .from("event_budgets")
+          .select("*")
+          .eq("club_id", clubId),
+      ]);
+
+      if (eventResult.error) {
+        throw eventResult.error;
+      }
+
+      if (taskResult.error) {
+        throw taskResult.error;
+      }
+
+      if (meetingResult.error) {
+        throw meetingResult.error;
+      }
+
+      if (announcementResult.error) {
+        throw announcementResult.error;
+      }
+
+      if (memberResult.error) {
+        throw memberResult.error;
+      }
+
+      if (budgetResult.error) {
+        throw budgetResult.error;
+      }
+
+      setEvents(eventResult.data || []);
+      setTasks(taskResult.data || []);
+      setMeetings(meetingResult.data || []);
+      setAnnouncements(announcementResult.data || []);
+      setMembers(memberResult.data || []);
+      setBudget(budgetResult.data || []);
+    } catch (dashboardError) {
+      console.error(
+        "Dashboard loading error:",
+        dashboardError
+      );
+
+      setError(
+        dashboardError?.message ||
+          "Unable to load the dashboard."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const today = useMemo(() => {
+    const value = new Date();
+
+    value.setHours(0, 0, 0, 0);
+
+    return value;
+  }, []);
+
+  const upcomingEvents = useMemo(() => {
+    return events.filter((event) => {
+      if (!event.event_date) {
+        return false;
+      }
+
+      const date = new Date(
+        `${event.event_date}T00:00:00`
+      );
+
+      return (
+        date >= today &&
+        String(event.status || "").toLowerCase() !==
+          "cancelled"
+      );
+    });
+  }, [events, today]);
+
+  const completedTasks = useMemo(() => {
+    return tasks.filter(
+      (task) =>
+        String(task.status || "").toLowerCase() ===
+        "completed"
+    );
+  }, [tasks]);
+
+  const pendingTasks = useMemo(() => {
+    return tasks.filter(
+      (task) =>
+        String(task.status || "").toLowerCase() !==
+        "completed"
+    );
+  }, [tasks]);
+
+  const overdueTasks = useMemo(() => {
+    return pendingTasks.filter((task) => {
+      if (!task.due_date) {
+        return false;
+      }
+
+      return (
+        new Date(
+          `${task.due_date}T00:00:00`
+        ) < today
+      );
+    });
+  }, [pendingTasks, today]);
+
+  const taskProgress = tasks.length
+    ? Math.round(
+        (completedTasks.length /
+          tasks.length) *
+          100
+      )
+    : 0;
+
+  const totalBudget = budget.reduce(
+    (sum, item) =>
+      sum +
+      Number(
+        item.allocated_amount || 0
+      ),
+    0
+  );
+
+  const totalSpent = budget.reduce(
+    (sum, item) =>
+      sum +
+      Number(
+        item.spent_amount || 0
+      ),
+    0
+  );
+
+  const nextMeeting = meetings.find(
+    (meeting) => {
+      if (!meeting.meeting_date) {
+        return false;
+      }
+
+      return (
+        new Date(
+          `${meeting.meeting_date}T00:00:00`
+        ) >= today
+      );
+    }
+  );
+
+  if (loading) {
+    return (
+      <div className={styles.loadingPage}>
+        <div className={styles.loadingOrb}>
+          C
+        </div>
+
+        <h2>
+          Loading your workspace
+        </h2>
+
+        <p>
+          Connecting to ClubOps AI...
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="clubops-dashboard">
+    <div className={styles.dashboard}>
       <Sidebar />
 
-      <main className="clubops-main">
+      <main className={styles.main}>
         <Topbar />
 
-        <div className="clubops-content">
-          {/* Welcome */}
-          <section className="clubops-welcome">
-            <div>
-              <span className="clubops-eyebrow">CLUB OVERVIEW</span>
+        <div className={styles.content}>
+          {error && (
+            <div className={styles.error}>
+              <strong>
+                Dashboard error
+              </strong>
 
-              <h1>Good evening, Club Admin 👋</h1>
+              <span>{error}</span>
+
+              <button
+                type="button"
+                onClick={loadDashboard}
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          <section className={styles.hero}>
+            <div>
+              <span className={styles.eyebrow}>
+                CLUBOPS AI · LIVE WORKSPACE
+              </span>
+
+              <h1>
+                Welcome{" "}
+                {workspace?.profile?.full_name ||
+                  "Club Member"}
+                <span> 👋</span>
+              </h1>
 
               <p>
-                Here&apos;s what&apos;s happening with your club today.
+                Your club operations at a
+                glance. Everything here is
+                connected to your live Supabase
+                workspace.
               </p>
             </div>
 
-            <div className="clubops-date-card">
-              <span className="clubops-date-icon">📅</span>
+            <div className={styles.roleCard}>
+              <span>CURRENT ROLE</span>
 
-              <div>
-                <strong>September 2026</strong>
-                <span>Club Operations</span>
+              <strong>
+                {workspace?.role ||
+                  "VOLUNTEER"}
+              </strong>
+
+              <small>
+                Workspace member
+              </small>
+            </div>
+          </section>
+
+          <section className={styles.stats}>
+            <Stat
+              icon="👥"
+              label="Active Members"
+              value={members.length}
+              note="People in your workspace"
+            />
+
+            <Stat
+              icon="◈"
+              label="Upcoming Events"
+              value={upcomingEvents.length}
+              note="Scheduled events"
+            />
+
+            <Stat
+              icon="✓"
+              label="Pending Tasks"
+              value={pendingTasks.length}
+              note={`${overdueTasks.length} overdue`}
+            />
+
+            <Stat
+              icon="↗"
+              label="Task Progress"
+              value={`${taskProgress}%`}
+              note={`${completedTasks.length} completed`}
+            />
+
+            <Stat
+              icon="₹"
+              label="Budget"
+              value={formatMoney(totalBudget)}
+              note={`${formatMoney(
+                totalSpent
+              )} spent`}
+            />
+          </section>
+
+          <section className={styles.grid}>
+            <div className={styles.panel}>
+              <PanelHeader
+                eyebrow="EVENT MANAGEMENT"
+                title="Upcoming Events"
+                href="/events"
+              />
+
+              {upcomingEvents.length === 0 ? (
+                <EmptyState
+                  icon="◈"
+                  title="No upcoming events"
+                  text="Create your first event to start planning club activities."
+                  href="/events?new=1"
+                  action="Create Event"
+                />
+              ) : (
+                <div className={styles.eventList}>
+                  {upcomingEvents
+                    .slice(0, 5)
+                    .map((event) => (
+                      <div
+                        key={event.id}
+                        className={styles.eventRow}
+                      >
+                        <div
+                          className={
+                            styles.dateBox
+                          }
+                        >
+                          <strong>
+                            {new Date(
+                              `${event.event_date}T00:00:00`
+                            ).getDate()}
+                          </strong>
+
+                          <span>
+                            {new Date(
+                              `${event.event_date}T00:00:00`
+                            ).toLocaleDateString(
+                              "en-IN",
+                              {
+                                month: "short",
+                              }
+                            )}
+                          </span>
+                        </div>
+
+                        <div
+                          className={
+                            styles.eventInfo
+                          }
+                        >
+                          <strong>
+                            {event.name}
+                          </strong>
+
+                          <p>
+                            {event.location ||
+                              "Location not set"}
+                          </p>
+
+                          <small>
+                            {formatTime(
+                              event.start_time
+                            ) ||
+                              "Time not set"}
+                          </small>
+                        </div>
+
+                        <span
+                          className={
+                            styles.badge
+                          }
+                        >
+                          {event.status ||
+                            "Planned"}
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+
+            <div className={styles.panel}>
+              <PanelHeader
+                eyebrow="TASK MANAGEMENT"
+                title="Task Progress"
+                href="/tasks"
+              />
+
+              <div
+                className={
+                  styles.progressCard
+                }
+              >
+                <div
+                  className={
+                    styles.progressNumber
+                  }
+                >
+                  <strong>
+                    {taskProgress}%
+                  </strong>
+
+                  <span>
+                    overall completion
+                  </span>
+                </div>
+
+                <div
+                  className={
+                    styles.progressTrack
+                  }
+                >
+                  <div
+                    style={{
+                      width: `${taskProgress}%`,
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className={styles.taskStats}>
+                <div>
+                  <strong>
+                    {completedTasks.length}
+                  </strong>
+
+                  <span>
+                    Completed
+                  </span>
+                </div>
+
+                <div>
+                  <strong>
+                    {pendingTasks.length}
+                  </strong>
+
+                  <span>
+                    Pending
+                  </span>
+                </div>
+
+                <div>
+                  <strong>
+                    {overdueTasks.length}
+                  </strong>
+
+                  <span>
+                    Overdue
+                  </span>
+                </div>
+              </div>
+
+              <div className={styles.taskList}>
+                {pendingTasks
+                  .slice(0, 4)
+                  .map((task) => {
+                    const priorityClass =
+                      `priority${String(
+                        task.priority ||
+                          "Medium"
+                      )
+                        .replace(/\s/g, "")
+                        .toLowerCase()}`;
+
+                    return (
+                      <div
+                        key={task.id}
+                        className={styles.taskRow}
+                      >
+                        <div
+                          className={
+                            styles.taskIcon
+                          }
+                        >
+                          ✓
+                        </div>
+
+                        <div>
+                          <strong>
+                            {task.title ||
+                              "Untitled task"}
+                          </strong>
+
+                          <span>
+                            Due{" "}
+                            {formatDate(
+                              task.due_date
+                            )}
+                          </span>
+                        </div>
+
+                        <em
+                          className={
+                            styles[
+                              priorityClass
+                            ]
+                          }
+                        >
+                          {task.priority ||
+                            "Medium"}
+                        </em>
+                      </div>
+                    );
+                  })}
+
+                {pendingTasks.length === 0 && (
+                  <div
+                    className={
+                      styles.miniEmpty
+                    }
+                  >
+                    All tasks are completed.
+                  </div>
+                )}
               </div>
             </div>
           </section>
 
-          {/* Statistics */}
-          <section className="clubops-stats">
-            {stats.map((stat) => (
-              <article className="clubops-stat-card" key={stat.title}>
-                <div className="clubops-stat-header">
-                  <div>
-                    <span className="clubops-stat-title">
-                      {stat.title}
-                    </span>
+          <section className={styles.grid}>
+            <div className={styles.panel}>
+              <PanelHeader
+                eyebrow="MEETING INTELLIGENCE"
+                title="Next Meeting"
+                href="/meetings"
+              />
 
-                    <strong className="clubops-stat-value">
-                      {stat.value}
-                    </strong>
-                  </div>
-
+              {nextMeeting ? (
+                <div
+                  className={
+                    styles.meetingCard
+                  }
+                >
                   <div
-                    className={`clubops-stat-icon ${stat.tone}`}
+                    className={
+                      styles.meetingIcon
+                    }
                   >
-                    {stat.icon}
+                    ◷
+                  </div>
+
+                  <div>
+                    <strong>
+                      {nextMeeting.title ||
+                        "Club Meeting"}
+                    </strong>
+
+                    <p>
+                      {formatDate(
+                        nextMeeting.meeting_date
+                      )}
+                      {" · "}
+                      {formatTime(
+                        nextMeeting.start_time
+                      ) ||
+                        "Time not set"}
+                    </p>
+
+                    <span>
+                      {nextMeeting.location ||
+                        "Location not set"}
+                    </span>
                   </div>
                 </div>
+              ) : (
+                <EmptyState
+                  icon="◷"
+                  title="No upcoming meetings"
+                  text="Schedule your next club coordination meeting."
+                  href="/meetings?new=1"
+                  action="Schedule Meeting"
+                />
+              )}
+            </div>
 
-                <div className="clubops-stat-footer">
-                  <span className="clubops-stat-description">
-                    {stat.description}
+            <div className={styles.panel}>
+              <PanelHeader
+                eyebrow="COMMUNICATION"
+                title="Latest Announcement"
+                href="/announcements"
+              />
+
+              {announcements[0] ? (
+                <div
+                  className={
+                    styles.announcement
+                  }
+                >
+                  <span>
+                    {announcements[0]
+                      .priority ||
+                      "Normal"}
                   </span>
 
-                  <span className="clubops-stat-change">
-                    {stat.change}
-                  </span>
-
-                  <span className="clubops-stat-change-text">
-                    {stat.changeText}
-                  </span>
-                </div>
-              </article>
-            ))}
-          </section>
-
-          {/* Main dashboard grid */}
-          <section className="clubops-dashboard-grid">
-            {/* Events */}
-            <article className="clubops-panel clubops-events-panel">
-              <div className="clubops-panel-header">
-                <div>
-                  <span className="clubops-section-label">
-                    SCHEDULE
-                  </span>
-
-                  <h2>Upcoming Events</h2>
+                  <h3>
+                    {announcements[0].title}
+                  </h3>
 
                   <p>
-                    Keep track of your club&apos;s upcoming activities.
+                    {announcements[0].content}
                   </p>
+
+                  <small>
+                    {formatDate(
+                      announcements[0]
+                        .created_at
+                    )}
+                  </small>
                 </div>
-
-                <Link href="/events" className="clubops-view-link">
-                  View all →
-                </Link>
-              </div>
-
-              <div className="clubops-event-list">
-                {events.map((event) => (
-                  <div className="clubops-event-item" key={event.name}>
-                    <div className="clubops-event-date">
-                      <strong>{event.day}</strong>
-                      <span>{event.month}</span>
-                    </div>
-
-                    <div className="clubops-event-details">
-                      <h3>{event.name}</h3>
-
-                      <p>{event.description}</p>
-
-                      <div className="clubops-event-meta">
-                        <span>🕐 {event.time}</span>
-                        <span>📍 {event.location}</span>
-                      </div>
-                    </div>
-
-                    <span className="clubops-upcoming-badge">
-                      Upcoming
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </article>
-
-            {/* Tasks */}
-            <article className="clubops-panel">
-              <div className="clubops-panel-header">
-                <div>
-                  <span className="clubops-section-label">
-                    WORKSPACE
-                  </span>
-
-                  <h2>Pending Tasks</h2>
-
-                  <p>Tasks that need your attention.</p>
-                </div>
-
-                <Link href="/tasks" className="clubops-view-link">
-                  View all →
-                </Link>
-              </div>
-
-              <div className="clubops-task-list">
-                {tasks.map((task) => (
-                  <div className="clubops-task-item" key={task.name}>
-                    <button
-                      type="button"
-                      className="clubops-task-checkbox"
-                      aria-label={`Complete ${task.name}`}
-                    >
-                      <span />
-                    </button>
-
-                    <div className="clubops-task-content">
-                      <h3>{task.name}</h3>
-
-                      <p>{task.category}</p>
-                    </div>
-
-                    <span
-                      className={`clubops-priority ${task.priorityClass}`}
-                    >
-                      {task.priority}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </article>
+              ) : (
+                <EmptyState
+                  icon="!"
+                  title="No announcements"
+                  text="Important club communication will appear here."
+                  href="/announcements?new=1"
+                  action="Create Announcement"
+                />
+              )}
+            </div>
           </section>
 
-          {/* Quick Actions */}
-          <section className="clubops-panel clubops-actions-panel">
-            <div className="clubops-panel-header">
+          {/* ClubOps AI Live Copilot Card */}
+          <section style={{
+            background: "#fff",
+            border: "1px solid rgba(0,0,0,0.08)",
+            borderRadius: "28px",
+            padding: "2.5rem",
+            marginBottom: "4rem",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.02)"
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
               <div>
-                <span className="clubops-section-label">
-                  SHORTCUTS
-                </span>
-
-                <h2>Quick Actions</h2>
-
-                <p>
-                  Jump directly into the tools you use most.
+                <span className="eyebrow">INTELLIGENT OPERATIONS COPILOT</span>
+                <h2 style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)", fontWeight: 800, letterSpacing: "-0.05em", margin: "0.2rem 0 0.4rem", color: "#111" }}>
+                  Ask ClubOps AI.
+                </h2>
+                <p style={{ margin: 0, fontSize: "0.95rem", color: "rgba(17,17,17,0.6)" }}>
+                  Need an event agenda, volunteer task breakdown, or campus announcement? Let Gemini accelerate your club.
                 </p>
               </div>
+              <Link href="/ai-assistant" className="apple-ai-item" style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                padding: "0.6rem 1.2rem",
+                borderRadius: "999px",
+                border: "1px solid rgba(0,0,0,0.15)",
+                fontSize: "0.82rem",
+                fontWeight: 700,
+                textDecoration: "none"
+              }}>
+                <span>Full AI Suite →</span>
+              </Link>
             </div>
 
-            <div className="clubops-actions-grid">
-              {quickActions.map((action) => (
-                <Link
-                  href={action.href}
-                  className="clubops-action-card"
-                  key={action.title}
+            {/* Quick Prompt Starters */}
+            <div style={{ display: "flex", gap: "0.6rem", flexWrap: "wrap", marginBottom: "1.2rem" }}>
+              {[
+                "Draft 2-Day Hackathon Schedule",
+                "Create Volunteer Task Checklist",
+                "Write Campus Registration Announcement",
+                "Suggest Budget Allocation for INR 50,000",
+              ].map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => {
+                    setCopilotInput(prompt);
+                    handleAskCopilot(prompt);
+                  }}
+                  style={{
+                    padding: "0.45rem 0.9rem",
+                    borderRadius: "999px",
+                    background: "rgba(0,0,0,0.04)",
+                    border: "1px solid rgba(0,0,0,0.08)",
+                    fontSize: "0.78rem",
+                    fontWeight: 600,
+                    color: "rgba(17,17,17,0.8)",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease"
+                  }}
                 >
-                  <div
-                    className={`clubops-action-icon ${action.className}`}
-                  >
-                    {action.icon}
-                  </div>
-
-                  <div>
-                    <h3>{action.title}</h3>
-                    <p>{action.description}</p>
-                  </div>
-
-                  <span className="clubops-action-arrow">→</span>
-                </Link>
+                  ⚡ {prompt}
+                </button>
               ))}
             </div>
+
+            {/* Copilot Input */}
+            <form onSubmit={(e) => { e.preventDefault(); handleAskCopilot(); }} style={{ display: "flex", gap: "0.8rem", marginBottom: copilotResponse ? "1.5rem" : 0 }}>
+              <input
+                type="text"
+                value={copilotInput}
+                onChange={(e) => setCopilotInput(e.target.value)}
+                placeholder="Ask anything about running your club (e.g., 'What permissions does a Coordinator need?')"
+                style={{
+                  flex: 1,
+                  padding: "0.85rem 1.2rem",
+                  borderRadius: "14px",
+                  border: "1px solid rgba(0,0,0,0.15)",
+                  background: "#fafaf8",
+                  fontSize: "0.92rem",
+                  color: "#111"
+                }}
+              />
+              <button
+                type="submit"
+                disabled={copilotLoading || !copilotInput.trim()}
+                style={{
+                  padding: "0.85rem 1.6rem",
+                  borderRadius: "999px",
+                  border: 0,
+                  background: "#111",
+                  color: "#fff",
+                  fontWeight: 700,
+                  fontSize: "0.88rem",
+                  cursor: copilotLoading || !copilotInput.trim() ? "not-allowed" : "pointer",
+                  opacity: copilotLoading || !copilotInput.trim() ? 0.6 : 1,
+                  whiteSpace: "nowrap"
+                }}
+              >
+                {copilotLoading ? "Generating..." : "Ask AI"}
+              </button>
+            </form>
+
+            {/* Copilot Response Card */}
+            {copilotResponse && (
+              <div style={{
+                background: "#fafaf8",
+                border: "1px solid rgba(0,0,0,0.1)",
+                borderRadius: "18px",
+                padding: "1.5rem",
+                marginTop: "1rem"
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.8rem" }}>
+                  <span style={{ fontSize: "0.75rem", fontWeight: 750, letterSpacing: "0.1em", textTransform: "uppercase", color: "rgba(17,17,17,0.5)" }}>
+                    AI GENERATED INSIGHT
+                  </span>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(copilotResponse);
+                        setCopilotCopied(true);
+                        setTimeout(() => setCopilotCopied(false), 2000);
+                      }}
+                      style={{
+                        background: "transparent",
+                        border: "1px solid rgba(0,0,0,0.15)",
+                        padding: "0.3rem 0.8rem",
+                        borderRadius: "999px",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        cursor: "pointer"
+                      }}
+                    >
+                      {copilotCopied ? "✓ Copied" : "Copy"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCopilotResponse("")}
+                      style={{
+                        background: "transparent",
+                        border: 0,
+                        fontSize: "0.75rem",
+                        color: "rgba(17,17,17,0.5)",
+                        cursor: "pointer"
+                      }}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+                <div style={{
+                  fontSize: "0.92rem",
+                  lineHeight: 1.65,
+                  color: "#111",
+                  whiteSpace: "pre-wrap",
+                  fontFamily: "inherit"
+                }}>
+                  {copilotResponse}
+                </div>
+              </div>
+            )}
           </section>
 
-          {/* Bottom information */}
-          <section className="clubops-bottom-grid">
-            <article className="clubops-info-card clubops-ai-card">
-              <div className="clubops-info-icon">🤖</div>
+          <section
+            className={styles.quick}
+          >
+            <div
+              className={
+                styles.quickHeading
+              }
+            >
+              <div>
+                <span>OPERATIONS</span>
 
-              <div className="clubops-info-content">
-                <span className="clubops-section-label">
-                  AI ASSISTANT
-                </span>
-
-                <h2>Your club&apos;s AI assistant</h2>
-
-                <p>
-                  Need help planning an event, organizing tasks,
-                  writing announcements, or managing operations?
-                  Ask ClubOps AI.
-                </p>
-
-                <Link
-                  href="/ai-assistant"
-                  className="clubops-info-button"
-                >
-                  Open AI Assistant →
-                </Link>
-              </div>
-            </article>
-
-            <article className="clubops-info-card clubops-summary-card">
-              <div className="clubops-summary-header">
-                <div>
-                  <span className="clubops-section-label">
-                    CLUB STATUS
-                  </span>
-
-                  <h2>Operations Summary</h2>
-                </div>
-
-                <span className="clubops-status-dot">
-                  Active
-                </span>
+                <h2>
+                  Quick Actions
+                </h2>
               </div>
 
-              <div className="clubops-summary-list">
-                <div>
-                  <span>Active members</span>
-                  <strong>248</strong>
-                </div>
+              <Link href="/ai-assistant">
+                Ask ClubOps AI →
+              </Link>
+            </div>
 
-                <div>
-                  <span>Events this month</span>
-                  <strong>12</strong>
-                </div>
+            <div
+              className={styles.quickGrid}
+            >
+              <QuickAction
+                href="/events?new=1"
+                icon="◈"
+                title="Create Event"
+                text="Plan your next club activity."
+              />
 
-                <div>
-                  <span>Completed tasks</span>
-                  <strong>86%</strong>
-                </div>
+              <QuickAction
+                href="/tasks?new=1"
+                icon="✓"
+                title="Assign Task"
+                text="Give work to a team member."
+              />
 
-                <div>
-                  <span>Average attendance</span>
-                  <strong>87%</strong>
-                </div>
-              </div>
-            </article>
+              <QuickAction
+                href="/attendance"
+                icon="◎"
+                title="Mark Attendance"
+                text="Record event participation."
+              />
+
+              <QuickAction
+                href="/members"
+                icon="♙"
+                title="Manage Members"
+                text="Keep your club team organized."
+              />
+
+              <QuickAction
+                href="/budget"
+                icon="₹"
+                title="Manage Budget"
+                text="Track event allocation and spending."
+              />
+
+              <QuickAction
+                href="/ai-assistant"
+                icon="✦"
+                title="Ask AI"
+                text="Generate plans and operational ideas."
+              />
+            </div>
           </section>
         </div>
       </main>
     </div>
+  );
+}
+
+function Stat({
+  icon,
+  label,
+  value,
+  note,
+}) {
+  return (
+    <article className={styles.stat}>
+      <div className={styles.statTop}>
+        <span
+          className={styles.statIcon}
+        >
+          {icon}
+        </span>
+
+        <span
+          className={styles.statLabel}
+        >
+          {label}
+        </span>
+      </div>
+
+      <strong>{value}</strong>
+
+      <p>{note}</p>
+    </article>
+  );
+}
+
+function PanelHeader({
+  eyebrow,
+  title,
+  href,
+}) {
+  return (
+    <div
+      className={styles.panelHeader}
+    >
+      <div>
+        <span>{eyebrow}</span>
+
+        <h2>{title}</h2>
+      </div>
+
+      {href && (
+        <Link href={href}>
+          View all →
+        </Link>
+      )}
+    </div>
+  );
+}
+
+function EmptyState({
+  icon,
+  title,
+  text,
+  href,
+  action,
+}) {
+  return (
+    <div className={styles.empty}>
+      <div
+        className={styles.emptyIcon}
+      >
+        {icon}
+      </div>
+
+      <strong>{title}</strong>
+
+      <p>{text}</p>
+
+      {href && (
+        <Link
+          href={href}
+          className={
+            styles.emptyAction
+          }
+        >
+          {action}
+        </Link>
+      )}
+    </div>
+  );
+}
+
+function QuickAction({
+  href,
+  icon,
+  title,
+  text,
+}) {
+  return (
+    <Link
+      href={href}
+      className={
+        styles.quickAction
+      }
+    >
+      <span>{icon}</span>
+
+      <div>
+        <strong>{title}</strong>
+
+        <p>{text}</p>
+      </div>
+
+      <b>→</b>
+    </Link>
   );
 }

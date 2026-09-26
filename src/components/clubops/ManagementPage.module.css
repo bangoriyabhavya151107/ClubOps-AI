@@ -1,0 +1,250 @@
+/* =========================================================
+   CLUBOPS AI — PRAVAS SAATHI 2.0 MANAGEMENT PAGE STYLING
+   ========================================================= */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.09);
+}
+
+.header > div > span {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.5);
+  margin-bottom: 0.5rem;
+}
+
+.header h2 {
+  margin: 0;
+  color: #111;
+  font-size: clamp(2.4rem, 4vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.06em;
+  line-height: 0.9;
+}
+
+.header p {
+  margin: 0.6rem 0 0;
+  color: rgba(17, 17, 17, 0.58);
+  font-size: 1rem;
+}
+
+.message {
+  margin-bottom: 1.8rem;
+  padding: 1rem 1.4rem;
+  border-radius: 16px;
+  color: #111;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.formCard,
+.tableCard {
+  padding: 2.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.04);
+}
+
+.formCard {
+  margin-bottom: 2.5rem;
+}
+
+.formCard h3 {
+  margin: 0 0 1.8rem;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #111;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.formGrid label {
+  display: grid;
+  gap: 0.5rem;
+  color: #111;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.formGrid label.full {
+  grid-column: 1 / -1;
+}
+
+.formGrid input,
+.formGrid select,
+.formGrid textarea {
+  width: 100%;
+  padding: 0.9rem 1.15rem;
+  border: 1px solid rgba(0, 0, 0, 0.13);
+  border-radius: 12px;
+  outline: none;
+  background: #ffffff;
+  font: inherit;
+  font-size: 0.92rem;
+  color: #111;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.formGrid textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.formGrid input:focus,
+.formGrid select:focus,
+.formGrid textarea:focus {
+  border-color: #111;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.checkbox {
+  display: flex !important;
+  align-items: center;
+  grid-column: 1 / -1;
+  gap: 10px;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 2rem;
+}
+
+.submitButton {
+  padding: 0.95rem 1.8rem;
+  border-radius: 999px;
+  background: #111111;
+  color: #ffffff;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 650;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.submitButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+}
+
+.cancelButton {
+  padding: 0.95rem 1.8rem;
+  border-radius: 999px;
+  background: transparent;
+  color: #111;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  font-size: 0.9rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.cancelButton:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* Table Controls & Search */
+.tableControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.search {
+  max-width: 380px;
+  padding: 0.85rem 1.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  font-size: 0.9rem;
+  background: #fafaf8;
+}
+
+.search:focus {
+  border-color: #111;
+  background: #ffffff;
+}
+
+/* Modern Pravas Saathi Table */
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 1rem 1.2rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(17, 17, 17, 0.5);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.table td {
+  padding: 1.2rem 1.2rem;
+  font-size: 0.92rem;
+  color: #111;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.table tr:hover td {
+  background: #fafaf8;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.deleteButton {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #dc2626;
+  font-size: 0.78rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deleteButton:hover {
+  background: #fef2f2;
+  border-color: #dc2626;
+}
+
+@media (max-width: 800px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
