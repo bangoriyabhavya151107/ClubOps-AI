@@ -18,9 +18,8 @@ export default function ClubOpsMotion({ children }) {
    * STARTUP ANIMATION
    * =========================================================
    *
-   * We keep your existing sessionStorage behaviour.
-   *
-   * The intro is shown only once per browser session.
+   * The ClubOps AI logo intro is shown once per browser
+   * session.
    */
 
   useEffect(() => {
@@ -34,7 +33,7 @@ export default function ClubOpsMotion({ children }) {
     } catch {
       /*
        * If sessionStorage is unavailable,
-       * we still allow the page to work normally.
+       * continue without the intro.
        */
       shouldShowIntro = false;
     }
@@ -46,28 +45,34 @@ export default function ClubOpsMotion({ children }) {
     setShowIntro(true);
 
     /*
-     * Give the navbar enough time to mount before
-     * calculating the real navbar logo position.
+     * Wait for the navbar to mount before finding
+     * the real navbar logo position.
      */
+
     const targetTimer = window.setTimeout(() => {
       updateLogoTarget();
     }, 100);
 
     /*
-     * Complete animation.
+     * Finish the intro animation.
      */
-    introTimerRef.current = window.setTimeout(() => {
-      setShowIntro(false);
 
-      try {
-        sessionStorage.setItem(
-          "co-seen",
-          "1"
-        );
-      } catch {
-        // Storage unavailable.
-      }
-    }, 2700);
+    introTimerRef.current =
+      window.setTimeout(() => {
+        setShowIntro(false);
+
+        try {
+          sessionStorage.setItem(
+            "co-seen",
+            "1"
+          );
+        } catch {
+          /*
+           * Storage unavailable.
+           * The application continues normally.
+           */
+        }
+      }, 2700);
 
     return () => {
       window.clearTimeout(targetTimer);
@@ -86,18 +91,14 @@ export default function ClubOpsMotion({ children }) {
    * FIND REAL NAVBAR LOGO
    * =========================================================
    *
-   * This is the important fix.
+   * The flying logo does not use a hard-coded position.
    *
-   * We don't guess where the navbar logo is.
-   *
-   * We find the actual:
+   * It finds the actual logo inside Topbar.jsx:
    *
    *     .apple-logo-badge
    *
-   * from your existing Topbar.jsx.
-   *
-   * Therefore the startup logo can travel toward the
-   * real navbar logo position.
+   * This allows the intro logo to travel directly toward
+   * the real navbar logo.
    */
 
   function updateLogoTarget() {
@@ -138,7 +139,7 @@ export default function ClubOpsMotion({ children }) {
 
   /*
    * =========================================================
-   * RECALCULATE ON RESIZE
+   * RECALCULATE LOGO POSITION ON RESIZE
    * =========================================================
    */
 
@@ -178,11 +179,17 @@ export default function ClubOpsMotion({ children }) {
 
   /*
    * =========================================================
-   * BODY STATE
+   * BODY INTRO STATE
    * =========================================================
    *
-   * This temporarily hides the final navbar logo while
-   * the animated logo is travelling toward it.
+   * While the startup animation is running we add:
+   *
+   *     co-logo-intro-active
+   *
+   * to the body.
+   *
+   * Dashboard animations use this state so that the
+   * dashboard waits for the logo animation to finish.
    */
 
   useEffect(() => {
@@ -213,7 +220,15 @@ export default function ClubOpsMotion({ children }) {
    * SCROLL PROGRESS
    * =========================================================
    *
-   * Keep the existing ClubOps scroll progress feature.
+   * We store the scroll position as a percentage:
+   *
+   *     0%
+   *     25%
+   *     50%
+   *     100%
+   *
+   * The global CSS uses this value directly as the width
+   * of the progress bar.
    */
 
   useEffect(() => {
@@ -226,20 +241,31 @@ export default function ClubOpsMotion({ children }) {
           .scrollHeight -
         window.innerHeight;
 
+      /*
+       * No scrollable content.
+       */
+
       if (documentHeight <= 0) {
-        document.documentElement.style
-          .setProperty(
-            "--co-scroll-progress",
-            "0%"
-          );
+        document.documentElement.style.setProperty(
+          "--co-scroll-progress",
+          "0%"
+        );
 
         return;
       }
+
+      /*
+       * Calculate percentage.
+       */
 
       const percentage =
         (scrollTop /
           documentHeight) *
         100;
+
+      /*
+       * Keep the value between 0 and 100.
+       */
 
       const safePercentage =
         Math.min(
@@ -250,14 +276,25 @@ export default function ClubOpsMotion({ children }) {
           )
         );
 
-      document.documentElement.style
-        .setProperty(
-          "--co-scroll-progress",
-          `${safePercentage}%`
-        );
+      /*
+       * Save the percentage to the root.
+       */
+
+      document.documentElement.style.setProperty(
+        "--co-scroll-progress",
+        `${safePercentage}%`
+      );
     }
 
+    /*
+     * Set initial value immediately.
+     */
+
     updateProgress();
+
+    /*
+     * Update while scrolling.
+     */
 
     window.addEventListener(
       "scroll",
@@ -266,6 +303,10 @@ export default function ClubOpsMotion({ children }) {
         passive: true,
       }
     );
+
+    /*
+     * Recalculate when window size changes.
+     */
 
     window.addEventListener(
       "resize",
@@ -291,7 +332,8 @@ export default function ClubOpsMotion({ children }) {
    * SCROLL REVEAL
    * =========================================================
    *
-   * Keep support for existing .co-reveal elements.
+   * Existing .co-reveal elements are revealed when they
+   * enter the viewport.
    */
 
   useEffect(() => {
@@ -355,7 +397,7 @@ export default function ClubOpsMotion({ children }) {
   return (
     <>
       {/* =====================================================
-          EXISTING SCROLL PROGRESS
+          SCROLL PROGRESS BAR
           ===================================================== */}
 
       <div
@@ -364,16 +406,12 @@ export default function ClubOpsMotion({ children }) {
       >
         <div
           className="scroll-progress-bar"
-          style={{
-            transform:
-              "scaleX(var(--co-scroll-progress-value, 0))",
-          }}
         />
       </div>
 
 
       {/* =====================================================
-          STARTUP LOGO
+          STARTUP LOGO INTRO
           ===================================================== */}
 
       {mounted && showIntro && (
@@ -382,15 +420,21 @@ export default function ClubOpsMotion({ children }) {
           aria-hidden="true"
         >
 
-          {/* Background */}
+          {/* =================================================
+              INTRO BACKGROUND
+              ================================================= */}
+
           <div className="co-intro-bg" />
 
 
-          {/* Main intro content */}
+          {/* =================================================
+              MAIN INTRO CONTENT
+              ================================================= */}
+
           <div className="co-intro-center">
 
             {/* =================================================
-                ORIGINAL LARGE LOGO
+                LARGE CLUBOPS LOGO
                 ================================================= */}
 
             <div className="co-intro-mark">
@@ -434,12 +478,9 @@ export default function ClubOpsMotion({ children }) {
           {/* =================================================
               FLYING LOGO
               =================================================
-
-              This is the logo that actually travels from
-              the centre of the screen to the navbar.
-
-              Its destination is calculated from the REAL
-              .apple-logo-badge in Topbar.jsx.
+              
+              This logo starts in the center and travels
+              toward the actual navbar logo.
               ================================================= */}
 
           <div
@@ -475,7 +516,7 @@ export default function ClubOpsMotion({ children }) {
 
 
           {/* =================================================
-              LIGHT TRAIL
+              LOGO LIGHT TRAIL
               ================================================= */}
 
           <div className="co-logo-trail" />

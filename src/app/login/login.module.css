@@ -295,3 +295,1223 @@
     padding: 3rem 6vw;
   }
 }
+
+
+/* =========================================================
+   CLUBOPS AI — LOGIN MOTION SYSTEM
+   ========================================================= */
+
+
+/* =========================================================
+   LOGIN PAGE BASE
+   ========================================================= */
+
+.page {
+  position: relative;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   BACKGROUND LIGHT
+   ========================================================= */
+
+.brandPanel::after {
+  content: "";
+
+  position: absolute;
+
+  width: 420px;
+
+  height: 420px;
+
+  left: -180px;
+
+  top: 25%;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(99, 91, 255, 0.22),
+      transparent 70%
+    );
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  animation:
+    loginGlowIn
+    1200ms
+    ease
+    500ms
+    forwards;
+}
+
+
+@keyframes loginGlowIn {
+  from {
+    opacity: 0;
+
+    transform:
+      scale(0.65);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   BRAND LOGO
+   ========================================================= */
+
+.brand {
+  opacity: 0;
+
+  transform:
+    translateY(-20px)
+    scale(0.95);
+
+  animation:
+    loginBrandIn
+    700ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    3000ms
+    both;
+}
+
+
+@keyframes loginBrandIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(-20px)
+      scale(0.95);
+  }
+
+  70% {
+    opacity: 1;
+
+    transform:
+      translateY(2px)
+      scale(1.01);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   LOGIN LOGO C
+   ========================================================= */
+
+.logo {
+  position: relative;
+
+  width: 48px;
+
+  height: 48px;
+
+  display: grid;
+
+  place-items: center;
+
+  flex-shrink: 0;
+
+  border-radius: 15px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #635bff,
+      #8b5cf6
+    );
+
+  color: #ffffff;
+
+  font-size: 1.5rem;
+
+  font-weight: 900;
+
+  box-shadow:
+    0 14px 35px
+    rgba(99, 91, 255, 0.32);
+
+  overflow: hidden;
+
+  transition:
+    transform 300ms
+    cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 300ms ease;
+}
+
+
+.logo::after {
+  content: "";
+
+  position: absolute;
+
+  top: -120%;
+
+  left: -120%;
+
+  width: 45%;
+
+  height: 340%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,0.6),
+      transparent
+    );
+
+  transform:
+    rotate(25deg);
+
+  animation:
+    loginLogoShine
+    3.5s
+    ease-in-out
+    3900ms
+    infinite;
+}
+
+
+@keyframes loginLogoShine {
+  0% {
+    left: -120%;
+  }
+
+  30% {
+    left: 170%;
+  }
+
+  100% {
+    left: 170%;
+  }
+}
+
+
+.brand:hover .logo {
+  transform:
+    scale(1.08)
+    rotate(-4deg);
+
+  box-shadow:
+    0 20px 45px
+    rgba(99, 91, 255, 0.4);
+}
+
+
+/* =========================================================
+   BRAND CONTENT
+   ========================================================= */
+
+.brandContent {
+  opacity: 0;
+
+  transform:
+    translateY(45px);
+
+  animation:
+    loginContentIn
+    900ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    3150ms
+    both;
+}
+
+
+@keyframes loginContentIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(45px);
+  }
+
+  70% {
+    opacity: 1;
+
+    transform:
+      translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   LOGIN BADGE
+   ========================================================= */
+
+.badge {
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  opacity: 0;
+
+  transform:
+    translateY(12px)
+    scale(0.96);
+
+  animation:
+    loginBadgeIn
+    550ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    3300ms
+    both;
+}
+
+
+.badge::before {
+  content: "";
+
+  width: 7px;
+
+  height: 7px;
+
+  border-radius: 50%;
+
+  background:
+    #8b5cf6;
+
+  box-shadow:
+    0 0 0 5px
+    rgba(139, 92, 246, 0.14);
+
+  animation:
+    loginBadgePulse
+    2s
+    ease-in-out
+    4s
+    infinite;
+}
+
+
+@keyframes loginBadgeIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(12px)
+      scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+@keyframes loginBadgePulse {
+  0%,
+  100% {
+    transform:
+      scale(1);
+
+    opacity: 0.8;
+  }
+
+  50% {
+    transform:
+      scale(1.35);
+
+    opacity: 1;
+  }
+}
+
+
+/* =========================================================
+   MAIN LOGIN HEADING
+   ========================================================= */
+
+.brandContent h1 {
+  opacity: 0;
+
+  transform:
+    translateY(45px)
+    scale(0.97);
+
+  animation:
+    loginHeadingIn
+    900ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    3380ms
+    both;
+}
+
+
+@keyframes loginHeadingIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(45px)
+      scale(0.97);
+  }
+
+  70% {
+    opacity: 1;
+
+    transform:
+      translateY(-4px)
+      scale(1.005);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   BRAND DESCRIPTION
+   ========================================================= */
+
+.brandContent p {
+  opacity: 0;
+
+  transform:
+    translateY(22px);
+
+  animation:
+    loginParagraphIn
+    700ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    3600ms
+    both;
+}
+
+
+@keyframes loginParagraphIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(22px);
+  }
+
+  to {
+    opacity: 0.6;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   FEATURES
+   ========================================================= */
+
+.features {
+  margin-top: 2.2rem;
+
+  display: grid;
+
+  gap: 0.8rem;
+}
+
+
+.features > div {
+  position: relative;
+
+  padding-left: 26px;
+
+  opacity: 0;
+
+  transform:
+    translateX(-22px);
+
+  animation:
+    loginFeatureIn
+    550ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+
+.features > div:nth-child(1) {
+  animation-delay:
+    3750ms;
+}
+
+
+.features > div:nth-child(2) {
+  animation-delay:
+    3830ms;
+}
+
+
+.features > div:nth-child(3) {
+  animation-delay:
+    3910ms;
+}
+
+
+.features > div:nth-child(4) {
+  animation-delay:
+    3990ms;
+}
+
+
+.features > div::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+
+  top: 50%;
+
+  width: 8px;
+
+  height: 8px;
+
+  border-radius: 50%;
+
+  background:
+    linear-gradient(
+      135deg,
+      #635bff,
+      #a855f7
+    );
+
+  transform:
+    translateY(-50%)
+    scale(0);
+
+  animation:
+    loginFeatureDot
+    450ms
+    cubic-bezier(0.34, 1.56, 0.64, 1)
+    both;
+}
+
+
+.features > div:nth-child(1)::before {
+  animation-delay:
+    3780ms;
+}
+
+
+.features > div:nth-child(2)::before {
+  animation-delay:
+    3860ms;
+}
+
+
+.features > div:nth-child(3)::before {
+  animation-delay:
+    3940ms;
+}
+
+
+.features > div:nth-child(4)::before {
+  animation-delay:
+    4020ms;
+}
+
+
+@keyframes loginFeatureIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateX(-22px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateX(0);
+  }
+}
+
+
+@keyframes loginFeatureDot {
+  from {
+    transform:
+      translateY(-50%)
+      scale(0);
+  }
+
+  to {
+    transform:
+      translateY(-50%)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   FORM PANEL
+   ========================================================= */
+
+.formPanel {
+  position: relative;
+
+  overflow: hidden;
+}
+
+
+/*
+ * Soft gradient behind the login form.
+ */
+
+.formPanel::before {
+  content: "";
+
+  position: absolute;
+
+  width: 520px;
+
+  height: 520px;
+
+  right: -260px;
+
+  bottom: -260px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(99, 91, 255, 0.1),
+      transparent 70%
+    );
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  animation:
+    loginFormGlow
+    1200ms
+    ease
+    3300ms
+    forwards;
+}
+
+
+@keyframes loginFormGlow {
+  from {
+    opacity: 0;
+
+    transform:
+      scale(0.7);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   LOGIN CARD
+   ========================================================= */
+
+.card {
+  position: relative;
+
+  z-index: 2;
+
+  opacity: 0;
+
+  transform:
+    translateY(35px)
+    scale(0.97);
+
+  animation:
+    loginCardIn
+    850ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    3000ms
+    both;
+}
+
+
+@keyframes loginCardIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(35px)
+      scale(0.97);
+  }
+
+  65% {
+    opacity: 1;
+
+    transform:
+      translateY(-4px)
+      scale(1.005);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   SMALL LOGIN LABEL
+   ========================================================= */
+
+.smallLabel {
+  display: inline-block;
+
+  opacity: 0;
+
+  transform:
+    translateY(10px);
+
+  animation:
+    loginSmallLabel
+    450ms
+    ease
+    3150ms
+    forwards;
+}
+
+
+@keyframes loginSmallLabel {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(10px);
+  }
+
+  to {
+    opacity: 0.55;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   LOGIN CARD HEADING
+   ========================================================= */
+
+.card h2 {
+  opacity: 0;
+
+  transform:
+    translateY(22px);
+
+  animation:
+    loginCardHeading
+    650ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    3230ms
+    both;
+}
+
+
+@keyframes loginCardHeading {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(22px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   LOGIN SUBTITLE
+   ========================================================= */
+
+.subtitle {
+  opacity: 0;
+
+  transform:
+    translateY(15px);
+
+  animation:
+    loginSubtitle
+    500ms
+    ease
+    3370ms
+    both;
+}
+
+
+@keyframes loginSubtitle {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(15px);
+  }
+
+  to {
+    opacity: 0.6;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   FORM FIELDS
+   ========================================================= */
+
+.card form .fieldGroup {
+  opacity: 0;
+
+  transform:
+    translateY(20px);
+
+  animation:
+    loginFieldIn
+    550ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    both;
+}
+
+
+.card form .fieldGroup:nth-child(1) {
+  animation-delay:
+    3500ms;
+}
+
+
+.card form .fieldGroup:nth-child(2) {
+  animation-delay:
+    3590ms;
+}
+
+
+@keyframes loginFieldIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   INPUT FOCUS POLISH
+   ========================================================= */
+
+.inputWrap input {
+  transition:
+    border-color 250ms ease,
+    box-shadow 250ms ease,
+    transform 250ms ease,
+    background 250ms ease;
+}
+
+
+.inputWrap input:hover {
+  border-color:
+    rgba(99, 91, 255, 0.25);
+}
+
+
+.inputWrap input:focus {
+  border-color:
+    #635bff;
+
+  box-shadow:
+    0 0 0 4px
+    rgba(99, 91, 255, 0.1);
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* =========================================================
+   PASSWORD BUTTON
+   ========================================================= */
+
+.eyeBtn {
+  transition:
+    color 200ms ease,
+    transform 200ms
+    cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+
+.eyeBtn:hover {
+  color:
+    #635bff;
+
+  transform:
+    scale(1.1);
+}
+
+
+/* =========================================================
+   SIGN-IN BUTTON
+   ========================================================= */
+
+.submitBtn {
+  position: relative;
+
+  overflow: hidden;
+
+  animation:
+    loginButtonIn
+    600ms
+    cubic-bezier(0.22, 1, 0.36, 1)
+    3690ms
+    both;
+}
+
+
+@keyframes loginButtonIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(18px)
+      scale(0.97);
+  }
+
+  70% {
+    opacity: 1;
+
+    transform:
+      translateY(-2px)
+      scale(1.01);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+.submitBtn::after {
+  content: "";
+
+  position: absolute;
+
+  top: -120%;
+
+  left: -120%;
+
+  width: 45%;
+
+  height: 340%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,0.25),
+      transparent
+    );
+
+  transform:
+    rotate(25deg);
+
+  transition:
+    left 700ms ease;
+}
+
+
+.submitBtn:hover::after {
+  left:
+    160%;
+}
+
+
+.submitBtn:hover {
+  transform:
+    translateY(-3px);
+
+  box-shadow:
+    0 18px 38px
+    rgba(0, 0, 0, 0.18);
+}
+
+
+.submitBtn:active {
+  transform:
+    translateY(0)
+    scale(0.98);
+}
+
+
+/* =========================================================
+   DIVIDER
+   ========================================================= */
+
+.divider {
+  opacity: 0;
+
+  animation:
+    loginSecondaryIn
+    500ms
+    ease
+    3830ms
+    forwards;
+}
+
+
+/* =========================================================
+   REGISTER
+   ========================================================= */
+
+.register {
+  opacity: 0;
+
+  transform:
+    translateY(10px);
+
+  animation:
+    loginSecondaryIn
+    500ms
+    ease
+    3890ms
+    forwards;
+}
+
+
+/* =========================================================
+   BACK HOME
+   ========================================================= */
+
+.home {
+  opacity: 0;
+
+  transform:
+    translateY(10px);
+
+  animation:
+    loginSecondaryIn
+    500ms
+    ease
+    3950ms
+    forwards;
+}
+
+
+@keyframes loginSecondaryIn {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   LINK HOVER
+   ========================================================= */
+
+.register a,
+.home,
+.forgotLink a {
+  transition:
+    color 200ms ease,
+    opacity 200ms ease;
+}
+
+
+.register a:hover,
+.forgotLink a:hover {
+  color:
+    #635bff;
+
+  opacity: 1;
+}
+
+
+.home:hover {
+  color:
+    #635bff;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .brandContent {
+    padding-bottom: 4vh;
+  }
+
+
+  .brandContent h1 {
+    font-size:
+      clamp(
+        3rem,
+        10vw,
+        5rem
+      );
+  }
+
+
+  .features {
+    margin-top:
+      1.5rem;
+  }
+}
+
+
+@media (max-width: 600px) {
+
+  .brandPanel {
+    min-height:
+      45vh;
+  }
+
+
+  .formPanel {
+    min-height:
+      55vh;
+  }
+
+
+  .brandContent h1 {
+    font-size:
+      clamp(
+        2.8rem,
+        12vw,
+        4rem
+      );
+  }
+
+
+  .brandContent p {
+    font-size:
+      0.92rem;
+  }
+
+
+  .features {
+    gap:
+      0.55rem;
+  }
+
+
+  .features > div {
+    font-size:
+      0.85rem;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .brand,
+  .brandContent,
+  .badge,
+  .brandContent h1,
+  .brandContent p,
+  .features > div,
+  .card,
+  .smallLabel,
+  .card h2,
+  .subtitle,
+  .card form .fieldGroup,
+  .submitBtn,
+  .divider,
+  .register,
+  .home {
+    animation:
+      none !important;
+
+    opacity:
+      1 !important;
+
+    transform:
+      none !important;
+  }
+
+
+  .brandPanel::after,
+  .formPanel::before {
+    animation:
+      none !important;
+
+    opacity:
+      1 !important;
+  }
+}
